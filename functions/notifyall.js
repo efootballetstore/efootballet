@@ -19,7 +19,7 @@ export async function onRequestPost({ request, env }) {
     if (!a.ok || (await a.json()) !== true) return json({ error: 'auth' }, 401);
     const { text } = await request.json();
     const H = { apikey: K, Authorization: 'Bearer ' + K };
-    const subs = await (await fetch(`${SB}/rest/v1/push_subs?select=id,endpoint`, { headers: H })).json();
+    const subs = await (await fetch(`${SB}/rest/v1/push_subs?app=neq.admin&select=id,endpoint`, { headers: H })).json();
     let push = 0;
     for (const s of Array.isArray(subs) ? subs : []) {
       try {

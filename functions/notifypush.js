@@ -45,10 +45,19 @@ export async function onRequestPost({ request, env }) {
     to = to.filter((x) => x && x !== uid);
     if (!to.length) return json({ sent: 0, why: 'no-recipient', kind: c.kind, role: m.role });
 
-    const subs = await (await fetch(`${SB}/rest/v1/push_subs?user_id=in.(${to.join(',')})&select=id,endpoint`, { headers: H })).json();
+    const subs = await (await fetch(`${SB}/rest/v1/push_subs?user_id=in.(${to.join(',')})&select=id,user_id,endpoint,app`, { headers: H })).json();
+    // admin-app phones get admin events only; everyone else gets their normal phones
+    const toAdmins = (c.kind === 'support' && m.role !== 'admin') || m.kind === 'deal_agree' || m.kind === 'exchange_accept';
+    const byUser = {};
+    for (const s of Array.isArray(subs) ? subs : []) (byUser[s.user_id] = byUser[s.user_id] || []).push(s);
+    subs = [];
+    for (const k of Object.keys(byUser)) {
+      const adm = byUser[k].filter((s) => s.app === 'admin');
+      subs = subs.concat(toAdmins && adm.length ? adm : byUser[k].filter((s) => s.app !== 'admin'));
+    }
     let sent = 0;
     const st = [];
-    for (const s of Array.isArray(subs) ? subs : []) {
+    for (const s of subs) {
       try {
         const r = await fetch(s.endpoint, { method: 'POST', headers: { TTL: '86400', Urgency: 'high', Authorization: await vapidAuth(env, s.endpoint), 'Content-Length': '0' } });
         st.push(r.status);
@@ -56,7 +65,7 @@ export async function onRequestPost({ request, env }) {
         else if (r.ok) sent++;
       } catch (e) { st.push('err'); }
     }
-    return json({ sent, to: to.length, subs: Array.isArray(subs) ? subs.length : String(JSON.stringify(subs)).slice(0, 80), st });
+    return json({ sent, to: to.length, subs: subs.length, st });
   } catch (e) {
     return json({ error: 'server' }, 500);
   }
