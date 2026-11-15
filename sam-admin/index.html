@@ -11,14 +11,15 @@ body{background:var(--bg);color:var(--t)}
 .ah{position:fixed;top:0;left:0;right:0;height:var(--hh);box-sizing:border-box;padding:env(safe-area-inset-top,0) 16px 0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1b1442,#120d2e);border-bottom:1px solid var(--l);z-index:20}
 .ah b{font-size:17px;letter-spacing:.08em}.ah small{color:var(--h)}
 .pane{position:fixed;top:var(--hh);bottom:var(--nh);left:0;right:0;overflow:auto;padding:14px;box-sizing:border-box}
-iframe.pane{border:0;width:100%;padding:0;background:var(--bg)}
+iframe.pane{border:0;width:100%;padding:0;background:var(--bg);height:calc(100vh - var(--hh) - var(--nh));height:calc(100dvh - var(--hh) - var(--nh))}
+nav[hidden]{display:none!important}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
 .card{background:var(--b2);border:1px solid var(--l);border-radius:18px;padding:14px;cursor:pointer;text-align:left;color:var(--t);font:inherit}
 .card .n{font-size:32px;font-weight:800;line-height:1.1;margin-top:4px}
 .card.hot{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}
 .card small{color:var(--h);display:block}
 .big{grid-column:1/-1}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
 .menu{display:flex;flex-direction:column;gap:10px}
 .menu button{display:flex;justify-content:space-between;align-items:center;text-align:left}
 nav .ei{font-style:normal;font-size:21px;display:block;line-height:1.1}
@@ -109,7 +110,7 @@ function paint(){
   <div class="card big"><small>💰 Sales today (verified)</small><div class="n">${(D.sales??0).toLocaleString()} <small style="display:inline">ETB</small></div></div>
  </div>
  <div class="box"><b>🔔 Notifications</b><p class="sub" style="margin:6px 0">${notif==='granted'?'On for this phone. You are alerted about new orders, receipts, ready customers and messages.':'Turn them on to get alerts for new orders, receipts, ready customers and messages.'}</p>
-  <div class="row"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`}
+  <div class="brow"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`}
 
 /* ---------- more ---------- */
 function more(){
