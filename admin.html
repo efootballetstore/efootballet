@@ -5,6 +5,7 @@ const sb=supabase.createClient(CFG.URL,CFG.KEY),A=document.getElementById('app')
 const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let me,tab='awaiting_review',rows=[],promos=[],lists=[],subs=[],last=-1,tm;
 const TABS={awaiting_review:'🔎 ለማረጋገጥ',approved:'📦 ለማድረስ',delivered:'✅ ደርሷል',rejected:'❌ ውድቅ',codes:'🎟 Codes',lst:'➕ Listings',subs:'📥 Sell requests',bc:'📣 Broadcast'};
+if(top!==self)document.documentElement.classList.add('inapp');if(TABS[location.hash.slice(1)])tab=location.hash.slice(1);window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(TABS[h]){tab=h;if(typeof draw==='function')draw()}});
 function login(m=''){
  clearInterval(tm);A.innerHTML=`<h1>🔐 Admin</h1><label>Email</label><input id="em" type="email"><label>Password</label><input id="pw" type="password"><div class="err">${m}</div><button class="btn" id="lg">ግባ</button>`;
  lg.onclick=async()=>{const{error}=await sb.auth.signInWithPassword({email:em.value.trim(),password:pw.value});error?login('ኢሜል ወይም ይለፍ ቃል ትክክል አይደለም'):start()}}
@@ -89,4 +90,4 @@ async function act(b){
  if(a=='req'&&!error&&data){try{const od=await sb.from('orders').select('user_id').eq('id',id).maybeSingle();const buid=od.data&&od.data.user_id;if(!buid){alert('Buyer not found for this order (guest order?) - no notification sent.')}else{const mm=await sb.rpc('notify_user',{p_user:buid,p_text:'Konami sent a verification code to your email. Please open your order (Profile > My orders) and enter the code.',p_kind:'text',p_meta:{order:id}});if(mm.error)alert('Message failed: '+mm.error.message);else pingPush(mm.data)}}catch(e){alert('Notify error: '+e)}}
  await load()}
 start();
-</script><a href="adminmsg.html" style="position:fixed;right:14px;bottom:84px;z-index:50;background:#F2B705;color:#000;text-decoration:none;font-weight:700;padding:12px 16px;border-radius:99px;box-shadow:0 8px 24px #000a">💬 Messages</a></body></html>
+</script><a class="fabm" href="adminmsg.html" style="position:fixed;right:14px;bottom:84px;z-index:50;background:#F2B705;color:#000;text-decoration:none;font-weight:700;padding:12px 16px;border-radius:99px;box-shadow:0 8px 24px #000a">💬 Messages</a></body></html>
