@@ -308,6 +308,11 @@ a[onclick^="sell("] svg{stroke:#fff}
 .toast.nt .btn{padding:7px 12px!important;font-size:13px;border-radius:10px}
 .toast.nt .ntx{flex:none;background:none;border:0;color:var(--h,#8C90A6);font-size:16px;padding:6px 8px;cursor:pointer}
 </style>
+<style>/*v5 messages clarity*/
+.mrow.unread{border-color:#F2B70566;background:linear-gradient(135deg,#F2B7050f,var(--b2) 60%)}
+.mrow.unread .mt b{color:var(--a)}
+.mrow.unread::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--a);flex:none;align-self:center}
+</style>
 </head><body><header><a class="brand" href="./"><img id="bl" alt=""><b id="nm"></b></a><span><button onclick="setLang()" id="lg"></button><button onclick="setTheme()" id="th"></button><button onclick="mn()" id="mb">☰</button></span></header><div class="mn" id="mn"><a onclick="go2(home)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</a><a onclick="go2(coins)"><img id="mc" class="mi" alt="">Coins</a><a onclick="go2(players)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.8 0 4.5 1.8 4.5 4.3"/></svg>Accounts</a><a onclick="go2(sell)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Sell your account</a><a onclick="go2(msgs)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h7"/></svg>Messages</a><a onclick="go2(support)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/><path d="M8.5 10.5h7"/></svg>Community</a><a onclick="go2(account)"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Profile</a></div><main id="v"><p class="sub">⏳ በመጫን ላይ...</p></main>
 <nav><button data-t="coins" onclick="coins()"><img id="nc" class="ni" alt="">Coins</button><button data-t="players" onclick="players()"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.8 0 4.5 1.8 4.5 4.3"/></svg>Accounts</button><button data-t="home" class="ctr" onclick="home()"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button><button data-t="sup" onclick="msgs()"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h7"/></svg>Messages<i class="bdg" id="nb" hidden></i></button><button data-t="acc" onclick="account()"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Profile</button></nav>
 <script>window.onerror=function(m,u,l){if(window.OK||/^Script error/i.test(m))return;var v=document.getElementById('v');v.innerHTML='<p class="err">ስህተት፦ '+m+' ('+(u||'').split('/').pop()+':'+l+')</p><p class="sub">ይህን ስክሪን ለ Claude ይላኩ።</p>'};</script>
@@ -352,13 +357,30 @@ function pickP(id,v){$(id).value=v;document.querySelectorAll('#'+id+'_p .pp').fo
 window.onpick_xm=v=>{const e=document.getElementById('xaw');if(e)e.hidden=v=='even'};
 function reveal(){try{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;let i=0;V.querySelectorAll('h1,h2,h3,.box,.sec,.pcard,.pcc,.cc,.mrow,.hint,p.sub,.sum').forEach(e=>{if(e.closest('.selfrm,.heroc,.tgm,.tgh,.tgc'))return;if(e.tagName=='H1')e.classList.add('shimt');e.style.setProperty('--d',Math.min(i++*0.05,0.6)+'s');e.classList.add('rv')})}catch(x){}}
 let _pn=0;const _pt=setInterval(()=>{try{if(U){clearInterval(_pt);askPush()}else if(++_pn>30)clearInterval(_pt)}catch(e){clearInterval(_pt)}},3000);
+let MQ='';
+function mrow(c,isSup){
+ const name=isSup?('SAM STORE '+L2('Support','ድጋፍ')+' '+VBH):E(c.name||'?');
+ const sub=isSup?E(c.last_text||L2('Ask us anything','ማንኛውንም ይጠይቁን')):(E(c.title||'')+(c.last_text?' \u00b7 '+E(c.last_text):'')||L2('No messages yet','እስካሁን መልዕክት የለም'));
+ const av=isSup?`<div class="tav sup">${SUP}</div>`:`<div class="tav" style="--h:${avc(c.name||'')}">${E(String(c.name||'?').charAt(0).toUpperCase())}</div>`;
+ const un=c.unread>0;
+ return `<div class="mrow${un?' unread':''}" onclick="chat(${c.id})">${av}<div class="mt"><b>${name}</b><small class="sub">${sub}</small></div><div style="text-align:right;flex:none"><small class="sub">${tmo(c.last_at)}</small>${un?`<div class="udot">${c.unread}</div>`:''}</div></div>`}
+function renderMsgs(){
+ const{sp,cs}=window.MC||{};if(!sp)return;
+ const all=(cs||[]).slice().sort((a,b)=>new Date(b.last_at||0)-new Date(a.last_at||0));
+ const q=MQ.trim().toLowerCase();
+ const filt=q?all.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.title||'').toLowerCase().includes(q)||(c.last_text||'').toLowerCase().includes(q)):all;
+ const showSup=!q||('sam store support '+L2('Support','ድጋፍ')).toLowerCase().includes(q);
+ const rows=filt.map(c=>mrow(c,false)).join('');
+ const searchBox=(all.length>4)?`<div class="srch" style="margin:12px 0"><span>\u{1F50D}</span><input id="mq" value="${E(MQ)}" placeholder="${L2('Search messages','መልዕክት ፈልግ')}" oninput="MQ=this.value;renderMsgs()"></div>`:'';
+ show(`<h1>${L2('Messages','መልዕክቶች')}</h1><p class="sub">${L2('Chat with sellers, buyers and SAM STORE support.','ከሻጮች፣ ገዢዎች እና ከ SAM STORE ድጋፍ ጋር ይወያዩ።')}</p>${searchBox}${showSup?mrow(sp,true):''}${rows||(q?`<p class="sub">${L2('No matching conversations.','የሚመሳሰል ውይይት አልተገኘም።')}</p>`:`<p class="sub">${L2('No conversations yet. Tap Chat on an account to message its seller.','እስካሁን ውይይት የለም። ሻጩን ለማነጋገር በአካውንት ላይ ውይይት ይጫኑ።')}</p>`)}`,'sup');
+ const mq=$('mq');if(mq){const l=mq.value.length;mq.focus();mq.setSelectionRange(l,l)}
+ badge()}
 async function msgs(){
  if(!U)return account(L2('Log in to see your messages.','መልዕክቶችዎን ለማየት ይግቡ።'));
  askPush();
  const[{data:sp},{data:cs}]=await Promise.all([sb.rpc('support_info'),sb.rpc('my_convs')]);
- const rows=(cs||[]).map(c=>`<div class="mrow" onclick="chat(${c.id})"><div class="tav" style="--h:${avc(c.name||'')}">${E(String(c.name||'?').charAt(0).toUpperCase())}</div><div class="mt"><b>${E(c.name||'')}</b><small class="sub">${E(c.title||'')}${c.last_text?' \u00b7 '+E(c.last_text):''}</small></div><div style="text-align:right"><small class="sub">${tmo(c.last_at)}</small>${c.unread>0?`<div class="udot">${c.unread}</div>`:''}</div></div>`).join('');
- show(`<h1>${L2('Messages','መልዕክቶች')}</h1><p class="sub">${L2('Chat with sellers, buyers and SAM STORE support.','ከሻጮች፣ ገዢዎች እና ከ SAM STORE ድጋፍ ጋር ይወያዩ።')}</p><div class="mrow" onclick="chat(${sp.id})"><div class="tav sup">${SUP}</div><div class="mt"><b>SAM STORE ${L2('Support','ድጋፍ')} ${VBH}</b><small class="sub">${E(sp.last_text||L2('Ask us anything','ማንኛውንም ይጠይቁን'))}</small></div>${sp.unread>0?`<div class="udot">${sp.unread}</div>`:''}</div>${rows||`<p class="sub">${L2('No conversations yet. Tap Chat on an account to message its seller.','እስካሁን ውይይት የለም። ሻጩን ለማነጋገር በአካውንት ላይ ውይይት ይጫኑ።')}</p>`}`,'sup');
- badge()}
+ window.MC={sp,cs};
+ renderMsgs()}
 const imgUrl=p=>CFG.URL+'/storage/v1/object/public/chat/'+p;
 const xmode=(m,n)=>m=='even'?L2('Even swap (no money)','እኩል መለዋወጥ (ያለ ገንዘብ)'):m=='buyer_adds'?L2('Buyer adds','ገዢ ይጨምራል')+' '+n+' ETB':L2('Seller adds','ሻጭ ይጨምራል')+' '+n+' ETB';
 async function chat(id){
