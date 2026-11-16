@@ -45,7 +45,7 @@ export async function onRequestPost({ request, env }) {
     to = to.filter((x) => x && x !== uid);
     if (!to.length) return json({ sent: 0, why: 'no-recipient', kind: c.kind, role: m.role });
 
-    const subs = await (await fetch(`${SB}/rest/v1/push_subs?user_id=in.(${to.join(',')})&select=id,user_id,endpoint,app`, { headers: H })).json();
+    let subs = await (await fetch(`${SB}/rest/v1/push_subs?user_id=in.(${to.join(',')})&select=id,user_id,endpoint,app`, { headers: H })).json();
     // admin-app phones get admin events only; everyone else gets their normal phones
     const toAdmins = (c.kind === 'support' && m.role !== 'admin') || m.kind === 'deal_agree' || m.kind === 'exchange_accept';
     const byUser = {};
