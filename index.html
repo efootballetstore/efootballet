@@ -308,6 +308,19 @@ a[onclick^="sell("] svg{stroke:#fff}
 .toast.nt .btn{padding:7px 12px!important;font-size:13px;border-radius:10px}
 .toast.nt .ntx{flex:none;background:none;border:0;color:var(--h,#8C90A6);font-size:16px;padding:6px 8px;cursor:pointer}
 </style>
+<style>/*v7 chat: like/edit/delete + premium animated name*/
+.prem{background:linear-gradient(90deg,#F2B705,#fff,#F2B705,#8ab4ff,#F2B705);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:premShine 4s linear infinite;font-weight:800}
+@keyframes premShine{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.lk{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:2px 8px;border-radius:99px;background:#0004;font-size:12px;font-weight:700;width:fit-content}
+.tb.out .lk{background:#0003}
+.lk.on{background:#2563eb33;color:#8ab4ff}
+.tb.out .lk.on{color:#1a3a7a}
+.tb.del i{opacity:.65;font-style:italic}
+.msheet{display:flex;flex-direction:column;gap:8px}
+.msheet .btn{width:100%}
+.edb{max-width:560px;margin:0 auto 6px;padding:7px 14px;font-size:13px;color:var(--h);background:#F2B70514;border:1px solid #F2B70540;border-radius:12px;display:flex;align-items:center;gap:6px}
+.edb a{color:var(--a);font-weight:700;text-decoration:none;margin-left:auto}
+</style>
 <style>/*v6 disable accidental text-selection/callout on long-press*/
 *{-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 body{-webkit-user-select:none;user-select:none}
@@ -364,7 +377,7 @@ function reveal(){try{if(matchMedia('(prefers-reduced-motion:reduce)').matches)r
 let _pn=0;const _pt=setInterval(()=>{try{if(U){clearInterval(_pt);askPush()}else if(++_pn>30)clearInterval(_pt)}catch(e){clearInterval(_pt)}},3000);
 let MQ='';
 function mrow(c,isSup){
- const name=isSup?('SAM STORE '+L2('Support','ድጋፍ')+' '+VBH):E(c.name||'?');
+ const name=isSup?('<span class="prem">SAM STORE</span> '+L2('Support','ድጋፍ')+' '+VBH):E(c.name||'?');
  const sub=isSup?E(c.last_text||L2('Ask us anything','ማንኛውንም ይጠይቁን')):(E(c.title||'')+(c.last_text?' \u00b7 '+E(c.last_text):'')||L2('No messages yet','እስካሁን መልዕክት የለም'));
  const av=isSup?`<div class="tav sup">${SUP}</div>`:`<div class="tav" style="--h:${avc(c.name||'')}">${E(String(c.name||'?').charAt(0).toUpperCase())}</div>`;
  const un=c.unread>0;
@@ -393,12 +406,13 @@ async function chat(id){
  const{data:info}=await sb.rpc('conv_info',{p_conv:id});
  if(!info||!info.kind)return msgs();
  const nm=info.name||info.title,qa=(info.kind=='listing'&&info.my_role=='buyer')?`<div class="qa"><button class="chip" onclick="askLast()">\u{1F4AC} ${L2('Last price?','የመጨረሻ ዋጋ?')}</button>${info.mode!='sale'?`<button class="chip" onclick="exchModal()">${XCH} ${L2('Exchange','መለዋወጥ')}</button>`:''}</div>`:'';
- show(`<div class="tgh"><button class="tback" onclick="msgs()">\u2039</button><div class="tav${info.kind=='support'?' sup':''}" style="--h:${avc(nm)}">${info.kind=='support'?SUP:E(String(nm).charAt(0).toUpperCase())}</div><div class="tnm"><b>${E(nm)}${info.verified?' '+VBH:''}</b><small>${info.kind=='support'?L2('SAM STORE team','የ SAM STORE ቡድን'):E(info.title)}</small></div></div><div id="cm" class="tgm"></div><div class="tgc">${qa}<div class="tgr"><button class="tatt" onclick="$('cf').click()">${CLIP}</button><input id="cf" type="file" accept="image/*" multiple hidden onchange="sendPhotos(this)"><input id="ci" maxlength="1000" autocomplete="off" placeholder="${L2('Message','መልዕክት')}"><button class="tsend" onclick="sendM(${id})">${SEND}</button></div></div>`,'sup');
+ show(`<div class="tgh"><button class="tback" onclick="msgs()">\u2039</button><div class="tav${info.kind=='support'?' sup':''}" style="--h:${avc(nm)}">${info.kind=='support'?SUP:E(String(nm).charAt(0).toUpperCase())}</div><div class="tnm"><b${info.kind=='support'?' class="prem"':''}>${E(nm)}${info.verified?' '+VBH:''}</b><small>${info.kind=='support'?L2('SAM STORE team','የ SAM STORE ቡድን'):E(info.title)}</small></div></div><div id="cm" class="tgm"></div><div class="tgc">${qa}<div class="tgr"><button class="tatt" onclick="$('cf').click()">${CLIP}</button><input id="cf" type="file" accept="image/*" multiple hidden onchange="sendPhotos(this)"><input id="ci" maxlength="1000" autocomplete="off" placeholder="${L2('Message','መልዕክት')}"><button class="tsend" onclick="sendM(${id})">${SEND}</button></div></div>`,'sup');
  window.CINFO=info;window.CID=id;window.LASTN='';
- const go=async()=>{const[{data:ms},{data:inf}]=await Promise.all([sb.from('messages').select('*').eq('conv_id',id).order('id'),sb.rpc('conv_info',{p_conv:id})]);if(!ms)return;if(inf&&inf.kind)window.CINFO=inf;const key=ms.length+':'+((inf&&inf.other_read)||0);if(key===window.LASTN)return;const ae=document.activeElement;if(ae&&/^(pp|cr|ce|cp)/.test(ae.id||'')&&ae.value)return;window.LASTN=key;drawChat(ms);sb.rpc('mark_read',{p_conv:id}).then(badge)};
+ const go=async()=>{const[{data:ms},{data:inf},{data:lk}]=await Promise.all([sb.from('messages').select('*').eq('conv_id',id).order('id'),sb.rpc('conv_info',{p_conv:id}),sb.from('message_likes').select('message_id,user_id').eq('conv_id',id)]);if(!ms)return;if(inf&&inf.kind)window.CINFO=inf;window.LK=lk||[];const key=ms.length+':'+((inf&&inf.other_read)||0)+':'+((lk||[]).length);if(key===window.LASTN)return;const ae=document.activeElement;if(ae&&/^(pp|cr|ce|cp)/.test(ae.id||'')&&ae.value)return;if(window.EDITID)return;window.LASTN=key;drawChat(ms);sb.rpc('mark_read',{p_conv:id}).then(badge)};
  window.CHATGO=go;await go();T=setInterval(go,3000);
  $('ci').addEventListener('keydown',e=>{if(e.key==='Enter')sendM(id)})}
 function drawChat(ms){const info=window.CINFO,box=$('cm');if(!box)return;const me=U.id,or=info.other_read||0;window.MS=ms;
+ const LKC={},LKMINE=new Set();(window.LK||[]).forEach(r=>{LKC[r.message_id]=(LKC[r.message_id]||0)+1;if(r.user_id===me)LKMINE.add(r.message_id)});window.LKMINE=LKMINE;
  let lastAsk=-1,lastOff=-1;ms.forEach((m,i)=>{if(m.kind=='price_ask')lastAsk=i;if(m.kind=='price_offer'||m.kind=='no_price')lastAsk=-1;if(m.kind=='exchange_offer')lastOff=i;if(m.kind=='exchange_accept'||m.kind=='exchange_decline')lastOff=-1});
  const done=(i,k,cat,st)=>ms.slice(i+1).some(x=>x.kind==k&&x.meta&&x.meta.catalog_id==cat&&(st==null||x.meta.stage==st));
  const rm=(m,i)=>{const mine=m.sender_id===me,t=tmo(m.created_at),mt=m.meta||{},tk=mine?` <i class="tk${m.id<=or?' r':''}">${m.id<=or?'\u2713\u2713':'\u2713'}</i>`:'';
@@ -407,7 +421,9 @@ function drawChat(ms){const info=window.CINFO,box=$('cm');if(!box)return;const m
   if(m.kind=='price_offer'){const agreed=ms.slice(i+1).some(x=>x.kind=='deal_agree');return `<div class="sysb">\u2705 <b>${L2('Last price','የመጨረሻ ዋጋ')}: ${info.my_role=='seller'?mt.seller_price:mt.price} ETB</b>${info.my_role=='buyer'?`<div class="prq">${agreed?'':`<button class="btn s" onclick="dealAgree()">\u{1F91D} ${L2('Agree to this price','በዚህ ዋጋ ተስማምቻለሁ')}</button>`}<button class="btn" onclick="buy(${info.catalog_id})">${L2('Buy at this price','በዚህ ዋጋ ግዛ')}</button></div>`:''}</div>`}
   if(m.kind=='deal_agree')return `<div class="sysb">\u{1F91D} <b>${L2('Deal agreed','ስምምነት ተደርሷል')}: ${mt.price} ETB</b><div class="sub">${L2('SAM STORE admin has been notified.','የ SAM STORE አስተዳዳሪ ተነግሮታል።')}</div></div>`;
   if(m.kind=='no_price')return `<div class="sysb">\u2139\u{FE0F} ${L2('No lower price is available.','ከዚህ ዝቅ ያለ ዋጋ የለም።')}</div>`;
-  if(m.kind=='image')return `<div class="tb ${mine?'out':'in'} timg"><a href="${imgUrl(mt.path)}" target="_blank" rel="noopener"><img class="cimg" src="${imgUrl(mt.path)}" alt=""></a><span class="tt">${t}${tk}</span></div>`;
+  if(m.kind=='image'){if(m.deleted)return `<div class="tb ${mine?'out':'in'} del"><i>${L2('This photo was deleted','ይህ ፎቶ ተሰርዟል')}</i><span class="tt">${t}${tk}</span></div>`;
+   const cnt=LKC[m.id]||0,liked=LKMINE.has(m.id);
+   return `<div class="tb ${mine?'out':'in'} timg" onclick="msgMenu(${m.id},${mine?1:0},1)"><a href="${imgUrl(mt.path)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img class="cimg" src="${imgUrl(mt.path)}" alt=""></a>${cnt?`<div class="lk${liked?' on':''}">\u{1F44D} ${cnt}</div>`:''}<span class="tt">${t}${tk}</span></div>`}
   if(m.kind=='exchange_offer'){let h=`<div class="sysb xch"><b>${XCH} ${L2('Exchange offer','የመለዋወጥ ጥያቄ')}</b><div>${xmode(mt.mode,mt.amount||0)}</div>${mt.ovr?`<div>OVR ${E(mt.ovr)}</div>`:''}${mt.note?`<div class="sub">${E(mt.note)}</div>`:''}<div class="xth">${(mt.images||[]).map(p=>`<a href="${imgUrl(p)}" target="_blank" rel="noopener"><img src="${imgUrl(p)}" alt=""></a>`).join('')}</div>`;
    if(info.my_role=='seller'&&i===lastOff)h+=`<div class="prq"><button class="btn" onclick="xAns('exchange_accept')">${L2('Accept exchange','መለዋወጡን ተቀበል')}</button><button class="btn s" onclick="xAns('exchange_decline')">${L2('Decline','አልቀበልም')}</button></div>`;return h+'</div>'}
   if(m.kind=='exchange_accept')return `<div class="sysb">\u{1F91D} <b>${L2('Exchange accepted','መለዋወጡ ተቀባይነት አግኝቷል')}</b><div class="sub">${L2('SAM STORE exchange fee is 100 ETB. Agree here who pays it, then pay and send the Telebirr receipt.','የ SAM STORE መለዋወጫ ክፍያ 100 ብር ነው። ማን እንደሚከፍል እዚህ ተስማምታችሁ ይክፈሉ፣ የ Telebirr ደረሰኙን ይላኩ።')}</div>${info.fee_id?`<button class="btn" style="margin-top:8px" onclick="buy(${info.fee_id})">${L2('Pay 100 ETB fee','100 ብር ክፍያ ክፈል')}</button>`:''}</div>`;
@@ -416,7 +432,9 @@ function drawChat(ms){const info=window.CINFO,box=$('cm');if(!box)return;const m
   if(m.kind=='cred_req'){let h=`<div class="sysb">\u{1F511} ${E(m.body)}`;if(!done(i,'creds_sent',mt.catalog_id,null))h+=`<div class="prq"><input id="ce${m.id}" type="email" autocomplete="off" placeholder="${L2('Account email','የአካውንት ኢሜል')}"><input id="cp${m.id}" autocomplete="off" placeholder="${L2('Account password','የአካውንት ይለፍ ቃል')}"><button class="btn" onclick="sendCreds(${m.id})">${L2('Send login details','መግቢያ ላክ')}</button></div>`;return h+'</div>'}
   if(m.kind=='code_sent'||m.kind=='creds_sent')return `<div class="sysb">\u2705 ${L2(m.kind=='code_sent'?'Code sent.':'Login details sent.',m.kind=='code_sent'?'ኮዱ ተልኳል።':'መግቢያው ተልኳል።')}</div>`;
   if(m.kind=='sell_request')return `<div class="sysb">\u{1F4E9} ${E(m.body)}</div>`;
-  return `<div class="tb ${mine?'out':'in'}">${E(m.body)}<span class="tt">${t}${tk}</span></div>`};
+  if(m.deleted)return `<div class="tb ${mine?'out':'in'} del"><i>${L2('This message was deleted','ይህ መልዕክት ተሰርዟል')}</i><span class="tt">${t}${tk}</span></div>`;
+  {const cnt=LKC[m.id]||0,liked=LKMINE.has(m.id);
+  return `<div class="tb ${mine?'out':'in'}" onclick="msgMenu(${m.id},${mine?1:0},0)">${E(m.body)}${cnt?`<div class="lk${liked?' on':''}">\u{1F44D} ${cnt}</div>`:''}<span class="tt">${m.edited_at?L2('edited','የተስተካከለ')+' \u00b7 ':''}${t}${tk}</span></div>`}};
  let day='',out='';ms.forEach((m,i)=>{const d=new Date(m.created_at).toDateString();if(d!==day){day=d;out+=`<div class="tdate"><span>${dlab(m.created_at)}</span></div>`}out+=rm(m,i)});
  box.innerHTML=out;scrollTo(0,document.body.scrollHeight)}
 async function sendPhotos(inp){const fs=[...inp.files].slice(0,10);inp.value='';if(!fs.length)return;toast(L2('Sending photos\u2026','ፎቶዎችን በመላክ ላይ\u2026'));for(const f of fs){try{const bl=await shrink(f),path=U.id+'/'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2))+'.jpg';const u=await sb.storage.from('chat').upload(path,bl,{contentType:'image/jpeg'});if(u.error)throw u.error;const{data,error}=await sb.rpc('send_message',{p_conv:window.CID,p_body:'',p_kind:'image',p_meta:{path}});if(error)throw error;afterSend(data)}catch(e){toast(L2('Could not send a photo.','ፎቶ መላክ አልተቻለም።'));break}}}
@@ -433,7 +451,26 @@ async function sendCreds(mid){const m=(window.MS||[]).find(x=>x.id==mid);if(!m)r
 async function pingAdmin(t,r){try{const ss=(await sb.auth.getSession()).data.session;if(ss&&r)fetch('/notifyadmin',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+ss.access_token},body:JSON.stringify({type:t,ref:r})})}catch(e){}}
 async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(!s||!mid)return;fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
 const afterSend=mid=>{window.LASTN=-1;if(window.CHATGO)window.CHATGO();pingPush(mid)};
-async function sendM(id){const i=$('ci');const v=i.value.trim();if(!v)return;i.value='';const{data,error}=await sb.rpc('send_message',{p_conv:id,p_body:v});if(error){i.value=v;const m=String(error.message);toast(/BLOCKED/.test(m)?L2('Phone numbers, links and contact details can\u2019t be shared here.','ስልክ ቁጥር፣ link እና የመገናኛ መረጃ እዚህ መላክ አይቻልም።'):/RATE/.test(m)?L2('Too many messages. Please wait a minute.','በጣም ብዙ መልዕክት። ትንሽ ይጠብቁ።'):L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
+async function sendM(id){const i=$('ci');const v=i.value.trim();if(!v)return;
+ if(window.EDITID){const eid=window.EDITID;i.value='';const{error}=await sb.rpc('edit_message',{p_id:eid,p_body:v});cancelEdit();if(error){toast(L2('Could not save the edit.','ማስተካከያውን ማስቀመጥ አልተቻለም።'));return}window.LASTN=-1;window.CHATGO&&window.CHATGO();return}
+ i.value='';const{data,error}=await sb.rpc('send_message',{p_conv:id,p_body:v});if(error){i.value=v;const m=String(error.message);toast(/BLOCKED/.test(m)?L2('Phone numbers, links and contact details can\u2019t be shared here.','ስልክ ቁጥር፣ link እና የመገናኛ መረጃ እዚህ መላክ አይቻልም።'):/RATE/.test(m)?L2('Too many messages. Please wait a minute.','በጣም ብዙ መልዕክት። ትንሽ ይጠብቁ።'):L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
+function startEditFromMenu(id){document.querySelectorAll('.cmod').forEach(x=>x.remove());const m=(window.MS||[]).find(x=>x.id==id);startEdit(id,(m&&m.body)||'')}
+function cancelEdit(){window.EDITID=null;const i=$('ci');if(i)i.placeholder=L2('Message','መልዕክት');const eb=$('edb');if(eb)eb.remove()}
+function startEdit(id,body){window.EDITID=id;const i=$('ci');if(!i)return;i.value=body;i.focus();i.placeholder=L2('Edit message\u2026','መልዕክት ያስተካክሉ\u2026');
+ if(!$('edb')){const b=document.createElement('div');b.id='edb';b.className='edb';b.innerHTML='\u270f\ufe0f '+L2('Editing message','መልዕክት በማስተካከል ላይ')+' \u00b7 <a href="#" onclick="cancelEdit();return false">'+L2('Cancel','ተወው')+'</a>';i.parentElement.parentElement.insertBefore(b,i.parentElement)}}
+function msgMenu(id,mine,isImg){
+ const liked=(window.LKMINE||new Set()).has(id);
+ const d=document.createElement('div');d.className='cmod';
+ d.innerHTML='<div class="cbox msheet">'
+  +'<button class="btn s" onclick="doLike('+id+',this)">'+(liked?'\u{1F499}':'\u{1F44D}')+' '+L2('Like','መውደድ')+'</button>'
+  +(mine&&!isImg?'<button class="btn s" onclick="startEditFromMenu('+id+')">\u270f\ufe0f '+L2('Edit','አስተካክል')+'</button>':'')
+  +(mine?'<button class="btn s cdel" onclick="doDelete('+id+')">\u{1F5D1}\ufe0f '+L2('Delete','ሰርዝ')+'</button>':'')
+  +'<button class="btn s" onclick="this.closest(\'.cmod\').remove()">'+L2('Cancel','ተወው')+'</button>'
+  +'</div>';
+ d.onclick=e=>{if(e.target===d)d.remove()};
+ document.body.appendChild(d)}
+async function doLike(id,btn){document.querySelectorAll('.cmod').forEach(x=>x.remove());await sb.rpc('toggle_like',{p_id:id});window.LASTN=-1;window.CHATGO&&window.CHATGO()}
+async function doDelete(id){document.querySelectorAll('.cmod').forEach(x=>x.remove());if(!await confirmUI(L2('Delete this message? This cannot be undone.','ይህን መልዕክት ይሰርዙ? ይህ መመለስ አይቻልም።'),L2('Delete','ሰርዝ')))return;const{error}=await sb.rpc('delete_message',{p_id:id});if(error){toast(L2('Could not delete.','መሰረዝ አልተቻለም።'));return}window.LASTN=-1;window.CHATGO&&window.CHATGO()}
 async function offerP(){const v=parseInt(($('pp').value||'').replace(/\D/g,''));if(!(v>0)){toast(L2('Enter a price.','ዋጋ ያስገቡ።'));return}const{data,error}=await sb.rpc('send_message',{p_conv:window.CID,p_body:'',p_kind:'price_offer',p_meta:{price:v}});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 async function noLast(){const{data,error}=await sb.rpc('send_message',{p_conv:window.CID,p_body:'',p_kind:'no_price'});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 async function openChat(cid){if(!U){account();return null}const{data,error}=await sb.rpc('start_listing_conv',{p_catalog:cid});if(error){toast(/SELF/.test(error.message)?L2('This is your own account.','ይህ የእርስዎ አካውንት ነው።'):L2('Could not open the chat.','ውይይት መክፈት አልተቻለም።'));return null}return data}
