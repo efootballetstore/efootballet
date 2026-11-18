@@ -308,6 +308,15 @@ a[onclick^="sell("] svg{stroke:#fff}
 .toast.nt .btn{padding:7px 12px!important;font-size:13px;border-radius:10px}
 .toast.nt .ntx{flex:none;background:none;border:0;color:var(--h,#8C90A6);font-size:16px;padding:6px 8px;cursor:pointer}
 </style>
+<style>/*v10 full-screen code entry*/
+.cfull{position:fixed;inset:0;z-index:9999;background:var(--bg,#0b0f17);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.cfh{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--l)}
+.cfh b{font-size:16px}
+.cfx{background:none;border:0;color:var(--t);font-size:20px;padding:4px 8px;cursor:pointer}
+.cfb{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:24px}
+.cfb input{width:100%;box-sizing:border-box;font-size:34px;letter-spacing:8px;text-align:center;padding:22px 10px;border-radius:16px;border:1px solid var(--l);background:var(--b2);color:var(--t)}
+.cfb .btn{font-size:16px;padding:16px}
+</style>
 <style>/*v9 code-expiry hint*/
 .cdhint{font-size:12px;color:var(--h);margin-top:6px;opacity:.85}
 .cdhint a{color:var(--a);font-weight:700;text-decoration:none;margin-left:4px}
@@ -436,7 +445,7 @@ function drawChat(ms){const info=window.CINFO,box=$('cm');if(!box)return;const m
    if(info.my_role=='seller'&&i===lastOff)h+=`<div class="prq"><button class="btn" onclick="xAns('exchange_accept')">${L2('Accept exchange','መለዋወጡን ተቀበል')}</button><button class="btn s" onclick="xAns('exchange_decline')">${L2('Decline','አልቀበልም')}</button></div>`;return h+'</div>'}
   if(m.kind=='exchange_accept')return `<div class="sysb">\u{1F91D} <b>${L2('Exchange accepted','መለዋወጡ ተቀባይነት አግኝቷል')}</b><div class="sub">${L2('SAM STORE exchange fee is 100 ETB. Agree here who pays it, then pay and send the Telebirr receipt.','የ SAM STORE መለዋወጫ ክፍያ 100 ብር ነው። ማን እንደሚከፍል እዚህ ተስማምታችሁ ይክፈሉ፣ የ Telebirr ደረሰኙን ይላኩ።')}</div>${info.fee_id?`<button class="btn" style="margin-top:8px" onclick="buy(${info.fee_id})">${L2('Pay 100 ETB fee','100 ብር ክፍያ ክፈል')}</button>`:''}</div>`;
   if(m.kind=='exchange_decline')return `<div class="sysb">\u274C ${L2('Exchange declined.','መለዋወጡ ውድቅ ሆኗል።')}</div>`;
-  if(m.kind=='code_req'){let h=`<div class="sysb">\u{1F510} ${E(m.body)}`;if(!done(i,'code_sent',mt.catalog_id,mt.stage))h+=`<div class="prq"><input id="cr${m.id}" autocomplete="one-time-code" inputmode="numeric" placeholder="${L2('Code','ኮድ')}"><button class="btn" onclick="sendCode(${m.id})">${L2('Send code','ኮዱን ላክ')}</button></div><div class="cdhint">\u23f1 ${L2('Codes usually expire in about 3 minutes.','ኮዶች አብዛኛውን ጊዜ በ3 ደቂቃ ያልቃሉ።')} <a href="#" onclick="askNewCode();return false">${L2('Code expired? Ask for a new one','ኮዱ አልቋል? አዲስ ይጠይቁ')}</a></div>`;return h+'</div>'}
+  if(m.kind=='code_req'){let h=`<div class="sysb">\u{1F510} ${E(m.body)}`;if(!done(i,'code_sent',mt.catalog_id,mt.stage))h+=`<div class="prq"><input id="cr${m.id}" readonly onclick="openCodeFull(${m.id})" autocomplete="one-time-code" inputmode="numeric" placeholder="${L2('Tap to enter the code','ኮድ ለማስገባት ይንኩ')}"></div><div class="cdhint">\u23f1 ${L2('Codes usually expire in about 3 minutes.','ኮዶች አብዛኛውን ጊዜ በ3 ደቂቃ ያልቃሉ።')} <a href="#" onclick="askNewCode();return false">${L2('Code expired? Ask for a new one','ኮዱ አልቋል? አዲስ ይጠይቁ')}</a></div>`;return h+'</div>'}
   if(m.kind=='cred_req'){let h=`<div class="sysb">\u{1F511} ${E(m.body)}`;if(!done(i,'creds_sent',mt.catalog_id,null))h+=`<div class="prq"><input id="ce${m.id}" type="email" autocomplete="off" placeholder="${L2('Account email','የአካውንት ኢሜል')}"><input id="cp${m.id}" autocomplete="off" placeholder="${L2('Account password','የአካውንት ይለፍ ቃል')}"><button class="btn" onclick="sendCreds(${m.id})">${L2('Send login details','መግቢያ ላክ')}</button></div>`;return h+'</div>'}
   if(m.kind=='code_sent'||m.kind=='creds_sent')return `<div class="sysb">\u2705 ${L2(m.kind=='code_sent'?'Code sent.':'Login details sent.',m.kind=='code_sent'?'ኮዱ ተልኳል።':'መግቢያው ተልኳል።')}</div>`;
   if(m.kind=='sell_request')return `<div class="sysb">\u{1F4E9} ${E(m.body)}</div>`;
@@ -464,6 +473,11 @@ async function sendM(id){const i=$('ci');const v=i.value.trim();if(!v)return;
  i.value='';const{data,error}=await sb.rpc('send_message',{p_conv:id,p_body:v});if(error){i.value=v;const m=String(error.message);toast(/BLOCKED/.test(m)?L2('Phone numbers, links and contact details can\u2019t be shared here.','ስልክ ቁጥር፣ link እና የመገናኛ መረጃ እዚህ መላክ አይቻልም።'):/RATE/.test(m)?L2('Too many messages. Please wait a minute.','በጣም ብዙ መልዕክት። ትንሽ ይጠብቁ።'):L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 function startEditFromMenu(id){document.querySelectorAll('.cmod').forEach(x=>x.remove());const m=(window.MS||[]).find(x=>x.id==id);startEdit(id,(m&&m.body)||'')}
 async function askNewCode(){if(!window.CID)return;const t=L2('My code expired. Please send a new one.','ኮዱ አልቋል። እባክዎ አዲስ ኮድ ይላኩልኝ።');const{data,error}=await sb.rpc('send_message',{p_conv:window.CID,p_body:t});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data);toast(L2('Request sent.','ጥያቄው ተልኳል።'))}
+function openCodeFull(mid){window.CFMID=mid;const cur=($('cr'+mid)&&$('cr'+mid).value)||'';const d=document.createElement('div');d.id='cfull';d.className='cfull';
+ d.innerHTML='<div class="cfh"><button class="cfx" onclick="closeCodeFull()">\u2190</button><b>'+L2('Enter the code','ኮዱን ያስገቡ')+'</b></div><div class="cfb"><input id="cfInput" inputmode="numeric" autocomplete="one-time-code" placeholder="'+L2('Code','ኮድ')+'" value="'+E(cur)+'"><button class="btn" onclick="submitCodeFull()">'+L2('Send code','ኮዱን ላክ')+'</button></div>';
+ document.body.appendChild(d);setTimeout(()=>{const inp=$('cfInput');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}},60)}
+function closeCodeFull(){const d=$('cfull');if(d)d.remove()}
+function submitCodeFull(){const v=($('cfInput')&&$('cfInput').value||'').trim();const mid=window.CFMID;const orig=$('cr'+mid);if(orig)orig.value=v;closeCodeFull();if(!v){toast(L2('Enter the code.','ኮዱን ያስገቡ።'));return}sendCode(mid)}
 function cancelEdit(){window.EDITID=null;const i=$('ci');if(i)i.placeholder=L2('Message','መልዕክት');const eb=$('edb');if(eb)eb.remove()}
 function startEdit(id,body){window.EDITID=id;const i=$('ci');if(!i)return;i.value=body;i.focus();i.placeholder=L2('Edit message\u2026','መልዕክት ያስተካክሉ\u2026');
  if(!$('edb')){const b=document.createElement('div');b.id='edb';b.className='edb';b.innerHTML='\u270f\ufe0f '+L2('Editing message','መልዕክት በማስተካከል ላይ')+' \u00b7 <a href="#" onclick="cancelEdit();return false">'+L2('Cancel','ተወው')+'</a>';i.parentElement.parentElement.insertBefore(b,i.parentElement)}}
