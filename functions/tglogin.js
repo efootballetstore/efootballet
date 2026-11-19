@@ -23,6 +23,6 @@ export async function onRequestPost({ request, env }) {
   if (Array.isArray(ex) && ex.length && ex[0].user_id !== s.user.id)
     return J({ error: 'This Telegram is already linked to another account. Log in with that account.' }, 409);
   await fetch(`${SB}/rest/v1/tg_links?on_conflict=user_id`, { method: 'POST', headers: { ...H, Prefer: 'resolution=merge-duplicates' },
-    body: JSON.stringify({ user_id: s.user.id, tg_id: u.id, username: u.username || null, first_name: u.first_name || null }) });
+    body: JSON.stringify({ user_id: s.user.id, tg_id: u.id, username: u.username || null, first_name: u.first_name || null, photo_url: u.photo_url || null }) });
   return J({ access_token: s.access_token, refresh_token: s.refresh_token });
 }
