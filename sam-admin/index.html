@@ -46,7 +46,7 @@ const sb=supabase.createClient(CFG.URL,CFG.KEY),$=i=>document.getElementById(i);
 const VAPID='BA7-v2x2GvoU1Jcuf1WqX1z6o787aSupTfXRWXZkysCgAGKaJTE78Qv0R2hUUibxGF6dtl40nESqBebHb1CthAc';
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const u8=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
-let cur='home',timer=null,ME=null;
+const BUILD=Date.now();let cur='home',timer=null,ME=null;
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sam-admin/sw.js',{scope:'/sam-admin/'}).catch(()=>{});
 
 /* ---------- login ---------- */
@@ -67,8 +67,8 @@ function go(t,hash){cur=t;setNav(t);setTimeout(refresh,300);
  $('v').hidden=!(t==='home'||t==='more');$('fo').hidden=t!=='orders';$('fm').hidden=t!=='msgs';
  if(t==='home')dash();
  if(t==='more')more();
- if(t==='orders'){const f=frame('fo','/admin.html#'+(hash||'awaiting_review'));if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}}
- if(t==='msgs')frame('fm','/adminmsg.html');
+ if(t==='orders'){const f=frame('fo','/admin.html?v='+BUILD+'#'+(hash||'awaiting_review'));if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}}
+ if(t==='msgs')frame('fm','/adminmsg.html?v='+BUILD);
  history.replaceState(null,'','#'+t)}
 function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
 
