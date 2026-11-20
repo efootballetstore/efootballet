@@ -14,7 +14,7 @@ export async function onRequestPost({ request, env }) {
     return new Response('ok');
   }
   if (m.text === '/start') {
-    await api('sendMessage', { chat_id: chat, text: 'Welcome to Sam Store! Send your message here and we will reply soon.' });
+    await api('sendMessage', { chat_id: chat, text: 'Welcome to eFootballET! Send your message here and we will reply soon.' });
     return new Response('ok');
   }
   // Seller replies: (1) a price -> send final price (+100) to the buyer, (2) a code -> save it for the admin.
@@ -39,7 +39,7 @@ export async function onRequestPost({ request, env }) {
               const reqs = await get(`price_requests?catalog_id=eq.${cid}&answered=eq.false&select=user_id`);
               for (const r of reqs) {
                 const b = await get(`tg_links?user_id=eq.${r.user_id}&select=tg_id`);
-                if (b && b[0]) await api('sendMessage', { chat_id: b[0].tg_id, text: `\u{1F4AC} Final price for the account (${c.label}): ${final} ETB.\nTo buy, open https://samstore.pages.dev and tap Buy.` });
+                if (b && b[0]) await api('sendMessage', { chat_id: b[0].tg_id, text: `\u{1F4AC} Final price for the account (${c.label}): ${final} ETB.\nTo buy, open https://efootballet.store and tap Buy.` });
               }
               await patch(`price_requests?catalog_id=eq.${cid}&answered=eq.false`, { answered: true });
               await patch(`catalog?id=eq.${cid}`, { price: final });

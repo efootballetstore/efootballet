@@ -1,4 +1,4 @@
-// Telegram login for Sam Store: verifies Telegram's signed data, then creates/signs in a Supabase user.
+// Telegram login for eFootballET: verifies Telegram's signed data, then creates/signs in a Supabase user.
 const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 export async function onRequestPost({ request, env }) {

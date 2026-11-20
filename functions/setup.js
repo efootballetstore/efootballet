@@ -1,4 +1,4 @@
-// One-time helper: open https://samstore.pages.dev/setup?key=YOUR_HOOK_SECRET to connect the bot to /tg
+// One-time helper: open https://efootballet.store/setup?key=YOUR_HOOK_SECRET to connect the bot to /tg
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   if (!env.HOOK_SECRET || url.searchParams.get('key') !== env.HOOK_SECRET)
