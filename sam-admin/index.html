@@ -58,12 +58,12 @@ async function start(){
  const a=await sb.rpc('is_admin');if(a.error||!a.data){await sb.auth.signOut();return login('This account is not an admin.')}
  ME=session.user;$('who').textContent=(ME.email||'').split('@')[0];$('nav').hidden=false;
  const h=location.hash.slice(1);go(['orders','msgs','more'].includes(h)?h:'home');
- refresh();clearInterval(timer);timer=setInterval(refresh,20000);ensurePush(true)}
+ refresh();clearInterval(timer);timer=setInterval(refresh,6000);ensurePush(true)}
 
 /* ---------- navigation ---------- */
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
 function frame(id,src){const f=$(id);if(!f.getAttribute('src'))f.src=src;return f}
-function go(t,hash){cur=t;setNav(t);
+function go(t,hash){cur=t;setNav(t);setTimeout(refresh,300);
  $('v').hidden=!(t==='home'||t==='more');$('fo').hidden=t!=='orders';$('fm').hidden=t!=='msgs';
  if(t==='home')dash();
  if(t==='more')more();
@@ -75,13 +75,14 @@ function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
 /* ---------- dashboard ---------- */
 let D={};
 async function load(){
- const[o,c,r]=await Promise.all([
+ const[o,c,r,xm]=await Promise.all([
   sb.from('orders').select('id,code,status,amount,created_at,claimed_by,package,product').order('id',{ascending:false}).limit(300),
-  sb.rpc('admin_convs'),sb.from('order_ready').select('*')]);
+  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000)]);
  if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
  const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});
  const today=new Date().toDateString(),td=rows.filter(x=>new Date(x.created_at).toDateString()===today);
- D={verify:rows.filter(x=>x.status==='awaiting_review').length,
+ const seenX={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept')exch++});
+ D={exch,verify:rows.filter(x=>x.status==='awaiting_review').length,
   deliver:rows.filter(x=>x.status==='approved'&&!x.claimed_by).length,
   working:rows.filter(x=>x.status==='approved'&&x.claimed_by).length,
   ready:rows.filter(x=>x.status==='approved'&&ready[x.code]).length,
@@ -101,6 +102,7 @@ function paint(){
  $('v').innerHTML=`
  <h2 style="margin:4px 0">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
+  ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"go('msgs')")}
   ${card(D.verify?'hot':'','🔎 To verify','ለማረጋገጥ',D.verify??'…',"openOrders('awaiting_review')")}
   ${card(D.deliver?'hot':'','📦 To deliver','ለማድረስ',D.deliver??'…',"openOrders('approved')")}
   ${card(D.ready?'hot':'','🟢 Ready now','ዝግጁ የሆኑ ደንበኞች',D.ready??'…',"openOrders('approved')")}
@@ -140,6 +142,7 @@ async function enablePush(quiet){try{
  if(!quiet)alert('✅ Admin notifications are ON for this phone.');paint()}catch(e){quiet||alert('Error: '+e.message)}}
 async function testPush(){try{const s=(await sb.auth.getSession()).data.session;const r=await fetch('/notifytest',{method:'POST',headers:{authorization:'Bearer '+s.access_token}});const j=await r.json();alert('Test sent to '+(j.phones||0)+' phone(s). '+JSON.stringify(j.status||j))}catch(e){alert('Error: '+e)}}
 
+window.addEventListener('message',e=>{if(e.data==='sam-refresh')refresh()});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','orders','msgs','more'].includes(h)&&h!==cur&&ME)go(h)});
 start();
-</script></body></html>
+</script><style>.vbi{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .08em}.vbi svg{width:100%;height:100%;display:block}</style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script></body></html>
