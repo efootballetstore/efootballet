@@ -1,8 +1,8 @@
 {
  "id": "/sam-admin/",
- "name": "SAM ADMIN",
- "short_name": "SAM ADMIN",
- "description": "SAM STORE admin: orders, messages and notifications.",
+ "name": "eFootballET ADMIN",
+ "short_name": "eFootballET ADMIN",
+ "description": "eFootballET admin: orders, messages and notifications.",
  "start_url": "/sam-admin/",
  "scope": "/sam-admin/",
  "display": "standalone",

@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SAM ADMIN</title><meta name="robots" content="noindex">
+<title>eFootballET ADMIN</title><meta name="robots" content="noindex">
 <link rel="manifest" href="/sam-admin/manifest.json"><meta name="theme-color" content="#120d2e">
 <link rel="icon" href="/sam-admin/icon-192.png"><link rel="apple-touch-icon" href="/sam-admin/icon-192.png">
 <link rel="stylesheet" href="/style.css">
@@ -29,7 +29,7 @@ nav button{position:relative}
 .lg{max-width:380px;margin:12vh auto 0}.lg input{width:100%;box-sizing:border-box;margin:6px 0 12px}
 .err{color:#ef4444;min-height:20px}
 </style></head><body>
-<div class="ah"><b>SAM ADMIN</b><small id="who"></small></div>
+<div class="ah"><b>eFootballET ADMIN</b><small id="who"></small></div>
 <div id="v" class="pane"></div>
 <iframe id="fo" class="pane" hidden title="orders"></iframe>
 <iframe id="fm" class="pane" hidden title="messages"></iframe>
@@ -51,7 +51,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/sam-admin/sw.
 
 /* ---------- login ---------- */
 function login(msg=''){clearInterval(timer);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
- $('v').innerHTML=`<div class="lg"><h1>🔐 SAM ADMIN</h1><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="err">${E(msg)}</div><button class="btn" id="lgb">Log in</button></div>`;
+ $('v').innerHTML=`<div class="lg"><h1>🔐 eFootballET ADMIN</h1><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="err">${E(msg)}</div><button class="btn" id="lgb">Log in</button></div>`;
  $('lgb').onclick=async()=>{$('lgb').disabled=true;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error){login('Wrong email or password');return}start()}}
 async function start(){
  const{data:{session}}=await sb.auth.getSession();if(!session)return login();
@@ -93,7 +93,7 @@ async function load(){
   delivered:td.filter(x=>x.status==='delivered').length};
  const b1=D.verify+D.deliver,b2=D.unread;
  $('b1').textContent=b1>99?'99+':b1;$('b1').hidden=!b1;$('b2').textContent=b2>99?'99+':b2;$('b2').hidden=!b2;
- document.title=(b1+b2)?`(${b1+b2}) SAM ADMIN`:'SAM ADMIN'}
+ document.title=(b1+b2)?`(${b1+b2}) eFootballET ADMIN`:'eFootballET ADMIN'}
 async function refresh(){try{await load();if(cur==='home')paint()}catch(e){}}
 async function dash(){paint();await refresh()}
 function card(cls,label,sub,n,click){return `<button class="card ${cls}" onclick="${click}"><small>${label}</small><div class="n">${n}</div><small>${sub}</small></button>`}
@@ -126,7 +126,7 @@ function more(){
   ${it('✅','Delivered','Completed orders',"openOrders('delivered','more')")}
   ${it('❌','Rejected','',"openOrders('rejected','more')")}
   ${it('🔔','Notifications','Turn on / test',"go('home')")}
-  ${it('🌐','Open customer site','samstore.pages.dev',"location.href='/'")}
+  ${it('🌐','Open customer site','efootballet.store',"location.href='/'")}
   ${it('🚪','Log out','',"logout()")}</div>`}
 async function logout(){await sb.auth.signOut();$('fo').removeAttribute('src');$('fm').removeAttribute('src');login()}
 
