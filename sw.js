@@ -14,7 +14,7 @@ self.addEventListener('push', (e) => {
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = {}; }
   e.waitUntil(self.registration.showNotification(d.title || 'eFootballET', {
     body: d.body || '\u{1F4AC} You have a new message', icon: '/icon-512.png', badge: '/badge-96.png',
-    tag: d.tag || 'sam-msg', renotify: true, data: { url: d.url || '/?msgs=1' } }));
+    tag: d.tag || 'admin-msg', renotify: true, data: { url: d.url || '/?msgs=1' } }));
 });
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();

@@ -2,6 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /adminmsg.html
-Disallow: /sam-admin/
+Disallow: /admin-panel/
 
 Sitemap: https://efootballet.store/sitemap.xml
