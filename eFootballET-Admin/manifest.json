@@ -1,0 +1,19 @@
+{
+ "id": "/sam-admin/",
+ "name": "eFootballET ADMIN",
+ "short_name": "eFootballET ADMIN",
+ "description": "eFootballET admin: orders, messages and notifications.",
+ "start_url": "/sam-admin/",
+ "scope": "/sam-admin/",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#120d2e",
+ "theme_color": "#120d2e",
+ "lang": "en",
+ "icons": [
+  {"src": "/sam-admin/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "/sam-admin/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+  {"src": "/sam-admin/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+  {"src": "/sam-admin/badge-512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome"}
+ ]
+}

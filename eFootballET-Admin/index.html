@@ -1,0 +1,150 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>eFootballET ADMIN</title><meta name="robots" content="noindex">
+<link rel="manifest" href="/sam-admin/manifest.json"><meta name="theme-color" content="#120d2e">
+<link rel="icon" href="/sam-admin/icon-192.png"><link rel="apple-touch-icon" href="/sam-admin/icon-192.png">
+<link rel="stylesheet" href="/style.css">
+<style>
+:root{--hh:calc(54px + env(safe-area-inset-top,0px));--nh:96px}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--t)}
+.ah{position:fixed;top:0;left:0;right:0;height:var(--hh);box-sizing:border-box;padding:env(safe-area-inset-top,0) 16px 0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1b1442,#120d2e);border-bottom:1px solid var(--l);z-index:20}
+.ah b{font-size:17px;letter-spacing:.08em}.ah small{color:var(--h)}
+.pane{position:fixed;top:var(--hh);bottom:var(--nh);left:0;right:0;overflow:auto;padding:14px;box-sizing:border-box}
+iframe.pane{border:0;width:100%;padding:0;background:var(--bg);height:calc(100vh - var(--hh) - var(--nh));height:calc(100dvh - var(--hh) - var(--nh))}
+nav[hidden]{display:none!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.card{background:var(--b2);border:1px solid var(--l);border-radius:18px;padding:14px;cursor:pointer;text-align:left;color:var(--t);font:inherit}
+.card .n{font-size:32px;font-weight:800;line-height:1.1;margin-top:4px}
+.card.hot{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}
+.card small{color:var(--h);display:block}
+.big{grid-column:1/-1}
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.menu{display:flex;flex-direction:column;gap:10px}
+.menu button{display:flex;justify-content:space-between;align-items:center;text-align:left}
+nav .ei{font-style:normal;font-size:21px;display:block;line-height:1.1}
+nav button{position:relative}
+.bd{position:absolute;top:2px;left:calc(50% + 8px);min-width:18px;height:18px;border-radius:99px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 5px}
+.bd[hidden]{display:none}
+.lg{max-width:380px;margin:12vh auto 0}.lg input{width:100%;box-sizing:border-box;margin:6px 0 12px}
+.err{color:#ef4444;min-height:20px}
+</style></head><body>
+<div class="ah"><b>eFootballET ADMIN</b><small id="who"></small></div>
+<div id="v" class="pane"></div>
+<iframe id="fo" class="pane" hidden title="orders"></iframe>
+<iframe id="fm" class="pane" hidden title="messages"></iframe>
+<nav id="nav" hidden>
+ <button data-t="home" class="on" onclick="go('home')"><i class="ei">📊</i>Home</button>
+ <button data-t="orders" onclick="go('orders')"><i class="ei">📋</i>Orders<span class="bd" id="b1" hidden></span></button>
+ <button data-t="msgs" onclick="go('msgs')"><i class="ei">💬</i>Messages<span class="bd" id="b2" hidden></span></button>
+ <button data-t="more" onclick="go('more')"><i class="ei">⚙️</i>More</button>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.URL,CFG.KEY),$=i=>document.getElementById(i);
+const VAPID='BA7-v2x2GvoU1Jcuf1WqX1z6o787aSupTfXRWXZkysCgAGKaJTE78Qv0R2hUUibxGF6dtl40nESqBebHb1CthAc';
+const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const u8=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
+const BUILD=Date.now();let cur='home',timer=null,ME=null;
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sam-admin/sw.js',{scope:'/sam-admin/'}).catch(()=>{});
+
+/* ---------- login ---------- */
+function login(msg=''){clearInterval(timer);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
+ $('v').innerHTML=`<div class="lg"><h1>🔐 eFootballET ADMIN</h1><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="err">${E(msg)}</div><button class="btn" id="lgb">Log in</button></div>`;
+ $('lgb').onclick=async()=>{$('lgb').disabled=true;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error){login('Wrong email or password');return}start()}}
+async function start(){
+ const{data:{session}}=await sb.auth.getSession();if(!session)return login();
+ const a=await sb.rpc('is_admin');if(a.error||!a.data){await sb.auth.signOut();return login('This account is not an admin.')}
+ ME=session.user;$('who').textContent=(ME.email||'').split('@')[0];$('nav').hidden=false;
+ const h=location.hash.slice(1);go(['orders','msgs','more'].includes(h)?h:'home');
+ refresh();clearInterval(timer);timer=setInterval(refresh,6000);ensurePush(true)}
+
+/* ---------- navigation ---------- */
+function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function fixMsgFrame(){try{const d=$('fm').contentDocument;if(!d||!d.head||d.getElementById('shellfix'))return;const st=d.createElement('style');st.id='shellfix';st.textContent='.cin{align-items:center!important}.cin input{flex:1!important;width:auto!important;margin:0!important;min-width:0!important;border-radius:24px!important}.cin .btn{width:46px!important;height:46px!important;flex:none!important;margin:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important}.cin .btn::after{display:none!important}.chh .btn{width:auto!important;margin:0!important}.cms{padding-bottom:130px!important}';d.head.appendChild(st)}catch(e){}}
+function frame(id,src){const f=$(id);if(!f.getAttribute('src'))f.src=src;return f}
+function go(t,hash){cur=t;setNav(t);setTimeout(refresh,300);
+ $('v').hidden=!(t==='home'||t==='more');$('fo').hidden=t!=='orders';$('fm').hidden=t!=='msgs';
+ if(t==='home')dash();
+ if(t==='more')more();
+ if(t==='orders'){const f=frame('fo','/admin.html?v='+BUILD+'#'+(hash||'awaiting_review'));if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}}
+ if(t==='msgs')frame('fm','/adminmsg.html?v='+BUILD);
+ history.replaceState(null,'','#'+t)}
+function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
+
+/* ---------- dashboard ---------- */
+let D={};
+async function load(){
+ const[o,c,r,xm]=await Promise.all([
+  sb.from('orders').select('id,code,status,amount,created_at,claimed_by,package,product').order('id',{ascending:false}).limit(300),
+  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000)]);
+ if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
+ const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});
+ const today=new Date().toDateString(),td=rows.filter(x=>new Date(x.created_at).toDateString()===today);
+ const seenX={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept')exch++});
+ D={exch,verify:rows.filter(x=>x.status==='awaiting_review').length,
+  deliver:rows.filter(x=>x.status==='approved'&&!x.claimed_by).length,
+  working:rows.filter(x=>x.status==='approved'&&x.claimed_by).length,
+  ready:rows.filter(x=>x.status==='approved'&&ready[x.code]).length,
+  unread:convs.reduce((s,x)=>s+(+x.unread||0),0),
+  today:td.length,
+  sales:td.filter(x=>['approved','delivered'].includes(x.status)).reduce((s,x)=>s+(+x.amount||0),0),
+  delivered:td.filter(x=>x.status==='delivered').length};
+ const b1=D.verify+D.deliver,b2=D.unread;
+ $('b1').textContent=b1>99?'99+':b1;$('b1').hidden=!b1;$('b2').textContent=b2>99?'99+':b2;$('b2').hidden=!b2;
+ document.title=(b1+b2)?`(${b1+b2}) eFootballET ADMIN`:'eFootballET ADMIN'}
+async function refresh(){try{await load();if(cur==='home')paint()}catch(e){}}
+async function dash(){paint();await refresh()}
+function card(cls,label,sub,n,click){return `<button class="card ${cls}" onclick="${click}"><small>${label}</small><div class="n">${n}</div><small>${sub}</small></button>`}
+function paint(){
+ if(cur!=='home')return;
+ const notif=('Notification' in window)?Notification.permission:'unsupported';
+ $('v').innerHTML=`
+ <h2 style="margin:4px 0">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
+ <div class="grid">
+  ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"go('msgs')")}
+  ${card(D.verify?'hot':'','🔎 To verify','ለማረጋገጥ',D.verify??'…',"openOrders('awaiting_review')")}
+  ${card(D.deliver?'hot':'','📦 To deliver','ለማድረስ',D.deliver??'…',"openOrders('approved')")}
+  ${card(D.ready?'hot':'','🟢 Ready now','ዝግጁ የሆኑ ደንበኞች',D.ready??'…',"openOrders('approved')")}
+  ${card(D.unread?'hot':'','💬 Unread','ያልተነበቡ መልዕክቶች',D.unread??'…',"go('msgs')")}
+  ${card('','🛒 Orders today','የዛሬ ትዕዛዞች',D.today??'…',"openOrders('awaiting_review')")}
+  ${card('','✅ Delivered today','ዛሬ የደረሱ',D.delivered??'…',"openOrders('delivered')")}
+  <div class="card big"><small>💰 Sales today (verified)</small><div class="n">${(D.sales??0).toLocaleString()} <small style="display:inline">ETB</small></div></div>
+ </div>
+ <div class="box"><b>🔔 Notifications</b><p class="sub" style="margin:6px 0">${notif==='granted'?'On for this phone. You are alerted about new orders, receipts, ready customers and messages.':'Turn them on to get alerts for new orders, receipts, ready customers and messages.'}</p>
+  <div class="brow"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`}
+
+/* ---------- more ---------- */
+function more(){
+ const it=(ic,t,sub,c)=>`<button class="card" onclick="${c}"><span><b>${ic} ${t}</b><small>${sub}</small></span><span>›</span></button>`;
+ $('v').innerHTML=`<h2 style="margin:4px 0">More</h2><div class="menu">
+  ${it('📣','Broadcast','Message all members',"openOrders('bc','more')")}
+  ${it('🎟','Codes','Promo codes',"openOrders('codes','more')")}
+  ${it('➕','Listings','Players, accounts',"openOrders('lst','more')")}
+  ${it('📥','Sell requests','From sellers',"openOrders('subs','more')")}
+  ${it('✅','Delivered','Completed orders',"openOrders('delivered','more')")}
+  ${it('❌','Rejected','',"openOrders('rejected','more')")}
+  ${it('🔔','Notifications','Turn on / test',"go('home')")}
+  ${it('🌐','Open customer site','efootballet.store',"location.href='/'")}
+  ${it('🚪','Log out','',"logout()")}</div>`}
+async function logout(){await sb.auth.signOut();$('fo').removeAttribute('src');$('fm').removeAttribute('src');login()}
+
+/* ---------- push ---------- */
+async function ensurePush(quiet){if(!('Notification' in window)||Notification.permission!=='granted')return;await enablePush(quiet)}
+async function enablePush(quiet){try{
+ if(!('PushManager' in window))return quiet||alert('Push is not supported in this browser.');
+ const p=await Notification.requestPermission();if(p!=='granted')return quiet||alert('Notifications were not allowed. Turn them on in phone Settings.');
+ const reg=await navigator.serviceWorker.ready;let s=await reg.pushManager.getSubscription();
+ if(s&&localStorage.avk!==VAPID){await s.unsubscribe();s=null}localStorage.avk=VAPID;
+ if(!s)s=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
+ const j=s.toJSON();const r=await sb.rpc('save_push_admin',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});
+ if(r.error)return quiet||alert('Could not save: '+r.error.message+' (run migration29)');
+ if(!quiet)alert('✅ Admin notifications are ON for this phone.');paint()}catch(e){quiet||alert('Error: '+e.message)}}
+async function testPush(){try{const s=(await sb.auth.getSession()).data.session;const r=await fetch('/notifytest',{method:'POST',headers:{authorization:'Bearer '+s.access_token}});const j=await r.json();alert('Test sent to '+(j.phones||0)+' phone(s). '+JSON.stringify(j.status||j))}catch(e){alert('Error: '+e)}}
+
+$('fm').addEventListener('load',fixMsgFrame);
+window.addEventListener('message',e=>{if(e.data==='sam-refresh')refresh()});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','orders','msgs','more'].includes(h)&&h!==cur&&ME)go(h)});
+start();
+</script><style>.vbi{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .08em}.vbi svg{width:100%;height:100%;display:block}</style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script></body></html>
