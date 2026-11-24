@@ -3,7 +3,7 @@
 <title>eFootballET ADMIN</title><meta name="robots" content="noindex">
 <link rel="manifest" href="/admin-panel/manifest.json"><meta name="theme-color" content="#120d2e">
 <link rel="icon" href="/admin-panel/icon-192.png"><link rel="apple-touch-icon" href="/admin-panel/icon-192.png">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin-premium.css?v=2"><script src="/admin-premium.js?v=2"></script>
 <style>
 :root{--hh:calc(54px + env(safe-area-inset-top,0px));--nh:96px}
 html,body{height:100%;margin:0}
@@ -28,6 +28,32 @@ nav button{position:relative}
 .bd[hidden]{display:none}
 .lg{max-width:380px;margin:12vh auto 0}.lg input{width:100%;box-sizing:border-box;margin:6px 0 12px}
 .err{color:#ef4444;min-height:20px}
+
+.card{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;box-shadow:0 12px 28px #0007,inset 0 1px 0 #ffffff14;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,#ffffff12 50%,transparent 60%);transform:translateX(-120%);transition:transform .8s var(--ease);pointer-events:none}
+.card:active::before{transform:translateX(120%)}
+.card .n{background:linear-gradient(180deg,#fff 15%,#F2B705);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.card .n small{-webkit-text-fill-color:var(--h)}
+.dh{display:flex;align-items:center;gap:12px;margin:2px 0 14px}
+.dh .back{width:46px;height:46px;border-radius:15px;background:#ffffff0d;border:1px solid #ffffff22;color:var(--t);font-size:26px;line-height:1;display:grid;place-items:center;padding:0;cursor:pointer}
+.dh h2{margin:0;font-size:21px}.dh small{display:block;color:var(--h)}
+.it{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;border-radius:18px;margin-bottom:11px;box-shadow:0 10px 24px #0006,inset 0 1px 0 #ffffff12;overflow:hidden;transition:border-color .3s}
+.it.open{border-color:#F2B70566}
+.ith{display:flex;gap:10px;align-items:center;padding:14px;cursor:pointer}
+.ith .m{flex:1;min-width:0}.ith .m b{display:block;font-size:15.5px}
+.ith .m small{color:var(--h);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ith .ch{font-size:22px;color:var(--a);transition:transform .35s var(--ease)}
+.it.open .ith .ch{transform:rotate(90deg)}
+.xd{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
+.it.open .xd{grid-template-rows:1fr}
+.xd>div{overflow:hidden;min-height:0}
+.xb{padding:2px 14px 14px;line-height:1.6}
+.xb .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:7px 0;border-top:1px solid #ffffff0f;word-break:break-word}
+.xb .r a{color:var(--a)}
+.st{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#F2B70522;color:#F2B705;border:1px solid #F2B70544;white-space:nowrap}
+.cpb{border:1px solid #ffffff24;background:#ffffff10;border-radius:10px;padding:3px 10px;color:var(--t);font-size:15px;cursor:pointer}
+.bd2{min-width:22px;height:22px;border-radius:99px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
+.sw{animation:paneIn .42s var(--ease) both}
 </style></head><body>
 <div class="ah"><b>eFootballET ADMIN</b><small id="who"></small></div>
 <div id="v" class="pane"></div>
@@ -64,25 +90,26 @@ async function start(){
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
 function fixMsgFrame(){try{const d=$('fm').contentDocument;if(!d||!d.head||d.getElementById('shellfix'))return;const st=d.createElement('style');st.id='shellfix';st.textContent='.cin{align-items:center!important}.cin input{flex:1!important;width:auto!important;margin:0!important;min-width:0!important;border-radius:24px!important}.cin .btn{width:46px!important;height:46px!important;flex:none!important;margin:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important}.cin .btn::after{display:none!important}.chh .btn{width:auto!important;margin:0!important}.cms{padding-bottom:130px!important}';d.head.appendChild(st)}catch(e){}}
 function frame(id,src){const f=$(id);if(!f.getAttribute('src'))f.src=src;return f}
-function go(t,hash){cur=t;setNav(t);setTimeout(refresh,300);
+function go(t,hash){cur=t;view='dash';setNav(t);setTimeout(refresh,300);
  $('v').hidden=!(t==='home'||t==='more');$('fo').hidden=t!=='orders';$('fm').hidden=t!=='msgs';
  if(t==='home')dash();
  if(t==='more')more();
  if(t==='orders'){const f=frame('fo','/admin.html?v='+BUILD+'#'+(hash||'awaiting_review'));if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}}
  if(t==='msgs')frame('fm','/adminmsg.html?v='+BUILD);
+ {const P=t==='orders'?$('fo'):t==='msgs'?$('fm'):$('v');P.classList.remove('sw');void P.offsetWidth;P.classList.add('sw')}
  history.replaceState(null,'','#'+t)}
 function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
 
 /* ---------- dashboard ---------- */
-let D={};
+let D={},ORD=[],RDY={},CVS=[],PXM={},view='dash',dk='',OPEN={},EXD={};
 async function load(){
  const[o,c,r,xm]=await Promise.all([
-  sb.from('orders').select('id,code,status,amount,created_at,claimed_by,package,product').order('id',{ascending:false}).limit(300),
+  sb.from('orders').select('*').order('id',{ascending:false}).limit(300),
   sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000)]);
  if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
  const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});
  const today=new Date().toDateString(),td=rows.filter(x=>new Date(x.created_at).toDateString()===today);
- const seenX={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept')exch++});
+ const seenX={},PX0={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept'){exch++;PX0[m.conv_id]=1}});
  D={exch,verify:rows.filter(x=>x.status==='awaiting_review').length,
   deliver:rows.filter(x=>x.status==='approved'&&!x.claimed_by).length,
   working:rows.filter(x=>x.status==='approved'&&x.claimed_by).length,
@@ -90,30 +117,89 @@ async function load(){
   unread:convs.reduce((s,x)=>s+(+x.unread||0),0),
   today:td.length,
   sales:td.filter(x=>['approved','delivered'].includes(x.status)).reduce((s,x)=>s+(+x.amount||0),0),
-  delivered:td.filter(x=>x.status==='delivered').length};
+  delivered:td.filter(x=>x.status==='delivered').length};ORD=rows;RDY=ready;CVS=convs;PXM=PX0;
  const b1=D.verify+D.deliver,b2=D.unread;
  $('b1').textContent=b1>99?'99+':b1;$('b1').hidden=!b1;$('b2').textContent=b2>99?'99+':b2;$('b2').hidden=!b2;
  document.title=(b1+b2)?`(${b1+b2}) eFootballET ADMIN`:'eFootballET ADMIN'}
 async function refresh(){try{await load();if(cur==='home')paint()}catch(e){}}
 async function dash(){paint();await refresh()}
-function card(cls,label,sub,n,click){return `<button class="card ${cls}" onclick="${click}"><small>${label}</small><div class="n">${n}</div><small>${sub}</small></button>`}
+function card(cls,label,sub,n,click){return `<button class="card ${cls}" onclick="${click}"><small>${label}</small><div class="n" data-v="${n}">${n}</div><small>${sub}</small></button>`}
 function paint(){
  if(cur!=='home')return;
+ if(view==='detail')return paintDetail();
  const notif=('Notification' in window)?Notification.permission:'unsupported';
  $('v').innerHTML=`
  <h2 style="margin:4px 0">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
-  ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"go('msgs')")}
-  ${card(D.verify?'hot':'','🔎 To verify','ለማረጋገጥ',D.verify??'…',"openOrders('awaiting_review')")}
-  ${card(D.deliver?'hot':'','📦 To deliver','ለማድረስ',D.deliver??'…',"openOrders('approved')")}
-  ${card(D.ready?'hot':'','🟢 Ready now','ዝግጁ የሆኑ ደንበኞች',D.ready??'…',"openOrders('approved')")}
-  ${card(D.unread?'hot':'','💬 Unread','ያልተነበቡ መልዕክቶች',D.unread??'…',"go('msgs')")}
-  ${card('','🛒 Orders today','የዛሬ ትዕዛዞች',D.today??'…',"openOrders('awaiting_review')")}
-  ${card('','✅ Delivered today','ዛሬ የደረሱ',D.delivered??'…',"openOrders('delivered')")}
-  <div class="card big"><small>💰 Sales today (verified)</small><div class="n">${(D.sales??0).toLocaleString()} <small style="display:inline">ETB</small></div></div>
+  ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"detail('exch')")}
+  ${card(D.verify?'hot':'','🔎 To verify','ለማረጋገጥ',D.verify??'…',"detail('verify')")}
+  ${card(D.deliver?'hot':'','📦 To deliver','ለማድረስ',D.deliver??'…',"detail('deliver')")}
+  ${card(D.ready?'hot':'','🟢 Ready now','ዝግጁ የሆኑ ደንበኞች',D.ready??'…',"detail('ready')")}
+  ${card(D.unread?'hot':'','💬 Unread','ያልተነበቡ መልዕክቶች',D.unread??'…',"detail('unread')")}
+  ${card('','🛒 Orders today','የዛሬ ትዕዛዞች',D.today??'…',"detail('today')")}
+  ${card('','✅ Delivered today','ዛሬ የደረሱ',D.delivered??'…',"detail('delivered')")}
+  <div class="card big"><small>💰 Sales today (verified)</small><div class="n" data-v="${D.sales??0}">${(D.sales??0).toLocaleString()} <small style="display:inline">ETB</small></div></div>
  </div>
  <div class="box"><b>🔔 Notifications</b><p class="sub" style="margin:6px 0">${notif==='granted'?'On for this phone. You are alerted about new orders, receipts, ready customers and messages.':'Turn them on to get alerts for new orders, receipts, ready customers and messages.'}</p>
-  <div class="brow"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`}
+  <div class="brow"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`;if(document.documentElement.classList.contains('pa'))countUp()}
+
+/* ---------- dashboard detail (full order info inside) ---------- */
+const STL={awaiting_review:'🔎 To verify',approved:'📦 Approved',delivered:'✅ Delivered',rejected:'❌ Rejected',pending:'⏳ Pending'};
+const KT={exch:['🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ'],verify:['🔎 To verify','ለማረጋገጥ'],deliver:['📦 To deliver','ለማድረስ'],ready:['🟢 Ready now','ዝግጁ የሆኑ ደንበኞች'],unread:['💬 Unread','ያልተነበቡ መልዕክቶች'],today:['🛒 Orders today','የዛሬ ትዕዛዞች'],delivered:['✅ Delivered today','ዛሬ የደረሱ']};
+const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h ago':Math.floor(m/1440)+' d ago'};
+function cpd(b){const t=b.dataset.t||'';try{navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(x){}a.remove()}b.textContent='✅';setTimeout(()=>b.textContent='📋',1200)}
+const cpB=t=>`<button class="cpb" data-t="${E(t)}" onclick="event.stopPropagation();cpd(this)">📋</button>`;
+function tg(id){OPEN[id]=!OPEN[id];const el=document.getElementById('it'+id);if(el)el.classList.toggle('open',!!OPEN[id])}
+function listFor(k){
+ const today=new Date().toDateString(),isT=o=>new Date(o.created_at).toDateString()===today;
+ if(k==='verify')return ORD.filter(o=>o.status==='awaiting_review');
+ if(k==='deliver')return ORD.filter(o=>o.status==='approved'&&!o.claimed_by);
+ if(k==='ready')return ORD.filter(o=>o.status==='approved'&&RDY[o.code]);
+ if(k==='today')return ORD.filter(isT);
+ if(k==='delivered')return ORD.filter(o=>isT(o)&&o.status==='delivered');
+ if(k==='exch')return CVS.filter(c=>PXM[c.id]);
+ if(k==='unread')return CVS.filter(c=>+c.unread>0);
+ return []}
+function ordIt(o){
+ const id='o'+o.id,acc=['ef','account','player'].includes(o.cat),sp=(o.info||'').indexOf(' ');
+ let inf='';
+ if(acc&&sp>0){const e=o.info.slice(0,sp),p=o.info.slice(sp+1);inf=`<div class="r">📧 <code>${E(e)}</code> ${cpB(e)}</div><div class="r">🔑 <code>${E(p)}</code> ${cpB(p)}</div>`}
+ else if(o.info)inf=`<div class="r">🔑 <code>${E(o.info)}</code> ${cpB(o.info)}</div>`;
+ const tab=['awaiting_review','approved','delivered','rejected'].includes(o.status)?o.status:'awaiting_review';
+ const rd=RDY[o.code];
+ return `<div class="it${OPEN[id]?' open':''}" id="it${id}"><div class="ith" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.product)} — ${E(o.package)}</b><small>💰 ${E(o.amount)} ETB · 📞 ${E(o.phone||'')} · ${ago(o.created_at)}</small></div><span class="st">${STL[o.status]||E(o.status)}</span><span class="ch">›</span></div>
+ <div class="xd"><div><div class="xb">
+  <div class="r"><span class="st">${STL[o.status]||E(o.status)}</span> 🔖 <code>${E(o.code)}</code> ${cpB(o.code)}</div>
+  <div class="r">🕒 ${new Date(o.created_at).toLocaleString()} (${ago(o.created_at)})</div>
+  <div class="r">📦 ${E(o.product)} — ${E(o.package)}</div>
+  <div class="r">💰 <b>${E(o.amount)} ETB</b>${o.promo?` · 🎟 ${E(o.promo)} (−${E(o.discount)})`:''}</div>
+  ${o.phone?`<div class="r">📞 <a href="tel:${E(o.phone)}">${E(o.phone)}</a> ${cpB(o.phone)}</div>`:''}
+  ${o.tg?`<div class="r">✈️ ${E(o.tg)}</div>`:''}
+  ${inf}
+  ${o.kcode?`<div class="r">🔐 Konami code: <b style="font-size:20px">${E(o.kcode)}</b> ${cpB(o.kcode)}</div>`:(o.code_req?'<div class="r">⏳ Customer is sending the code…</div>':'')}
+  ${o.status==='approved'?(rd?`<div class="r">🟢 Customer is ready (${ago(rd)})</div>`:'<div class="r">⏳ Customer is not ready yet</div>'):''}
+  ${o.claimed_by?`<div class="r">🙋 ${E(o.claimed_by_name||'Claimed')}</div>`:(o.status==='approved'?'<div class="r">🙋 Not claimed yet</div>':'')}
+  ${o.tx_ref?`<div class="r">🔢 <code>${E(o.tx_ref)}</code> ${cpB(o.tx_ref)} <a href="https://transactioninfo.ethiotelecom.et/receipt/${E(o.tx_ref)}" target="_blank" rel="noopener">🔗 Telebirr</a></div>`:''}
+  ${o.auto_note?`<div class="r">🤖 ${E(o.auto_note)}</div>`:''}
+  ${o.proof?`<div class="r"><img src="${CFG.URL}/storage/v1/object/public/proofs/${E(o.proof)}" style="max-width:100%;border-radius:12px"></div>`:''}
+  <button class="btn" style="margin-top:10px;width:100%" onclick="openOrders('${tab}')">📂 Open in Orders (approve / deliver)</button>
+ </div></div></div></div>`}
+function convIt(c){
+ const id='c'+c.id,x=EXD[c.id],U0=CFG.URL+'/storage/v1/object/public/chat/';
+ let det='';
+ if(x){det=`<div class="r">🔁 <b>${E(x.mode||'')}</b> ${E(x.amount||0)} ETB · OVR ${E(x.ovr||'')}</div>${x.note?`<div class="r">📝 ${E(x.note)}</div>`:''}${(x.images||[]).length?`<div class="r" style="gap:6px">${(x.images||[]).map(q=>`<a href="${U0+E(q)}" target="_blank"><img src="${U0+E(q)}" style="width:76px;height:76px;object-fit:cover;border-radius:10px"></a>`).join('')}</div>`:''}`}
+ else if(dk==='exch')det='<div class="r">⏳ Loading offer…</div>';
+ return `<div class="it${OPEN[id]?' open':''}" id="it${id}"><div class="ith" onclick="tg('${id}')"><div class="m"><b>${E(c.title)}${PXM[c.id]?' <span class="st">🔁 Verify exchange</span>':''}</b><small>${E(c.last_text||'')}</small></div>${+c.unread?`<span class="bd2">${E(c.unread)}</span>`:''}<span class="ch">›</span></div>
+ <div class="xd"><div><div class="xb"><div class="r">💬 ${E(c.last_text||'—')}</div>${det}<button class="btn" style="margin-top:10px;width:100%" onclick="openChat(${c.id})">💬 Open chat</button></div></div></div></div>`}
+function paintDetail(){
+ const L=listFor(dk),T=KT[dk]||['',''],isC=dk==='exch'||dk==='unread';
+ $('v').innerHTML=`<div class="dh"><button class="back" onclick="view='dash';paint()">‹</button><div><h2>${T[0]}</h2><small>${T[1]} · ${L.length}</small></div></div>`+(L.length?L.map(isC?convIt:ordIt).join(''):'<p class="sub" style="text-align:center;margin-top:40px">✨ ምንም የለም · Nothing here</p>')}
+function detail(k){cur='home';view='detail';dk=k;OPEN={};EXD={};setNav('home');$('v').hidden=false;$('fo').hidden=$('fm').hidden=true;$('v').scrollTop=0;paintDetail();const P=$('v');P.classList.remove('sw');void P.offsetWidth;P.classList.add('sw');if(k==='exch')loadExd();history.replaceState(null,'','#home')}
+async function loadExd(){const ids=listFor('exch').map(c=>c.id);if(!ids.length)return;
+ try{const{data}=await sb.from('messages').select('conv_id,meta,id').eq('kind','exchange_offer').in('conv_id',ids).order('id',{ascending:false});(data||[]).forEach(m=>{if(!EXD[m.conv_id])EXD[m.conv_id]=m.meta||{}})}catch(e){}
+ if(cur==='home'&&view==='detail'&&dk==='exch')paintDetail()}
+function openChat(id){go('msgs');let n=0;const t=setInterval(()=>{n++;try{const w=$('fm').contentWindow;if(w&&typeof w.chat==='function'&&(w.CID||w.document.querySelector('.mrow'))){clearInterval(t);w.chat(id);return}}catch(e){}if(n>40){clearInterval(t);try{$('fm').contentWindow.chat(id)}catch(e){}}},150)}
+function countUp(){document.querySelectorAll('.n[data-v]').forEach(el=>{const v=+el.dataset.v;if(!(v>0)||v>1e7||!el.firstChild)return;const s=performance.now(),f=t=>{const p=Math.min(1,(t-s)/700),e=1-Math.pow(1-p,3);el.firstChild.nodeValue=Math.round(v*e).toLocaleString()+(el.dataset.v==String(v)&&el.querySelector('small')?' ':'');if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 
 /* ---------- more ---------- */
 function more(){
