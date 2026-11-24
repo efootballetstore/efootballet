@@ -829,7 +829,7 @@ async function status(code,p){
 async function promo(id){const c=C.find(x=>x.id==id),v=($('pr').value||'').trim();if(!v){$('pm').textContent='';$('tt').textContent=c.price+' ETB';return}
  const r=await sb.rpc('check_promo',{p_code:v}),d=r.data&&r.data.discount;$('pm').innerHTML=d?`<span class="disc">${VBH}<b>−${d} ETB discount applied</b></span>`:'Invalid or already used code.';$('tt').textContent=Math.max(c.price-(d||0),1)+' ETB'}
 async function sendKc(c,p){const v=$('kc').value.trim();if(!/^[A-Za-z0-9]{4,10}$/.test(v)){$('er').textContent='ኮዱ ትክክል አይደለም።';return}
- const r=await sb.rpc('submit_konami_code',{p_code:c,p_phone:p,p_val:v});if(r.error||!r.data){$('er').textContent='መላክ አልተቻለም፣ እንደገና ይሞክሩ።';return}status(c,p)}
+ const r=await sb.rpc('submit_konami_code',{p_code:c,p_phone:p,p_val:v});if(r.error||!r.data){$('er').textContent='መላክ አልተቻለም፣ እንደገና ይሞክሩ።';return}pingAdmin('code',c);status(c,p)}
 function mn(){$('mn').classList.toggle('open')}
 function go2(f){$('mn').classList.remove('open');f()}
 async function sell(){
