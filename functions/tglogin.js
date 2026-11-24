@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
   const SB = env.SUPABASE_URL, K = env.SUPABASE_SERVICE_KEY;
   const H = { apikey: K, Authorization: 'Bearer ' + K, 'content-type': 'application/json' };
   const ex = await (await fetch(`${SB}/rest/v1/tg_links?tg_id=eq.${encodeURIComponent(u.id)}&select=user_id`, { headers: H })).json();
-  const email = `tg${u.id}@telegram.samstore.app`;
+  const email = `tg${u.id}@telegram.efootballet.app`;
   const pw = hex(await crypto.subtle.digest('SHA-256', enc.encode(env.TG_PASS_SECRET + ':' + u.id)));
   await fetch(`${SB}/auth/v1/admin/users`, { method: 'POST', headers: H,
     body: JSON.stringify({ email, password: pw, email_confirm: true, user_metadata: { tg: u.username ? '@' + u.username : u.first_name } }) });
