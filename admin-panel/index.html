@@ -54,6 +54,16 @@ nav button{position:relative}
 .cpb{border:1px solid #ffffff24;background:#ffffff10;border-radius:10px;padding:3px 10px;color:var(--t);font-size:15px;cursor:pointer}
 .bd2{min-width:22px;height:22px;border-radius:99px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
 .sw{animation:paneIn .42s var(--ease) both}
+
+.kov{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:#05060dd9;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:paneIn .35s var(--ease) both}
+.kbox{width:100%;max-width:380px;text-align:center;background:linear-gradient(160deg,#241c4d,#121423);border:1px solid #F2B70577;border-radius:24px;padding:22px 18px;box-shadow:0 0 40px #F2B70533,0 20px 50px #000a}
+.kbox .kt{font-weight:800;font-size:18px}
+.kbox .kc{font-size:54px;font-weight:800;letter-spacing:.14em;margin:14px 0;color:#F2B705;font-family:ui-monospace,Menlo,monospace!important;text-shadow:0 0 24px #F2B70566}
+.kbox .ks{color:var(--h);margin-bottom:14px;line-height:1.5}
+.kbox .btn{width:100%;margin:6px 0}
+.kbox small{display:block;color:var(--h);margin-top:8px}
+.kwait{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#F2B7051f;border:1px solid #F2B70566;font-weight:700;cursor:pointer;animation:glow 2s ease-in-out infinite}
+.kwait i{font-style:normal;animation:beat 1s ease-in-out infinite}
 </style></head><body>
 <div class="ah"><b>eFootballET ADMIN</b><small id="who"></small></div>
 <div id="v" class="pane"></div>
@@ -76,7 +86,7 @@ const BUILD=Date.now();let cur='home',timer=null,ME=null;
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/admin-panel/sw.js',{scope:'/admin-panel/'}).catch(()=>{});
 
 /* ---------- login ---------- */
-function login(msg=''){clearInterval(timer);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
+function login(msg=''){clearInterval(timer);clearInterval(KW);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
  $('v').innerHTML=`<div class="lg"><h1>🔐 eFootballET ADMIN</h1><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="err">${E(msg)}</div><button class="btn" id="lgb">Log in</button></div>`;
  $('lgb').onclick=async()=>{$('lgb').disabled=true;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error){login('Wrong email or password');return}start()}}
 async function start(){
@@ -84,7 +94,7 @@ async function start(){
  const a=await sb.rpc('is_admin');if(a.error||!a.data){await sb.auth.signOut();return login('This account is not an admin.')}
  ME=session.user;$('who').textContent=(ME.email||'').split('@')[0];$('nav').hidden=false;
  const h=location.hash.slice(1);go(['orders','msgs','more'].includes(h)?h:'home');
- refresh();clearInterval(timer);timer=setInterval(refresh,6000);ensurePush(true)}
+ refresh();clearInterval(timer);timer=setInterval(refresh,6000);clearInterval(KW);KW=setInterval(codeWatch,2500);codeWatch();ensurePush(true)}
 
 /* ---------- navigation ---------- */
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
@@ -101,6 +111,7 @@ function go(t,hash){cur=t;view='dash';setNav(t);setTimeout(refresh,300);
 function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
 
 /* ---------- dashboard ---------- */
+let KWAIT=[],KSEEN={},KW=null;try{KSEEN=JSON.parse(localStorage.kseen||'{}')}catch(e){}
 let D={},ORD=[],RDY={},CVS=[],PXM={},view='dash',dk='',OPEN={},EXD={};
 async function load(){
  const[o,c,r,xm]=await Promise.all([
@@ -129,6 +140,7 @@ function paint(){
  if(view==='detail')return paintDetail();
  const notif=('Notification' in window)?Notification.permission:'unsupported';
  $('v').innerHTML=`
+ ${KWAIT.length?`<div class="kwait" onclick="detail('deliver')"><i>⏳</i><span>Waiting for customer code: ${KWAIT.map(o=>'#'+o.id).join(', ')}</span></div>`:''}
  <h2 style="margin:4px 0">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
   ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"detail('exch')")}
@@ -200,6 +212,28 @@ async function loadExd(){const ids=listFor('exch').map(c=>c.id);if(!ids.length)r
  if(cur==='home'&&view==='detail'&&dk==='exch')paintDetail()}
 function openChat(id){go('msgs');let n=0;const t=setInterval(()=>{n++;try{const w=$('fm').contentWindow;if(w&&typeof w.chat==='function'&&(w.CID||w.document.querySelector('.mrow'))){clearInterval(t);w.chat(id);return}}catch(e){}if(n>40){clearInterval(t);try{$('fm').contentWindow.chat(id)}catch(e){}}},150)}
 function countUp(){document.querySelectorAll('.n[data-v]').forEach(el=>{const v=+el.dataset.v;if(!(v>0)||v>1e7||!el.firstChild)return;const s=performance.now(),f=t=>{const p=Math.min(1,(t-s)/700),e=1-Math.pow(1-p,3);el.firstChild.nodeValue=Math.round(v*e).toLocaleString()+(el.dataset.v==String(v)&&el.querySelector('small')?' ':'');if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+
+/* ---------- instant Konami code alert ---------- */
+function beep3(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[0,.22,.44].forEach((t,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=i===2?1175:880;g.gain.setValueAtTime(.0001,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.35,c.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+.18);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
+function closeK(){clearInterval(window.KAG);const d=$('kov');if(d)d.remove()}
+function showCode(o){
+ try{navigator.vibrate&&navigator.vibrate([200,100,200,100,400])}catch(e){}
+ beep3();closeK();
+ const d=document.createElement('div');d.id='kov';d.className='kov';
+ d.innerHTML=`<div class="kbox"><div class="kt">🔐 Konami code received</div><div class="kc">${E(o.kcode)}</div><div class="ks">#${E(o.id)} · ${E(o.product)} — ${E(o.package)}<br>📞 ${E(o.phone||'')}</div><button class="btn" data-t="${E(o.kcode)}" onclick="cpd(this)">📋 Copy code</button><button class="btn s" onclick="closeK()">Close</button><small id="kage">⏱ 0:00 since it arrived</small></div>`;
+ document.body.appendChild(d);
+ const t0=Date.now();clearInterval(window.KAG);window.KAG=setInterval(()=>{const e=$('kage');if(!e)return clearInterval(window.KAG);const q=Math.floor((Date.now()-t0)/1000);e.textContent='⏱ '+Math.floor(q/60)+':'+String(q%60).padStart(2,'0')+' since it arrived';e.style.color=q>150?'#ef4444':''},1000)}
+async function codeWatch(){
+ if(!ME||document.hidden)return;
+ try{
+  const{data,error}=await sb.from('orders').select('id,code,product,package,phone,kcode,code_req,status').eq('status','approved').or('kcode.not.is.null,code_req.eq.true').limit(30);
+  if(error||!data)return;
+  const w=data.filter(o=>o.code_req&&!o.kcode),nk=JSON.stringify(w.map(o=>o.id)),ok=JSON.stringify(KWAIT.map(o=>o.id));
+  KWAIT=w;if(nk!==ok&&cur==='home'&&view==='dash')paint();
+  let fresh=null;
+  data.forEach(o=>{if(!o.kcode)return;const k=o.id+':'+o.kcode;if(!KSEEN[k]){KSEEN[k]=Date.now();fresh=o}});
+  if(fresh){const ks=Object.entries(KSEEN).sort((a,b)=>b[1]-a[1]).slice(0,60);KSEEN=Object.fromEntries(ks);try{localStorage.kseen=JSON.stringify(KSEEN)}catch(e){}showCode(fresh);refresh()}
+ }catch(e){}}
 
 /* ---------- more ---------- */
 function more(){
