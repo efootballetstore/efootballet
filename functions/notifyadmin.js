@@ -57,9 +57,9 @@ export async function onRequestPost({ request, env }) {
 
     const what = `${o.package || o.product || 'Order'} · ${o.amount} ETB`;
     const msg = {
-      order: { title: '🛒 New order', body: what, url: '/sam-admin/#orders' },
-      receipt: { title: '🧾 Receipt sent', body: what, url: '/sam-admin/#orders' },
-      ready: { title: '🟢 Customer is ready', body: `${what} · ask for the code now`, url: '/sam-admin/#orders' },
+      order: { title: '🛒 New order', body: what, url: '/admin-panel/#orders' },
+      receipt: { title: '🧾 Receipt sent', body: what, url: '/admin-panel/#orders' },
+      ready: { title: '🟢 Customer is ready', body: `${what} · ask for the code now`, url: '/admin-panel/#orders' },
     }[type];
     const text = JSON.stringify(msg);
 
