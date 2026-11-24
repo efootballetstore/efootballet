@@ -15,6 +15,22 @@ export async function onRequestPost({ request, env }) {
   const ex = await (await fetch(`${SB}/rest/v1/tg_links?tg_id=eq.${encodeURIComponent(u.id)}&select=user_id`, { headers: H })).json();
   const email = `tg${u.id}@telegram.efootballet.app`;
   const pw = hex(await crypto.subtle.digest('SHA-256', enc.encode(env.TG_PASS_SECRET + ':' + u.id)));
+  // This Telegram is already linked to a real account (email/Google): sign in AS that account.
+  const linked = Array.isArray(ex) && ex.length ? ex[0].user_id : null;
+  if (linked) {
+    const ur = await (await fetch(`${SB}/auth/v1/admin/users/${linked}`, { headers: H })).json().catch(() => ({}));
+    if (ur && ur.email && ur.email !== email) {
+      const gl = await (await fetch(`${SB}/auth/v1/admin/generate_link`, { method: 'POST', headers: H,
+        body: JSON.stringify({ type: 'magiclink', email: ur.email }) })).json().catch(() => ({}));
+      const th = gl.hashed_token || (gl.properties && gl.properties.hashed_token);
+      if (th) {
+        const vr = await (await fetch(`${SB}/auth/v1/verify`, { method: 'POST', headers: { apikey: K, 'content-type': 'application/json' },
+          body: JSON.stringify({ type: 'magiclink', token_hash: th }) })).json().catch(() => ({}));
+        if (vr.access_token) return J({ access_token: vr.access_token, refresh_token: vr.refresh_token });
+      }
+      return J({ error: 'Could not log in to the account linked to this Telegram. Log in with your email or Google instead.' }, 409);
+    }
+  }
   await fetch(`${SB}/auth/v1/admin/users`, { method: 'POST', headers: H,
     body: JSON.stringify({ email, password: pw, email_confirm: true, user_metadata: { tg: u.username ? '@' + u.username : u.first_name } }) });
   const r = await fetch(`${SB}/auth/v1/token?grant_type=password`, { method: 'POST', headers: H, body: JSON.stringify({ email, password: pw }) });
