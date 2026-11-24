@@ -15,11 +15,7 @@ create policy adm_sel on orders for select to authenticated using (true);
 insert into catalog(cat,plat,title,label,price)
 select 'ef','All Region','eFootball Coins - All Region',a||' Coins',b from unnest(array[130,300,550,750,1040,2130,3250,5700],array[300,550,950,1300,1800,3400,4800,7900]) t(a,b);
 insert into catalog(cat,plat,title,label,price)
-select 'ef','Japan Region','eFootball Coins - Japan Region',a||' Coins',b from unnest(array[137,315,578,788,1092,2237,3413,5985],array[300,550,950,1300,1800,3400,4800,7900]) t(a,b);
-insert into catalog(cat,title,label,price)
-select 'pubg','PUBG UC',a||' UC',b from unnest(array[60,325,660,985,1320,1800,2460,3850,5650,8100,11950,16200,24300,32400],array[220,880,1720,2780,3550,4180,5900,8650,13000,17200,25500,34000,51500,68500]) t(a,b);
-insert into catalog(cat,title,label,price)
-select 'ff','Free Fire Diamonds',a||' Diamonds',b from unnest(array[110,231,341,462,583,693,1188,2420],array[180,375,550,750,935,1120,1840,3750]) t(a,b);
+select 'ef','Japan Region','eFootball Coins - Japan Region',a||' Coins',b from unnest(array[137,315,578,788,1092,2237,3413,5985],array[250,550,950,1300,1800,3400,4800,7900]) t(a,b);
 insert into catalog(cat,title,label,price) values('gem','Gemini Premium','18 ወር',350);
 
 create function create_order(p_id int,p_info text) returns text language plpgsql security definer set search_path=public as $$
