@@ -116,11 +116,11 @@ function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
 let KWAIT=[],KSEEN={},KW=null;try{KSEEN=JSON.parse(localStorage.kseen||'{}')}catch(e){}
 let D={},ORD=[],RDY={},CVS=[],PXM={},view='dash',dk='',OPEN={},EXD={};
 async function load(){
- const[o,c,r,xm]=await Promise.all([
+ const[o,c,r,xm,rm]=await Promise.all([
   sb.from('orders').select('*').order('id',{ascending:false}).limit(300),
-  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000)]);
+  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000),sb.from('messages').select('meta,created_at').not('meta->>ready','is',null).order('id',{ascending:false}).limit(200)]);
  if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
- const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});
+ const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});(rm&&rm.data||[]).forEach(x=>{const k=x.meta&&x.meta.ready;if(k&&!ready[k])ready[k]=x.created_at});
  const today=new Date().toDateString(),td=rows.filter(x=>new Date(x.created_at).toDateString()===today);
  const seenX={},PX0={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept'){exch++;PX0[m.conv_id]=1}});
  D={exch,verify:rows.filter(x=>x.status==='awaiting_review').length,
