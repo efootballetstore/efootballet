@@ -14,7 +14,7 @@ export async function onRequestPost({ request, env }) {
     return new Response('ok');
   }
   if (m.text === '/start') {
-    await api('sendMessage', { chat_id: chat, text: 'Welcome to eFootballET! Send your message here and we will reply soon.' });
+    await api('sendMessage', { chat_id: chat, text: 'Welcome to eFootballET! Best place for eFootball Coins in Ethiopia. Send your message here and we will reply soon.' });
     return new Response('ok');
   }
   // Seller replies: (1) a price -> send final price (+100) to the buyer, (2) a code -> save it for the admin.
