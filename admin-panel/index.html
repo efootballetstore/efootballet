@@ -3,60 +3,44 @@
 <title>eFootballET ADMIN</title><meta name="robots" content="noindex">
 <link rel="manifest" href="/admin-panel/manifest.json"><meta name="theme-color" content="#120d2e">
 <link rel="icon" href="/admin-panel/icon-192.png"><link rel="apple-touch-icon" href="/admin-panel/icon-192.png">
-<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin-premium.css?v=2"><script>["contextmenu","selectstart","dragstart"].forEach(function(t){document.addEventListener(t,function(e){e.stopImmediatePropagation()},true)})</script><script src="/admin-premium.js?v=3"></script>
+<link rel="stylesheet" href="/style.css">
+<script>["contextmenu","selectstart","dragstart"].forEach(function(t){document.addEventListener(t,function(e){e.stopImmediatePropagation()},true)})</script>
 <style>
 *{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
-.xs{padding:10px 0;border-top:1px solid #ffffff0f}.xs>b{display:block;margin-bottom:6px}.xs .btn{width:100%;margin-top:8px}.xcode{font-size:34px;font-weight:800;letter-spacing:.14em;color:#F2B705;font-family:ui-monospace,Menlo,monospace}
-:root{--hh:calc(54px + env(safe-area-inset-top,0px));--nh:96px}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--t)}
-.ah{position:fixed;top:0;left:0;right:0;height:var(--hh);box-sizing:border-box;padding:env(safe-area-inset-top,0) 16px 0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1b1442,#120d2e);border-bottom:1px solid var(--l);z-index:20}
-.ah b{font-size:17px;letter-spacing:.08em}.ah small{color:var(--h)}
-.pane{position:fixed;top:var(--hh);bottom:var(--nh);left:0;right:0;overflow:auto;padding:14px;box-sizing:border-box}
-iframe.pane{border:0;width:100%;padding:0;background:var(--bg);height:calc(100vh - var(--hh) - var(--nh));height:calc(100dvh - var(--hh) - var(--nh))}
+:root{--hh:calc(54px + env(safe-area-inset-top,0px));--nh:92px;--ease:cubic-bezier(.22,1,.36,1)}
+@keyframes paneIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+html,body{height:100%;margin:0}body{background:var(--bg);color:var(--t)}
+.ah{position:fixed;top:0;left:0;right:0;height:var(--hh);box-sizing:border-box;padding:env(safe-area-inset-top,0) 14px 0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1b1442,#120d2e);border-bottom:1px solid var(--l);z-index:20}
+.ah b{font-size:16px;letter-spacing:.08em}.ah small{color:var(--h);margin-right:8px}.ah button{background:#ffffff10;border:1px solid #ffffff22;color:var(--t);border-radius:12px;width:38px;height:34px;font-size:18px}
+.pane{position:fixed;top:var(--hh);bottom:var(--nh);left:0;right:0;overflow:auto;padding:12px;box-sizing:border-box;animation:paneIn .3s var(--ease) both}
+iframe.pane{border:0;width:100%;padding:0;background:var(--bg)}
 nav[hidden]{display:none!important}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
-.card{background:var(--b2);border:1px solid var(--l);border-radius:18px;padding:14px;cursor:pointer;text-align:left;color:var(--t);font:inherit}
-.card .n{font-size:32px;font-weight:800;line-height:1.1;margin-top:4px}
-.card.hot{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}
-.card small{color:var(--h);display:block}
+nav{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));height:70px;display:flex;gap:2px;padding:6px;border-radius:26px;background:#10121c;border:1px solid #ffffff1c;box-shadow:0 10px 30px #000a;z-index:30}
+nav button{flex:1;position:relative;background:none;border:0;color:var(--h);font:600 11px/1.2 inherit;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+nav button.on{background:linear-gradient(180deg,#F2B70533,#F2B7050f);color:#F2B705}nav .ei{font-style:normal;font-size:20px}
+.bd{position:absolute;top:2px;left:calc(50% + 6px);min-width:17px;height:17px;border-radius:99px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px}.bd[hidden]{display:none}
+.lg{max-width:380px;margin:12vh auto 0}.lg input{width:100%;box-sizing:border-box;margin:6px 0 12px}.err{color:#ef4444;min-height:20px}
+h2.t{margin:2px 0 10px;font-size:20px}.sub{color:var(--h)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.tile{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;border-radius:18px;padding:14px;text-align:left;color:var(--t);font:inherit;box-shadow:0 10px 24px #0006}
+.tile.hot{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}.tile .n{font-size:30px;font-weight:800;line-height:1.1}.tile small{display:block;color:var(--h)}
 .big{grid-column:1/-1}
-.brow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
-.menu{display:flex;flex-direction:column;gap:10px}
-.menu button{display:flex;justify-content:space-between;align-items:center;text-align:left}
-nav .ei{font-style:normal;font-size:21px;display:block;line-height:1.1}
-nav button{position:relative}
-.bd{position:absolute;top:2px;left:calc(50% + 8px);min-width:18px;height:18px;border-radius:99px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 5px}
-.bd[hidden]{display:none}
-.lg{max-width:380px;margin:12vh auto 0}.lg input{width:100%;box-sizing:border-box;margin:6px 0 12px}
-.err{color:#ef4444;min-height:20px}
-
-.card{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;box-shadow:0 12px 28px #0007,inset 0 1px 0 #ffffff14;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,#ffffff12 50%,transparent 60%);transform:translateX(-120%);transition:transform .8s var(--ease);pointer-events:none}
-.card:active::before{transform:translateX(120%)}
-.card .n{background:linear-gradient(180deg,#fff 15%,#F2B705);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.card .n small{-webkit-text-fill-color:var(--h)}
-.dh{display:flex;align-items:center;gap:12px;margin:2px 0 14px}
-.dh .back{width:46px;height:46px;border-radius:15px;background:#ffffff0d;border:1px solid #ffffff22;color:var(--t);font-size:26px;line-height:1;display:grid;place-items:center;padding:0;cursor:pointer}
-.dh h2{margin:0;font-size:21px}.dh small{display:block;color:var(--h)}
-.it{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;border-radius:18px;margin-bottom:11px;box-shadow:0 10px 24px #0006,inset 0 1px 0 #ffffff12;overflow:hidden;transition:border-color .3s}
-.it.open{border-color:#F2B70566}
-.ith{display:flex;gap:10px;align-items:center;padding:14px;cursor:pointer}
-.ith .m{flex:1;min-width:0}.ith .m b{display:block;font-size:15.5px}
-.ith .m small{color:var(--h);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ith .ch{font-size:22px;color:var(--a);transition:transform .35s var(--ease)}
-.it.open .ith .ch{transform:rotate(90deg)}
-.xd{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
-.it.open .xd{grid-template-rows:1fr}
-.xd>div{overflow:hidden;min-height:0}
-.xb{padding:2px 14px 14px;line-height:1.6}
-.xb .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:7px 0;border-top:1px solid #ffffff0f;word-break:break-word}
-.xb .r a{color:var(--a)}
-.st{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#F2B70522;color:#F2B705;border:1px solid #F2B70544;white-space:nowrap}
-.cpb{border:1px solid #ffffff24;background:#ffffff10;border-radius:10px;padding:3px 10px;color:var(--t);font-size:15px;cursor:pointer}
-.bd2{min-width:22px;height:22px;border-radius:99px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
-.sw{animation:paneIn .42s var(--ease) both}
-
+.cs{background:linear-gradient(160deg,#1c1f33,#121423);border:1px solid #ffffff17;border-radius:18px;margin-bottom:10px;overflow:hidden}.cs.open{border-color:#F2B70566}
+.csh{display:flex;gap:10px;align-items:center;padding:13px;cursor:pointer}.csh .m{flex:1;min-width:0}.csh .m b{display:block;font-size:15px}.csh .m small{display:block;color:var(--h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.csh .ch{font-size:22px;color:var(--a);transition:transform .3s}.cs.open .ch{transform:rotate(90deg)}
+.csb{display:none;padding:0 13px 13px}.cs.open .csb{display:block}
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;background:#F2B70522;color:#F2B705;border:1px solid #F2B70544;white-space:nowrap}
+.st.g{background:#22c3a622;color:#22C3A6;border-color:#22c3a655}.st.r{background:#ef444422;color:#ef4444;border-color:#ef444455}
+.stp{border-top:1px solid #ffffff12;padding:10px 0}.sth{display:flex;align-items:center;gap:9px}.sth i{font-style:normal;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#ffffff14;color:var(--h);font-weight:800;font-size:12.5px;flex:none}
+.stp.now .sth i{background:#F2B705;color:#000}.stp.done .sth i{background:#22c3a6;color:#00130f}.stp.done .sth b{color:#22C3A6}
+.stb{margin:7px 0 0 33px;line-height:1.65;word-break:break-word}.stb .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.stb .btn{flex:1 1 130px;width:auto;margin:0;min-height:44px;padding:8px 10px}
+.pp{margin:8px 0 2px;padding:9px 10px;border-radius:12px;background:#ffffff0a;border:1px solid #ffffff12}.pp>b{display:block;margin-bottom:3px}
+.cpb{border:1px solid #ffffff24;background:#ffffff10;border-radius:10px;padding:2px 9px;color:var(--t);font-size:14px}
+.code{font-size:32px;font-weight:800;letter-spacing:.14em;color:#F2B705;font-family:ui-monospace,Menlo,monospace}
+.box2{padding:12px;border-radius:16px;background:#ffffff0a;border:1px solid #ffffff14;margin-bottom:10px;line-height:1.7}
+.menu{display:flex;flex-direction:column;gap:10px}.menu button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:14px;border-radius:16px;background:#181a26;border:1px solid #ffffff14;color:var(--t);font:inherit}.menu small{display:block;color:var(--h)}
+.lgd span{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#F2B705;color:#000;font-weight:800;font-size:12px;margin-right:6px}
+.tabs2{display:flex;gap:8px;margin:0 0 10px}.tabs2 button{flex:1;border-radius:99px;padding:9px;border:1px solid #ffffff1f;background:#ffffff0a;color:var(--t);font-weight:700}.tabs2 button.on{background:#F2B705;color:#000}
 .kov{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:#05060dd9;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:paneIn .35s var(--ease) both}
 .kbox{width:100%;max-width:380px;text-align:center;background:linear-gradient(160deg,#241c4d,#121423);border:1px solid #F2B70577;border-radius:24px;padding:22px 18px;box-shadow:0 0 40px #F2B70533,0 20px 50px #000a}
 .kbox .kt{font-weight:800;font-size:18px}
@@ -66,16 +50,18 @@ nav button{position:relative}
 .kbox small{display:block;color:var(--h);margin-top:8px}
 .kwait{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#F2B7051f;border:1px solid #F2B70566;font-weight:700;cursor:pointer;animation:glow 2s ease-in-out infinite}
 .kwait i{font-style:normal;animation:beat 1s ease-in-out infinite}
+
 </style></head><body>
-<div class="ah"><b>eFootballET ADMIN</b><small id="who"></small></div>
+<div class="ah"><b>eFootballET ADMIN</b><span><small id="who"></small><button onclick="go('more')">⋯</button></span></div>
 <div id="v" class="pane"></div>
-<iframe id="fo" class="pane" hidden title="orders"></iframe>
-<iframe id="fm" class="pane" hidden title="messages"></iframe>
+<iframe id="fm" class="pane" hidden title="chat"></iframe>
+<iframe id="fo" class="pane" hidden title="classic"></iframe>
 <nav id="nav" hidden>
- <button data-t="home" class="on" onclick="go('home')"><i class="ei">📊</i>Home</button>
- <button data-t="orders" onclick="go('orders')"><i class="ei">📋</i>Orders<span class="bd" id="b1" hidden></span></button>
- <button data-t="msgs" onclick="go('msgs')"><i class="ei">💬</i>Messages<span class="bd" id="b2" hidden></span></button>
- <button data-t="more" onclick="go('more')"><i class="ei">⚙️</i>More</button>
+ <button data-t="home" onclick="go('home')"><i class="ei">🏠</i>Home</button>
+ <button data-t="coins" onclick="go('coins')"><i class="ei">🪙</i>Coins<span class="bd" id="b1" hidden></span></button>
+ <button data-t="sales" onclick="go('sales')"><i class="ei">🏷️</i>Sales<span class="bd" id="b2" hidden></span></button>
+ <button data-t="swaps" onclick="go('swaps')"><i class="ei">🔁</i>Swaps<span class="bd" id="b3" hidden></span></button>
+ <button data-t="chat" onclick="go('chat')"><i class="ei">💬</i>Chat<span class="bd" id="b4" hidden></span></button>
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/config.js"></script>
@@ -84,175 +70,244 @@ const sb=supabase.createClient(CFG.URL,CFG.KEY),$=i=>document.getElementById(i);
 const VAPID='BA7-v2x2GvoU1Jcuf1WqX1z6o787aSupTfXRWXZkysCgAGKaJTE78Qv0R2hUUibxGF6dtl40nESqBebHb1CthAc';
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const u8=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
-const BUILD=Date.now();let cur='home',timer=null,ME=null;
+const BUILD=Date.now();let cur='home',ME=null,timer=null,KSEEN={};try{KSEEN=JSON.parse(localStorage.kseen||'{}')}catch(e){}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/admin-panel/sw.js',{scope:'/admin-panel/'}).catch(()=>{});
 
+/* ---------- meaning of the letters and codes ---------- */
+const CT={1:'Data transfer code',2:'Konami login code',3:'Email change code'};
+const CASK={1:'Please send Code 1 — the data transfer code.',2:'Please send Code 2 — the code Konami emailed so the account can log in.',3:'Please send Code 3 — the code Konami emailed to confirm the email change.'};
+const LEGEND=`<div class="lgd"><p><span>A</span>Coin buyer</p><p><span>B</span>Account seller</p><p><span>E</span>Account buyer</p><p><span>C</span>Account owner (listed, accepted the swap)</p><p><span>F</span>Swap requester (sent the swap request)</p><hr style="border-color:#ffffff14"><p><b>Code 1</b> · Data transfer code</p><p><b>Code 2</b> · Konami login code</p><p><b>Code 3</b> · Email change code</p></div>`;
+
+/* ---------- small helpers ---------- */
+const ago=t=>{if(!t)return '';const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h ago':Math.floor(m/1440)+' d ago'};
+function cpd(b){const t=b.dataset.t||'';try{navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(x){}a.remove()}b.textContent='✅';setTimeout(()=>b.textContent='📋',1200)}
+const cpB=t=>`<button class="cpb" data-t="${E(t)}" onclick="event.stopPropagation();cpd(this)">📋</button>`;
+const chip=(t,c)=>`<span class="st ${c||''}">${t}</span>`;
+const stp=(n,t,s,b)=>`<div class="stp ${s}"><div class="sth"><i>${s=='done'?'✓':n}</i><b>${t}</b></div><div class="stb">${b}</div></div>`;
+const bt=(t,f,c)=>`<button class="btn ${c||'s'}" onclick="${f}">${t}</button>`;
+const loginH=(e,p)=>e||p?`<div>📧 <code>${E(e||'—')}</code> ${e?cpB(e):''}</div><div>🔑 <code>${E(p||'—')}</code> ${p?cpB(p):''}</div>`:'<small class="sub">—</small>';
+const codeH=(c,at)=>`<span class="code">${E(c)}</span> ${cpB(c)}${at?`<div><small class="sub">⏱ received ${ago(at)}</small></div>`:''}`;
+const splitLogin=t=>{if(t==null)return['',''];if(typeof t=='object')return[t.email||t.e||'',t.pass||t.password||t.p||''];const m=String(t).trim().match(/^(\S+?)[\s:|]+([\s\S]+)$/);return m?[m[1],m[2].trim()]:['',String(t)]};
+const pkey=t=>{t=String(t||'');const m=t.match(/\((?:buyer|seller)\s+([^)]+)\)/i)||t.match(/^\s*Support\s*[\u00b7\u2022:\-]\s*(.+?)\s*$/i);return m?m[1].trim():null};
+const isSupT=t=>/^\s*Support/i.test(String(t||''));
+async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(s&&mid)fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
+async function shrink(f){const u=URL.createObjectURL(f);try{const i=await new Promise((ok,no)=>{const n=new Image();n.onload=()=>ok(n);n.onerror=no;n.src=u});const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.82))}finally{URL.revokeObjectURL(u)}}
+
 /* ---------- login ---------- */
-function login(msg=''){clearInterval(timer);clearInterval(KW);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
+function login(msg=''){clearInterval(timer);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
  $('v').innerHTML=`<div class="lg"><h1>🔐 eFootballET ADMIN</h1><label>Email</label><input id="em" type="email" autocomplete="username"><label>Password</label><input id="pw" type="password" autocomplete="current-password"><div class="err">${E(msg)}</div><button class="btn" id="lgb">Log in</button></div>`;
  $('lgb').onclick=async()=>{$('lgb').disabled=true;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error){login('Wrong email or password');return}start()}}
 async function start(){
  const{data:{session}}=await sb.auth.getSession();if(!session)return login();
  const a=await sb.rpc('is_admin');if(a.error||!a.data){await sb.auth.signOut();return login('This account is not an admin.')}
  ME=session.user;$('who').textContent=(ME.email||'').split('@')[0];$('nav').hidden=false;
- const h=location.hash.slice(1);go(['orders','msgs','more'].includes(h)?h:'home');
- refresh();clearInterval(timer);timer=setInterval(refresh,6000);clearInterval(KW);KW=setInterval(codeWatch,2500);codeWatch();ensurePush(true)}
+ const h=location.hash.slice(1);go(['coins','sales','swaps','chat','more'].includes(h)?h:'home');
+ clearInterval(timer);timer=setInterval(tick,4500);ensurePush(true)}
+
+/* ---------- data ---------- */
+let D={orders:[],convs:[],ready:{},xm:[],steps:[],cat:[],conv:null,subs:0,sc:{}},XS={sup:{},party:{},val:{}},CRD={},OPEN={},BUSY=0;
+const XK=['exchange_offer','exchange_accept','exchange_decline','verify_done','fee_sender','fee_ask','fee_agree','fee_decline'];
+async function load(){
+ const[o,c,r,xm,st,cat,cv,sb2,rm]=await Promise.all([
+  sb.from('orders').select('*').order('id',{ascending:false}).limit(300),
+  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),
+  sb.from('messages').select('conv_id,id,kind,sender_id,meta,created_at').in('kind',XK).order('id',{ascending:false}).limit(1500),
+  sb.from('messages').select('id,conv_id,meta,created_at').not('meta->>adm','is',null).order('id',{ascending:false}).limit(1000),
+  sb.from('catalog').select('*').in('cat',['account','player']).order('id',{ascending:false}).limit(300),
+  sb.from('conversations').select('*').limit(2000),
+  sb.from('submissions').select('id').eq('status','pending').limit(100),
+  sb.from('messages').select('meta,created_at').not('meta->>ready','is',null).order('id',{ascending:false}).limit(200)]);
+ if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
+ D.orders=o.data||D.orders;D.convs=c.data||D.convs;D.xm=xm.data||D.xm;D.steps=st.data||D.steps;D.cat=cat.data||D.cat;D.conv=cv.error?D.conv:(cv.data||null);D.subs=(sb2.data||[]).length;
+ const ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});(rm.data||[]).forEach(x=>{const k=x.meta&&x.meta.ready;if(k&&!ready[k])ready[k]=x.created_at});D.ready=ready;
+ // seller codes of every active sale
+ const ids=[...new Set(saleOrders().filter(x=>x.status!='delivered').map(x=>x.catalog_id))];
+ await Promise.all(ids.map(async id=>{const q=await sb.rpc('seller_codes',{p_catalog:id});if(!q.error)D.sc[id]=q.data||{}}));
+ // badges + new Konami code alerts
+ const cn=coinOrders().filter(x=>['awaiting_review','approved'].includes(x.status)).length,sn=saleOrders().filter(x=>x.status!='delivered'&&x.status!='rejected').length,xn=swapCases().length,un=D.convs.reduce((s,x)=>s+(+x.unread||0),0);
+ [['b1',cn],['b2',sn],['b3',xn],['b4',un]].forEach(([i,n])=>{$(i).textContent=n>99?'99+':n;$(i).hidden=!n});
+ document.title=(cn+sn+xn+un)?`(${cn+sn+xn+un}) eFootballET ADMIN`:'eFootballET ADMIN';
+ let fresh=null;D.orders.forEach(x=>{if(x.status!='approved'||!x.kcode)return;const k=x.id+':'+x.kcode;if(!KSEEN[k]){KSEEN[k]=Date.now();fresh=x}});
+ if(fresh){const ks=Object.entries(KSEEN).sort((a,b)=>b[1]-a[1]).slice(0,60);KSEEN=Object.fromEntries(ks);try{localStorage.kseen=JSON.stringify(KSEEN)}catch(e){}if(!document.hidden)showCode(fresh)}
+}
+const coinOrders=()=>D.orders.filter(o=>o.cat==='ef');
+const saleOrders=()=>D.orders.filter(o=>['account','player'].includes(o.cat)&&o.catalog_id);
+const listing=id=>D.cat.find(l=>l.id==id)||{};
+function mk(ref){const o={};(D.steps||[]).forEach(m=>{const x=m.meta;if(x&&x.ref===ref&&x.step&&!o[x.step])o[x.step]=m.created_at});return o}
+async function note(uid,text,ref,step){ // message to a customer; with ref+step it is also the saved progress mark
+ if(!uid){alert('No user account found for this person.');return false}
+ const{data,error}=await sb.rpc('notify_user',{p_user:uid,p_text:text,p_kind:'text',p_meta:ref?{adm:1,ref,step}:{adm:1}});
+ if(error){alert('Failed: '+error.message);return false}pingPush(data);return true}
+const act=async fn=>{if(BUSY)return;BUSY=1;try{await fn();await load()}catch(e){alert('Error: '+(e.message||e))}finally{BUSY=0;paint()}};
 
 /* ---------- navigation ---------- */
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
-function fixMsgFrame(){try{const d=$('fm').contentDocument;if(!d||!d.head||d.getElementById('shellfix'))return;const st=d.createElement('style');st.id='shellfix';st.textContent='.cin{align-items:center!important}.cin input{flex:1!important;width:auto!important;margin:0!important;min-width:0!important;border-radius:24px!important}.cin .btn{width:46px!important;height:46px!important;flex:none!important;margin:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important}.cin .btn::after{display:none!important}.chh .btn{width:auto!important;margin:0!important}.cms{padding-bottom:130px!important}';d.head.appendChild(st)}catch(e){}}
-function frame(id,src){const f=$(id);if(!f.getAttribute('src'))f.src=src;return f}
-function go(t,hash){cur=t;view='dash';setNav(t);setTimeout(refresh,300);
- $('v').hidden=!(t==='home'||t==='more');$('fo').hidden=t!=='orders';$('fm').hidden=t!=='msgs';
- if(t==='home')dash();
- if(t==='more')more();
- if(t==='orders'){const f=frame('fo','/admin.html?v='+BUILD+'#'+(hash||'awaiting_review'));if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}}
- if(t==='msgs')frame('fm','/adminmsg.html?v='+BUILD);
- {const P=t==='orders'?$('fo'):t==='msgs'?$('fm'):$('v');P.classList.remove('sw');void P.offsetWidth;P.classList.add('sw')}
- history.replaceState(null,'','#'+t)}
-function openOrders(hash,navTab){go('orders',hash);if(navTab)setNav(navTab)}
+function frame(id,src){const f=$(id);if(f.getAttribute('src')!==src)f.src=src;return f}
+function go(t,hash){cur=t;setNav(t==='more'?'':t);const fr=t==='chat'||t==='classic';
+ $('v').hidden=fr;$('fm').hidden=t!=='chat';$('fo').hidden=t!=='classic';
+ if(t==='chat')frame('fm','/adminmsg.html?v='+BUILD);
+ if(t==='classic')frame('fo','/admin.html?v='+BUILD+'#'+(hash||'delivered'));
+ if(!fr){$('v').scrollTop=0;paint()}
+ history.replaceState(null,'','#'+(t==='classic'?'more':t))}
+function paint(){if(!ME)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#v')&&/INPUT|TEXTAREA/.test(a.tagName))return;
+ const y=$('v').scrollTop;({home,coins,sales,swaps,more}[cur]||(()=>{}))();$('v').scrollTop=y}
+async function tick(){if(!ME||document.hidden)return;try{await load();if(cur==='swaps')await swapRefresh();paint()}catch(e){}}
+function tg(id){OPEN[id]=!OPEN[id];if(OPEN[id]&&cur==='swaps')swapRefresh().then(paint);paint()}
 
-/* ---------- dashboard ---------- */
-let KWAIT=[],KSEEN={},KW=null;try{KSEEN=JSON.parse(localStorage.kseen||'{}')}catch(e){}
-let D={},ORD=[],RDY={},CVS=[],PXM={},view='dash',dk='',OPEN={},EXD={};
-async function load(){
- const[o,c,r,xm,rm]=await Promise.all([
-  sb.from('orders').select('*').order('id',{ascending:false}).limit(300),
-  sb.rpc('admin_convs'),sb.from('order_ready').select('*'),sb.from('messages').select('conv_id,kind,id').in('kind',['exchange_accept','verify_done','exchange_decline']).order('id',{ascending:false}).limit(1000),sb.from('messages').select('meta,created_at').not('meta->>ready','is',null).order('id',{ascending:false}).limit(200)]);
- if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
- const rows=o.data||[],convs=c.data||[],ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});(rm&&rm.data||[]).forEach(x=>{const k=x.meta&&x.meta.ready;if(k&&!ready[k])ready[k]=x.created_at});
- const today=new Date().toDateString(),td=rows.filter(x=>new Date(x.created_at).toDateString()===today);
- const seenX={},PX0={};let exch=0;(xm.data||[]).forEach(m=>{if(seenX[m.conv_id])return;seenX[m.conv_id]=1;if(m.kind==='exchange_accept'){exch++;PX0[m.conv_id]=1}});
- D={exch,verify:rows.filter(x=>x.status==='awaiting_review').length,
-  deliver:rows.filter(x=>x.status==='approved'&&!x.claimed_by).length,
-  working:rows.filter(x=>x.status==='approved'&&x.claimed_by).length,
-  ready:rows.filter(x=>x.status==='approved'&&ready[x.code]).length,
-  unread:convs.reduce((s,x)=>s+(+x.unread||0),0),
-  today:td.length,
-  sales:td.filter(x=>['approved','delivered'].includes(x.status)).reduce((s,x)=>s+(+x.amount||0),0),
-  delivered:td.filter(x=>x.status==='delivered').length};ORD=rows;RDY=ready;CVS=convs;PXM=PX0;
- const b1=D.verify+D.deliver,b2=D.unread;
- $('b1').textContent=b1>99?'99+':b1;$('b1').hidden=!b1;$('b2').textContent=b2>99?'99+':b2;$('b2').hidden=!b2;
- document.title=(b1+b2)?`(${b1+b2}) eFootballET ADMIN`:'eFootballET ADMIN'}
-async function refresh(){try{await load();if(cur==='home')paint()}catch(e){}}
-async function dash(){paint();await refresh()}
-function card(cls,label,sub,n,click){return `<button class="card ${cls}" onclick="${click}"><small>${label}</small><div class="n" data-v="${n}">${n}</div><small>${sub}</small></button>`}
-function paint(){
- if(cur!=='home')return;
- if(view==='detail')return paintDetail();
- const notif=('Notification' in window)?Notification.permission:'unsupported';
- $('v').innerHTML=`
- ${KWAIT.length?`<div class="kwait" onclick="detail('deliver')"><i>⏳</i><span>Waiting for customer code: ${KWAIT.map(o=>'#'+o.id).join(', ')}</span></div>`:''}
- <h2 style="margin:4px 0">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
+/* ---------- HOME ---------- */
+function home(){
+ const co=coinOrders(),so=saleOrders(),sw=swapCases(),un=D.convs.reduce((s,x)=>s+(+x.unread||0),0);
+ const cNeed=co.filter(o=>o.status=='awaiting_review'||(o.status=='approved'&&(!o.claimed_by||o.kcode))).length;
+ const sNeed=so.filter(o=>['awaiting_review','pending'].includes(o.status)||o.status=='approved').length;
+ const tile=(cls,ic,t,sub,n,f)=>`<button class="tile ${cls}" onclick="${f}"><small>${ic} ${t}</small><div class="n">${n}</div><small>${sub}</small></button>`;
+ $('v').innerHTML=`<h2 class="t">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
-  ${card(D.exch?'hot':'','🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ',D.exch??'…',"detail('exch')")}
-  ${card(D.verify?'hot':'','🔎 To verify','ለማረጋገጥ',D.verify??'…',"detail('verify')")}
-  ${card(D.deliver?'hot':'','📦 To deliver','ለማድረስ',D.deliver??'…',"detail('deliver')")}
-  ${card(D.ready?'hot':'','🟢 Ready now','ዝግጁ የሆኑ ደንበኞች',D.ready??'…',"detail('ready')")}
-  ${card(D.unread?'hot':'','💬 Unread','ያልተነበቡ መልዕክቶች',D.unread??'…',"detail('unread')")}
-  ${card('','🛒 Orders today','የዛሬ ትዕዛዞች',D.today??'…',"detail('today')")}
-  ${card('','✅ Delivered today','ዛሬ የደረሱ',D.delivered??'…',"detail('delivered')")}
-  <div class="card big"><small>💰 Sales today (verified)</small><div class="n" data-v="${D.sales??0}">${(D.sales??0).toLocaleString()} <small style="display:inline">ETB</small></div></div>
+  ${tile(cNeed?'hot':'','🪙','Coin orders','A · needs action: '+cNeed,co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
+  ${tile(sNeed?'hot':'','🏷️','Account sales','B → E · open: '+sNeed,so.filter(o=>!['delivered','rejected'].includes(o.status)).length,"go('sales')")}
+  ${tile(sw.length?'hot':'','🔁','Swaps','C ⇄ F · open',sw.length,"go('swaps')")}
+  ${tile(un?'hot':'','💬','Unread chats','Messages',un,"go('chat')")}
+  ${tile(D.subs?'hot':'','📥','Sell requests','To review & list',D.subs,"go('classic','subs')")}
  </div>
- <div class="box"><b>🔔 Notifications</b><p class="sub" style="margin:6px 0">${notif==='granted'?'On for this phone. You are alerted about new orders, receipts, ready customers and messages.':'Turn them on to get alerts for new orders, receipts, ready customers and messages.'}</p>
-  <div class="brow"><button class="btn s" onclick="enablePush()">${notif==='granted'?'Re-register':'Turn on'}</button><button class="btn s" onclick="testPush()">Send test</button></div></div>`;if(document.documentElement.classList.contains('pa'))countUp()}
+ <div class="box2"><b>Who is who</b>${LEGEND}</div>`}
 
-/* ---------- dashboard detail (full order info inside) ---------- */
-const STL={awaiting_review:'🔎 To verify',approved:'📦 Approved',delivered:'✅ Delivered',rejected:'❌ Rejected',pending:'⏳ Pending'};
-const KT={exch:['🔁 Exchange to verify','ለማረጋገጥ መለዋወጥ'],verify:['🔎 To verify','ለማረጋገጥ'],deliver:['📦 To deliver','ለማድረስ'],ready:['🟢 Ready now','ዝግጁ የሆኑ ደንበኞች'],unread:['💬 Unread','ያልተነበቡ መልዕክቶች'],today:['🛒 Orders today','የዛሬ ትዕዛዞች'],delivered:['✅ Delivered today','ዛሬ የደረሱ']};
-const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h ago':Math.floor(m/1440)+' d ago'};
-function cpd(b){const t=b.dataset.t||'';try{navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(x){}a.remove()}b.textContent='✅';setTimeout(()=>b.textContent='📋',1200)}
-const cpB=t=>`<button class="cpb" data-t="${E(t)}" onclick="event.stopPropagation();cpd(this)">📋</button>`;
-function tg(id){OPEN[id]=!OPEN[id];const el=document.getElementById('it'+id);if(el)el.classList.toggle('open',!!OPEN[id])}
-function listFor(k){
- const today=new Date().toDateString(),isT=o=>new Date(o.created_at).toDateString()===today;
- if(k==='verify')return ORD.filter(o=>o.status==='awaiting_review');
- if(k==='deliver')return ORD.filter(o=>o.status==='approved'&&!o.claimed_by);
- if(k==='ready')return ORD.filter(o=>o.status==='approved'&&RDY[o.code]);
- if(k==='today')return ORD.filter(isT);
- if(k==='delivered')return ORD.filter(o=>isT(o)&&o.status==='delivered');
- if(k==='exch')return CVS.filter(c=>PXM[c.id]);
- if(k==='unread')return grpC(CVS.filter(c=>+c.unread>0));
- return []}
-function ordIt(o){
- const id='o'+o.id,acc=['ef','account','player'].includes(o.cat),sp=(o.info||'').indexOf(' ');
- let inf='';
- if(acc&&sp>0){const e=o.info.slice(0,sp),p=o.info.slice(sp+1);inf=`<div class="r">📧 <code>${E(e)}</code> ${cpB(e)}</div><div class="r">🔑 <code>${E(p)}</code> ${cpB(p)}</div>`}
- else if(o.info)inf=`<div class="r">🔑 <code>${E(o.info)}</code> ${cpB(o.info)}</div>`;
- const tab=['awaiting_review','approved','delivered','rejected'].includes(o.status)?o.status:'awaiting_review';
- const rd=RDY[o.code];
- return `<div class="it${OPEN[id]?' open':''}" id="it${id}"><div class="ith" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.product)} — ${E(o.package)}</b><small>💰 ${E(o.amount)} ETB · 📞 ${E(o.phone||'')} · ${ago(o.created_at)}</small></div><span class="st">${STL[o.status]||E(o.status)}</span><span class="ch">›</span></div>
- <div class="xd"><div><div class="xb">
-  <div class="r"><span class="st">${STL[o.status]||E(o.status)}</span> 🔖 <code>${E(o.code)}</code> ${cpB(o.code)}</div>
-  <div class="r">🕒 ${new Date(o.created_at).toLocaleString()} (${ago(o.created_at)})</div>
-  <div class="r">📦 ${E(o.product)} — ${E(o.package)}</div>
-  <div class="r">💰 <b>${E(o.amount)} ETB</b>${o.promo?` · 🎟 ${E(o.promo)} (−${E(o.discount)})`:''}</div>
-  ${o.phone?`<div class="r">📞 <a href="tel:${E(o.phone)}">${E(o.phone)}</a> ${cpB(o.phone)}</div>`:''}
-  ${o.tg?`<div class="r">✈️ ${E(o.tg)}</div>`:''}
-  ${inf}
-  ${o.kcode?`<div class="r">🔐 Konami code: <b style="font-size:20px">${E(o.kcode)}</b> ${cpB(o.kcode)}</div>`:(o.code_req?'<div class="r">⏳ Customer is sending the code…</div>':'')}
-  ${o.status==='approved'?(rd?`<div class="r">🟢 Customer is ready (${ago(rd)})</div>`:'<div class="r">⏳ Customer is not ready yet</div>'):''}
-  ${o.claimed_by?`<div class="r">🙋 ${E(o.claimed_by_name||'Claimed')}</div>`:(o.status==='approved'?'<div class="r">🙋 Not claimed yet</div>':'')}
-  ${o.tx_ref?`<div class="r">🔢 <code>${E(o.tx_ref)}</code> ${cpB(o.tx_ref)} <a href="https://transactioninfo.ethiotelecom.et/receipt/${E(o.tx_ref)}" target="_blank" rel="noopener">🔗 Telebirr</a></div>`:''}
-  ${o.auto_note?`<div class="r">🤖 ${E(o.auto_note)}</div>`:''}
-  ${o.proof?`<div class="r"><img src="${CFG.URL}/storage/v1/object/public/proofs/${E(o.proof)}" style="max-width:100%;border-radius:12px"></div>`:''}
-  <button class="btn" style="margin-top:10px;width:100%" onclick="openOrders('${tab}')">📂 Open in Orders (approve / deliver)</button>
- </div></div></div></div>`}
-const pkey=t=>{t=String(t||'');const m=t.match(/\((?:buyer|seller)\s+([^)]+)\)/i)||t.match(/^\s*Support\s*[\u00b7\u2022:\-]\s*(.+?)\s*$/i);return m?m[1].trim():null};
-const isSupT=t=>/^\s*Support/i.test(String(t||''));
-function grpC(cs){const g={},out=[];(cs||[]).forEach(c=>{const k=pkey(c.title);if(!k){out.push(c);return}const K=k.toLowerCase();let x=g[K];if(!x){x=g[K]={id:c.id,title:k,last_text:c.last_text,last_at:c.last_at,unread:0,sup:null};out.push(x)}x.unread+=+c.unread||0;if(isSupT(c.title))x.sup=c.id;if(new Date(c.last_at)>new Date(x.last_at)){x.last_at=c.last_at;x.last_text=c.last_text}});out.forEach(x=>{if(x.sup)x.id=x.sup});return out}
-async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(s&&mid)fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
+/* ---------- COINS (A) ---------- */
+function coinCase(o){
+ const jp=/japan/i.test((o.product||'')+' '+(o.package||'')),ct=jp?2:1,id='o'+o.id;
+ const sp=(o.info||'').indexOf(' '),em=sp>0?o.info.slice(0,sp):'',pw=sp>0?o.info.slice(sp+1):(o.info||'');
+ const paid=['approved','delivered'].includes(o.status),mine=o.claimed_by&&ME&&o.claimed_by===ME.id,rd=D.ready[o.code],done=o.status=='delivered';
+ const next=o.status=='awaiting_review'?'Approve payment':o.status=='approved'?(!o.claimed_by?'Take it':o.kcode?'Deliver now':o.code_req?'Waiting for code':'Ask Code '+ct):'';
+ const sBadge=o.status=='approved'?chip(next,o.kcode?'g':''):chip(({awaiting_review:'🔎 To verify',delivered:'✅ Delivered',rejected:'❌ Rejected',pending:'⏳ Not paid'})[o.status]||E(o.status),done?'g':o.status=='rejected'?'r':'');
+ let b='';
+ b+=stp(1,'Payment',paid?'done':'now',`${chip('💰 '+E(o.amount)+' ETB')} ${o.tx_ref?`<code>${E(o.tx_ref)}</code> ${cpB(o.tx_ref)}`:''}${o.auto_note?`<div>🤖 ${E(o.auto_note)}</div>`:''}
+  ${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}${o.status=='awaiting_review'?bt('🔍 Check',`chk(${o.id},this)`):''}</div><div id="rc${o.id}"></div>`:''}
+  ${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}
+  ${o.status=='rejected'?`<div class="row">${bt('↩️ Approve anyway',`fa(${o.id})`)}</div>`:''}`);
+ b+=stp(2,'A · account login',paid?(em||pw?'done':'now'):'todo',`${loginH(em,pw)}<div>📞 ${E(o.phone||'—')} ${o.tg?'· ✈️ '+E(o.tg):''}</div>${o.status=='approved'?(rd?`<div>🟢 Customer is ready (${ago(rd)})</div>`:'<div><small class="sub">⏳ Customer has not said ready yet</small></div>'):''}
+  ${o.status=='approved'&&!o.claimed_by?`<div class="row">${bt('🙋 I will deliver this',`ordAct(${o.id},'claim')`,'')}</div>`:o.claimed_by&&!mine?`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`:''}`);
+ b+=stp(3,`Code ${ct} · ${CT[ct]}`,o.kcode?'done':(o.status=='approved'&&mine?'now':'todo'),`${jp?'Japan region → Code 2':'All Region → Code 1'}
+  ${o.kcode?`<div>${codeH(o.kcode)}</div>`:o.code_req?'<div>⏳ Customer is sending the code…</div>':''}
+  ${o.status=='approved'&&mine?`<div class="row">${bt(o.code_req||o.kcode?`🔁 Ask Code ${ct} again`:`🔐 Ask Code ${ct}`,`askCoin(${o.id},${ct})`,o.code_req||o.kcode?'s':'')}</div>`:''}`);
+ b+=stp(4,'Deliver',done?'done':(o.status=='approved'&&mine&&o.kcode?'now':'todo'),done?`✅ Delivered${o.proof?`<div><img style="max-width:100%;border-radius:12px" src="${CFG.URL}/storage/v1/object/public/proofs/${E(o.proof)}"></div>`:''}`:
+  o.status=='approved'&&mine?`<label class="sub">📸 Delivery proof photo (optional, customer sees it)</label><input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}</div>`:'<small class="sub">Take the order first.</small>');
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.package)} <small style="display:inline">${jp?'Japan':'All Region'}</small></b><small>${E(o.phone||'')} · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+function coins(){
+ const all=coinOrders(),act=all.filter(o=>['awaiting_review','approved'].includes(o.status)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,12);
+ $('v').innerHTML=`<h2 class="t">🪙 Coin orders <small class="sub" style="font-weight:400">A · coin buyer</small></h2>${act.map(coinCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open coin orders</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(coinCase).join('')}`:''}`}
+async function ordAct(id,a){if(a=='no'&&!confirm('Reject this order?'))return;act(async()=>{
+ const[fn,args]={ok:['review_order',{p_id:id,p_ok:true}],no:['review_order',{p_id:id,p_ok:false}],claim:['claim_order',{p_id:id}]}[a];
+ const{data,error}=await sb.rpc(fn,args);if(error||!data)alert('Failed (maybe another admin already did it)')})}
+async function fa(id){if(!confirm('Approve this order anyway?'))return;act(async()=>{const r=await sb.rpc('force_approve',{p_id:id});if(r.error)alert('Failed')})}
+async function askCoin(id,ct){act(async()=>{const o=D.orders.find(x=>x.id==id);
+ const{data,error}=await sb.rpc('request_code',{p_id:id});if(error||!data){alert('Could not request the code');return}
+ if(!o.user_id){alert('Code requested, but this is a guest order, so no message was sent.');return}
+ await note(o.user_id,CASK[ct]+' Konami sent it to your email. Open this chat or Profile > My orders and enter it.')})}
+async function finish(id){const f=$('pf'+id)&&$('pf'+id).files[0];act(async()=>{let path=null;
+ if(f){path=crypto.randomUUID()+'.jpg';const u=await sb.storage.from('proofs').upload(path,await shrink(f),{contentType:'image/jpeg'});if(u.error){alert('Photo upload failed, try again');return}}
+ const r=await sb.rpc('deliver_order',{p_id:id,p_proof:path});if(r.error||!r.data)alert('Failed')})}
+async function rcpt(id,b){const o=D.orders.find(x=>x.id==id),{data}=await sb.storage.from('receipts').createSignedUrl(o.receipt_path,300);$('rc'+id).innerHTML=data?`<img style="max-width:100%;border-radius:12px;margin-top:8px" src="${data.signedUrl}">`:'Could not open'}
+async function chk(id,b){b.disabled=true;const box=$('rc'+id);box.innerHTML='⏳ …';try{const ss=(await sb.auth.getSession()).data.session;const r=await fetch('/verifyreceipt',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+ss.access_token},body:JSON.stringify({order_id:id})});const d=await r.json();
+ const row=(l,ok)=>'<br>'+(ok?'✅ ':'❌ ')+l;let h='';if(d.error)h='⚠️ '+E(d.error);else if(d.reason=='notx')h='⚠️ No Telebirr number entered. Check the receipt image.';else if(d.reason=='fetch')h='⚠️ Could not reach Telebirr. Compare the receipt manually.';
+ else{const c=d.checks,ok=c.found&&c.receiver&&c.amount&&c.done&&!(d.dup&&d.dup.length);h=(ok?'🟢 <b>Matches — safe to approve</b>':'🔴 <b>Check carefully</b>')+row('Receipt found',c.found)+row('Receiver is eFootballET',c.receiver)+row('Amount '+d.amount+' ETB',c.amount)+row('Completed',c.done)+row('Not used on another order',!(d.dup&&d.dup.length))}
+ box.innerHTML='<div class="pp">'+h+'</div>'}catch(e){box.textContent='⚠️ '+e.message}b.disabled=false}
 
-/* ---------- exchange verification (login -> code -> verified) ---------- */
-const XS={};let XPB=0,XSIG='';
-async function xLoad(cid){
- const st=XS[cid]=XS[cid]||{};
- if(!st.uid){const{data}=await sb.from('messages').select('sender_id,id').eq('conv_id',cid).eq('kind','exchange_accept').order('id',{ascending:false}).limit(1);st.uid=(data&&data[0]&&data[0].sender_id)||null}
- if(st.uid&&!st.sup){const sups=CVS.filter(c=>isSupT(c.title)).map(c=>c.id);if(sups.length){const{data}=await sb.from('messages').select('conv_id').eq('sender_id',st.uid).in('conv_id',sups).limit(1);st.sup=(data&&data[0]&&data[0].conv_id)||null}}
- if(st.sup){const{data}=await sb.from('messages').select('id,kind,meta,created_at').eq('conv_id',st.sup).in('kind',['vr_ask','vr_answer']).order('id');const ms=data||[];
-  for(const w of ['login','code']){const asks=ms.filter(m=>m.kind=='vr_ask'&&m.meta&&m.meta.want==w),a=asks[asks.length-1];if(!a){st[w]=null;continue}const an=ms.find(m=>m.kind=='vr_answer'&&m.meta&&m.meta.req==a.meta.req);st[w]={req:a.meta.req,at:a.created_at,ans:an?an.created_at:null};
-   if(an&&(!st['d'+w]||st['d'+w].req!==a.meta.req)){const g=await sb.rpc('admin_vr_get',{p_req:a.meta.req});if(!g.error&&g.data)st['d'+w]={req:a.meta.req,v:g.data}}}}
- st.loaded=true}
-async function xPoll(){if(XPB||cur!=='home'||view!=='detail'||dk!=='exch')return;XPB=1;try{const ids=listFor('exch').map(c=>c.id);await Promise.all(ids.map(xLoad));const sig=JSON.stringify(ids.map(i=>XS[i]));if(sig!==XSIG){XSIG=sig;try{await Promise.all(ids.map(xLoad))}catch(e){}
- if(cur==='home'&&view==='detail'&&dk==='exch')paintDetail()}}catch(e){}finally{XPB=0}}
-async function xAsk(cid,w){const st=XS[cid];if(!st||!st.sup){alert('This customer has no Support chat yet.');return}
- const{data:mid,error}=await sb.rpc('admin_vr_ask',{p_conv:st.sup,p_want:w});if(error){alert(error.message=='NONE'?'This customer has no Support chat yet.':'Error: '+error.message);return}
- pingPush(mid);delete st['d'+w];await xLoad(cid);paintDetail()}
-async function xVerified(cid){if(!confirm('Mark this account as verified and ask the buyer to pay?'))return;
- const{data,error}=await sb.rpc('send_message',{p_conv:cid,p_body:'',p_kind:'verify_done'});if(error){alert('Could not mark verified: '+error.message);return}
- pingPush(data);alert('✅ Verified. The buyer is now asked to pay.');refresh()}
-function xPanel(c){
- const st=XS[c.id]||{};
- if(!st.loaded)return '<div class="r">⏳ Loading…</div>';
- if(!st.sup)return '<div class="r">⚠️ This customer has not opened the Support chat yet. Ask them to send a message to Support first.</div>';
- const L=st.login,C=st.code,dl=L&&st.dlogin&&st.dlogin.req===L.req?st.dlogin.v:null,dc=C&&st.dcode&&st.dcode.req===C.req?st.dcode.v:null;
- const wait=(r)=>r?(r.ans?'<div class="r">⏳ Opening…</div>':`<div class="r">⏳ Waiting for the customer… (${ago(r.at)})</div>`):'';
- let h=`<div class="xs"><b>① 🔑 Account login</b>`;
- if(dl&&(dl.email||dl.pass))h+=`<div class="r">📧 <code>${E(dl.email||'—')}</code> ${dl.email?cpB(dl.email):''}</div><div class="r">🔑 <code>${E(dl.pass||'—')}</code> ${dl.pass?cpB(dl.pass):''}</div>`;else h+=wait(L);
- h+=`<button class="btn s" onclick="xAsk(${c.id},'login')">${L?'🔁 Ask login again':'🔑 Ask customer for email + password'}</button></div>`;
- if(dl){h+=`<div class="xs"><b>② 🔐 Konami code</b>`;
-  if(dc&&dc.code)h+=`<div class="r"><span class="xcode">${E(dc.code)}</span> ${cpB(dc.code)}</div><div class="r"><small>⏱ received ${ago(C.ans)}</small></div>`;else h+=wait(C);
-  h+=`<button class="btn s" onclick="xAsk(${c.id},'code')">${C?'🔁 Ask new code':'🔐 Ask customer for the code'}</button></div>`;
-  h+=`<div class="xs"><b>③ Done</b><button class="btn" onclick="xVerified(${c.id})">✅ Verified — ask buyer to pay</button></div>`}
- return h}
-function convIt(c){
- const id='c'+c.id,x=EXD[c.id],U0=CFG.URL+'/storage/v1/object/public/chat/',ex=dk==='exch';
- let det='';
- if(x){det=`<div class="r">🔁 <b>${E(x.mode||'')}</b> ${E(x.amount||0)} ETB · OVR ${E(x.ovr||'')}</div>${x.note?`<div class="r">📝 ${E(x.note)}</div>`:''}${(x.images||[]).length?`<div class="r" style="gap:6px">${(x.images||[]).map(q=>`<a href="${U0+E(q)}" target="_blank"><img src="${U0+E(q)}" style="width:76px;height:76px;object-fit:cover;border-radius:10px"></a>`).join('')}</div>`:''}`}
- else if(ex)det='<div class="r">⏳ Loading offer…</div>';
- return `<div class="it${OPEN[id]?' open':''}" id="it${id}"><div class="ith" onclick="tg('${id}')"><div class="m"><b>${E(c.title)}${PXM[c.id]?' <span class="st">🔁 Verify exchange</span>':''}</b><small>${E(c.last_text||'')}</small></div>${+c.unread?`<span class="bd2">${E(c.unread)}</span>`:''}<span class="ch">›</span></div>
- <div class="xd"><div><div class="xb">${ex?'':`<div class="r">💬 ${E(c.last_text||'—')}</div>`}${det}${ex?xPanel(c):`<button class="btn" style="margin-top:10px;width:100%" onclick="openChat(${c.id})">💬 Open chat</button>`}</div></div></div></div>`}
-function paintDetail(){
- const L=listFor(dk),T=KT[dk]||['',''],isC=dk==='exch'||dk==='unread';
- $('v').innerHTML=`<div class="dh"><button class="back" onclick="view='dash';paint()">‹</button><div><h2>${T[0]}</h2><small>${T[1]} · ${L.length}</small></div></div>`+(L.length?L.map(isC?convIt:ordIt).join(''):'<p class="sub" style="text-align:center;margin-top:40px">✨ ምንም የለም · Nothing here</p>')}
-function detail(k){cur='home';view='detail';dk=k;OPEN={};EXD={};setNav('home');$('v').hidden=false;$('fo').hidden=$('fm').hidden=true;$('v').scrollTop=0;paintDetail();const P=$('v');P.classList.remove('sw');void P.offsetWidth;P.classList.add('sw');if(k==='exch')loadExd();history.replaceState(null,'','#home')}
-async function loadExd(){const ids=listFor('exch').map(c=>c.id);if(!ids.length)return;
- try{const{data}=await sb.from('messages').select('conv_id,meta,id').eq('kind','exchange_offer').in('conv_id',ids).order('id',{ascending:false});(data||[]).forEach(m=>{if(!EXD[m.conv_id])EXD[m.conv_id]=m.meta||{}})}catch(e){}
- if(cur==='home'&&view==='detail'&&dk==='exch')paintDetail()}
-function openChat(id){go('msgs');let n=0;const t=setInterval(()=>{n++;try{const w=$('fm').contentWindow;if(w&&typeof w.chat==='function'&&(w.CID||w.document.querySelector('.mrow'))){clearInterval(t);w.chat(id);return}}catch(e){}if(n>40){clearInterval(t);try{$('fm').contentWindow.chat(id)}catch(e){}}},150)}
-function countUp(){document.querySelectorAll('.n[data-v]').forEach(el=>{const v=+el.dataset.v;if(!(v>0)||v>1e7||!el.firstChild)return;const s=performance.now(),f=t=>{const p=Math.min(1,(t-s)/700),e=1-Math.pow(1-p,3);el.firstChild.nodeValue=Math.round(v*e).toLocaleString()+(el.dataset.v==String(v)&&el.querySelector('small')?' ':'');if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+/* ---------- SALES (B sells, E buys) ---------- */
+function saleCase(o){
+ const l=listing(o.catalog_id),c=o.catalog_id,id='s'+o.id,ref='s'+o.id,M=mk(ref),sc=D.sc[c]||{},cr=CRD[c];
+ const paid=['approved','delivered'].includes(o.status),mine=o.claimed_by&&ME&&o.claimed_by===ME.id,done=o.status=='delivered';
+ const stage=!cr&&!sc.c1?'login':!sc.c1?'code1':!M.verified?'verified':!sc.c2?'code3':!M.pay&&!paid?'pay':!paid?'paying':'deliver';
+ const label={login:'Ask B login',code1:'Ask Code 1',verified:'Press Verified',code3:'Ask Code 3',pay:'Ask E to pay',paying:'Waiting for E payment',deliver:'Deliver'}[stage];
+ const sBadge=done?chip('✅ Done','g'):o.status=='rejected'?chip('❌ Rejected','r'):chip(label,paid&&stage=='deliver'?'g':'');
+ let b=`<div class="pp"><b>🏷️ ${E(l.title||o.product||'Account')} · ${E(o.amount)} ETB</b>B: ${E(l.seller_tg||'—')} · E: ${E(o.phone||'')} ${o.tg?'· ✈️ '+E(o.tg):''}<br>${chip(({pending:'⏳ E has not paid yet',awaiting_review:'🔎 E paid, checking',approved:'💰 E paid',delivered:'✅ Delivered',rejected:'❌ Rejected'})[o.status]||E(o.status),paid?'g':'')}</div>`;
+ b+=stp(1,'B · account login',cr||sc.c1?'done':'now',`${cr?loginH(...splitLogin(cr)):'<small class="sub">Not loaded yet</small>'}<div class="row">${bt('📨 Ask B for login',`sAskLogin(${o.id})`)}${bt('👁 Show login',`sShow(${c},this)`)}</div>`);
+ b+=stp(2,'Code 1 · Data transfer code (from B)',sc.c1?'done':(cr?'now':'todo'),`${sc.c1?codeH(sc.c1):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c1?'🔁 Ask Code 1 again':'🔐 Ask B for Code 1',`sAskCode(${o.id},1)`)}</div>`);
+ b+=stp(3,'Verified',M.verified?'done':(sc.c1?'now':'todo'),M.verified?`✅ Verified ${ago(M.verified)}`:`<div class="row">${bt('✅ Verified — account is OK',`sVerified(${o.id})`,'')}</div><small class="sub">Tells E the account is verified.</small>`);
+ b+=stp(4,'Code 3 · Email change code (from B)',sc.c2?'done':(M.verified?'now':'todo'),`${sc.c2?codeH(sc.c2):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c2?'🔁 Ask Code 3 again':'🔐 Ask B for Code 3',`sAskCode(${o.id},3)`)}</div>`);
+ b+=stp(5,'E pays',paid?'done':(M.pay||sc.c2?'now':'todo'),paid?'💰 Payment received':`${M.pay?`✅ E was asked ${ago(M.pay)}`:''}<div class="row">${bt(M.pay?'🔁 Ask E to pay again':'💰 Ask E to pay',`sPay(${o.id})`)}</div>${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve payment',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}</div><div id="rc${o.id}"></div>`:''}`);
+ b+=stp(6,'Hand over & close',done?'done':(paid?'now':'todo'),done?'✅ Handed over':paid?`${!o.claimed_by?`<div class="row">${bt('🙋 I will hand it over',`ordAct(${o.id},'claim')`,'')}</div>`:mine?`<input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}${bt('🔒 Sold / Close listing',`sClose(${c})`)}</div>`:`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`}`:'<small class="sub">After E pays.</small>');
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(l.title||o.product||'Account')}</b><small>B → E · ${E(o.amount)} ETB · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+function sales(){
+ const all=saleOrders(),act=all.filter(o=>!['delivered','rejected'].includes(o.status)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,10);
+ $('v').innerHTML=`<h2 class="t">🏷️ Account sales <small class="sub" style="font-weight:400">B sells · E buys</small></h2>${act.map(saleCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open account sales</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(saleCase).join('')}`:''}`}
+const sellerOf=o=>listing(o.catalog_id).seller_id||null;
+async function sAskLogin(oid){act(async()=>{const o=D.orders.find(x=>x.id==oid),uid=sellerOf(o);if(!uid){alert('No seller linked to this listing');return}
+ const{data,error}=await sb.rpc('admin_msg_user',{p_user:uid,p_text:'A buyer is interested in your account. Please send the account email and password below.',p_kind:'cred_req',p_meta:{catalog_id:o.catalog_id}});if(error){alert('Failed: '+error.message);return}pingPush(data);alert('Login request sent to B')})}
+async function sShow(c,b){b.disabled=true;const r=await sb.rpc('seller_creds',{p_catalog:c});b.disabled=false;if(r.error){alert('No seller login saved');return}CRD[c]=r.data;paint()}
+async function sAskCode(oid,n){act(async()=>{const o=D.orders.find(x=>x.id==oid),uid=sellerOf(o),stage=n==1?1:2;if(!uid){alert('No seller linked to this listing');return}
+ const{data,error}=await sb.rpc('admin_msg_user',{p_user:uid,p_text:CASK[n]+' Konami sent it to the account email. Enter it below.',p_kind:'code_req',p_meta:{catalog_id:o.catalog_id,stage}});if(error){alert('Failed: '+error.message);return}
+ pingPush(data);sb.rpc('ask_seller_code',{p_catalog:o.catalog_id,p_stage:stage}).then(()=>{},()=>{});alert('Code '+n+' requested from B')})}
+async function sVerified(oid){if(!confirm('Mark this account as verified?'))return;act(async()=>{const o=D.orders.find(x=>x.id==oid);await note(o.user_id,'✅ The account you want to buy has been verified by eFootballET. We will ask you for payment shortly.','s'+oid,'verified')})}
+async function sPay(oid){act(async()=>{const o=D.orders.find(x=>x.id==oid);await note(o.user_id,'💰 Please pay '+o.amount+' ETB to get your account. Open Profile > My orders (or your buy request in Messages) and pay with Telebirr.','s'+oid,'pay')})}
+async function sClose(c){if(!confirm('Mark as sold? The listing leaves the website and saved passwords are deleted.'))return;act(async()=>{const r=await sb.rpc('close_listing',{p_catalog:c});alert(r.error?'Failed':'Closed')})}
 
-/* ---------- instant Konami code alert ---------- */
+/* ---------- SWAPS (C owner, F requester) ---------- */
+function swapCases(){
+ const by={};[...D.xm].reverse().forEach(m=>{(by[m.conv_id]=by[m.conv_id]||[]).push(m)});const out=[];
+ for(const cid in by){const ms=by[cid];let last=null,acc=null,off=null;
+  ms.forEach(m=>{if(m.kind=='exchange_offer'){last='o';off=m}else if(m.kind=='exchange_accept'){last='a';acc=m}else if(m.kind=='exchange_decline')last='d'});
+  if(last!=='a'||!acc)continue;const ref='x'+cid,M=mk(ref);if(M.done)continue;
+  const cv=(D.conv||[]).find(c=>c.id==cid)||{},C=acc.sender_id||cv.seller_id||null,F=(off&&off.sender_id)||cv.buyer_id||null;
+  const after=ms.filter(m=>m.id>acc.id);let payer=null,declined=false;
+  after.forEach(m=>{if(m.kind=='fee_sender'){payer=m.sender_id;declined=false}else if(m.kind=='fee_agree'){payer=m.sender_id;declined=false}else if(m.kind=='fee_decline'){payer=null;declined=true}});
+  out.push({cid:+cid,ref,M,C,F,offer:(off&&off.meta)||{},acc,unlocked:after.some(m=>m.kind=='verify_done'),payer,declined,asked:after.some(m=>m.kind=='fee_ask')&&!payer})}
+ return out.sort((a,b)=>b.cid-a.cid)}
+function supOf(uid){if(!uid)return null;const c=(D.conv||[]).find(x=>x.kind==='support'&&x.buyer_id===uid);return c?c.id:(XS.sup[uid]||null)}
+const nameOf=uid=>{const s=supOf(uid),c=s&&D.convs.find(x=>x.id==s);return(c&&pkey(c.title))||(uid?String(uid).slice(0,6):'?')};
+async function findSup(uid){if(!uid||supOf(uid))return;const sups=D.convs.filter(c=>isSupT(c.title)).map(c=>c.id);if(!sups.length)return;const{data}=await sb.from('messages').select('conv_id').eq('sender_id',uid).in('conv_id',sups).limit(1);if(data&&data[0])XS.sup[uid]=data[0].conv_id}
+async function partyLoad(uid,since,ref){await findSup(uid);const sup=supOf(uid);if(!sup)return;
+ const{data}=await sb.from('messages').select('id,kind,meta,created_at,body').eq('conv_id',sup).order('id',{ascending:false}).limit(300);const ms=(data||[]).reverse().filter(m=>new Date(m.created_at)>=new Date(since)-60000);
+ const P={sup,login:null,codes:{}};let lastCt=null;
+ for(const m of ms){if(m.meta&&m.meta.step==='ctype'&&m.meta.ref===ref){lastCt=m.meta.ctype;continue}
+  if(m.kind=='vr_ask'&&m.meta){const an=ms.find(x=>x.kind=='vr_answer'&&x.meta&&x.meta.req==m.meta.req),r={req:m.meta.req,at:m.created_at,ans:an?an.created_at:null};if(m.meta.want=='login')P.login=r;else if(lastCt){P.codes[lastCt]=r;lastCt=null}}}
+ const need=[P.login,...Object.values(P.codes)].filter(r=>r&&r.ans&&!XS.val[r.req]);
+ for(const r of need){const g=await sb.rpc('admin_vr_get',{p_req:r.req});if(!g.error&&g.data)XS.val[r.req]=g.data}
+ XS.party[uid+':'+ref]=P}
+async function swapRefresh(){const cs=swapCases();await Promise.all(cs.filter(c=>OPEN['x'+c.cid]).flatMap(c=>[partyLoad(c.C,c.acc.created_at,c.ref),partyLoad(c.F,c.acc.created_at,c.ref)]))}
+async function vrAsk(uid,want,ct,ref){act(async()=>{await findSup(uid);const sup=supOf(uid);if(!sup){alert('This person has no Support chat yet. Ask them to open Messages > Support and send "Hi".');return}
+ if(want=='code'){const e=await sb.rpc('send_message',{p_conv:sup,p_body:CASK[ct],p_meta:{adm:1,ref,step:'ctype',ctype:ct}});if(e.error){alert('Failed: '+e.error.message);return}}
+ const{data:mid,error}=await sb.rpc('admin_vr_ask',{p_conv:sup,p_want:want});if(error){alert('Error: '+error.message);return}pingPush(mid);const cs=swapCases().find(x=>x.ref===ref);await partyLoad(uid,cs?cs.acc.created_at:0,ref)})}
+async function xUnlock(cid){if(!confirm('Open the payment step for both users?'))return;act(async()=>{const{data,error}=await sb.rpc('send_message',{p_conv:cid,p_body:'',p_kind:'verify_done'});if(error){alert('Could not unlock: '+error.message);return}pingPush(data)})}
+async function xPaid(cid){const c=swapCases().find(x=>x.cid==cid);if(!c||!confirm('Payment received? Both users will be told.'))return;act(async()=>{
+ const t='✅ Payment received. eFootballET will now ask you for your account login and codes in Support chat.';await note(c.C,t,c.ref,'paid');await note(c.F,t)})}
+async function xDone(cid){const c=swapCases().find(x=>x.cid==cid);if(!c||!confirm('Mark this swap as completed?'))return;act(async()=>{
+ const t='🎉 Your account swap is completed. Thank you for using eFootballET!';await note(c.C,t,c.ref,'done');await note(c.F,t)})}
+function partyBlock(c,who,uid){
+ const P=XS.party[uid+':'+c.ref]||{},lg=P.login,lv=lg&&lg.ans?XS.val[lg.req]:null,nm=nameOf(uid);
+ const codeRow=n=>{const r=(P.codes||{})[n],v=r&&r.ans?XS.val[r.req]:null;return `<div style="margin-top:6px"><b>Code ${n}</b> · ${CT[n]}${v&&v.code?`<div>${codeH(v.code,r.ans)}</div>`:r?`<div>⏳ Waiting… (${ago(r.at)})</div>`:''}<div class="row">${bt(r?`🔁 Ask Code ${n} again`:`🔐 Ask ${who} for Code ${n}`,`vrAsk('${uid}','code',${n},'${c.ref}')`)}</div></div>`};
+ const [e,p]=lv?[lv.email,lv.pass]:['',''];
+ return `<div class="pp"><b>${who} · ${E(nm)}</b>${!supOf(uid)?'<div>⚠️ No Support chat yet</div>':''}
+  <div>${lv&&(e||p)?loginH(e,p):lg?`<div>⏳ Waiting for login… (${ago(lg.at)})</div>`:'<small class="sub">Login not asked yet</small>'}</div>
+  <div class="row">${bt(lg?'🔁 Ask login again':`🔑 Ask ${who} for email + password`,`vrAsk('${uid}','login',0,'${c.ref}')`)}</div>${codeRow(2)}${codeRow(3)}</div>`}
+function swapCase(c){
+ const id='x'+c.cid,o=c.offer,mode=o.mode=='even'?'Even swap':o.mode=='buyer_adds'?'F adds '+(o.amount||0)+' ETB':o.mode=='seller_adds'?'C adds '+(o.amount||0)+' ETB':E(o.mode||'');
+ const who=uid=>uid&&uid===c.C?'C':uid&&uid===c.F?'F':'?';
+ const adder=o.mode=='buyer_adds'?'F':o.mode=='seller_adds'?'C':null;
+ const PC=XS.party[c.C+':'+c.ref]||{},PF=XS.party[c.F+':'+c.ref]||{};
+ const logins=!!(PC.login&&PC.login.ans&&PF.login&&PF.login.ans),codes=['2','3'].every(n=>(PC.codes||{})[n]&&PC.codes[n].ans&&(PF.codes||{})[n]&&PF.codes[n].ans);
+ const step=!c.unlocked?'Unlock payment':!c.M.paid?'Payment':!logins?'Logins':!codes?'Codes':'Finish';
+ let b=`<div class="pp"><b>🔁 Deal</b>${chip(mode)} ${o.ovr?chip('OVR '+E(o.ovr)):''}${o.note?`<div>${E(o.note)}</div>`:''}<div class="row" style="gap:6px;margin-top:6px">${(o.images||[]).map(q=>`<a href="${CFG.URL}/storage/v1/object/public/chat/${E(q)}" target="_blank"><img src="${CFG.URL}/storage/v1/object/public/chat/${E(q)}" style="width:70px;height:70px;object-fit:cover;border-radius:10px"></a>`).join('')}</div></div>`;
+ const due=[];if(adder)due.push(`<div>💵 <b>${adder}</b> must pay the added money: <b>${o.amount||0} ETB</b></div>`);
+ due.push(`<div>🧾 eFootballET fee <b>100 ETB</b> → ${c.payer?`paid by <b>${who(c.payer)}</b>`:c.declined?'⚠️ declined, they must choose again':c.asked?'⏳ one asked the other to pay':'⏳ not chosen yet'}</div>`);
+ b+=stp(1,'Payment',c.M.paid?'done':'now',`${due.join('')}${c.unlocked?'<div>🔓 Payment step is open for both users</div>':''}<div class="row">${c.unlocked?'':bt('🔓 Open payment (C & F choose who pays)',`xUnlock(${c.cid})`,'')}${c.M.paid?'':bt('✅ Payment received',`xPaid(${c.cid})`,c.unlocked?'':'s')}</div>${c.M.paid?`<div>✅ Received ${ago(c.M.paid)}</div>`:''}`);
+ b+=stp(2,'Logins & codes · C',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'C',c.C));
+ b+=stp(3,'Logins & codes · F',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'F',c.F));
+ b+=stp(4,'Finish',logins&&codes?'now':'todo',`<div class="row">${bt('🎉 Swap completed',`xDone(${c.cid})`,'')}</div>`);
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${c.cid} · ${E(nameOf(c.F))} ⇄ ${E(nameOf(c.C))}</b><small>F ⇄ C · ${mode}</small></div>${chip(step)}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+function swaps(){const cs=swapCases();$('v').innerHTML=`<h2 class="t">🔁 Swaps <small class="sub" style="font-weight:400">C owner ⇄ F requester</small></h2>${cs.map(swapCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open swaps</p>'}`}
+
+/* ---------- MORE ---------- */
+function more(){const it=(ic,t,sub,c)=>`<button onclick="${c}"><span><b>${ic} ${t}</b><small>${sub}</small></span><span>›</span></button>`;
+ $('v').innerHTML=`<h2 class="t">More</h2><div class="menu">
+  ${it('📥','Sell requests','B submitted accounts to list',"go('classic','subs')")}
+  ${it('➕','Listings','Add / edit listings',"go('classic','lst')")}
+  ${it('🎟','Promo codes','',"go('classic','codes')")}
+  ${it('📣','Broadcast','Message all members',"go('classic','bc')")}
+  ${it('✅','Delivered','Completed orders',"go('classic','delivered')")}
+  ${it('❌','Rejected','',"go('classic','rejected')")}
+  ${it('🔔','Notifications','Turn on / test','enablePush()')}
+  ${it('🌐','Open customer site','efootballet.store',"location.href='/'")}
+  ${it('🚪','Log out','','logout()')}</div><div class="box2" style="margin-top:12px"><b>Who is who</b>${LEGEND}</div>`}
+async function logout(){await sb.auth.signOut();$('fo').removeAttribute('src');$('fm').removeAttribute('src');ME=null;login()}
+
 function beep3(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[0,.22,.44].forEach((t,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=i===2?1175:880;g.gain.setValueAtTime(.0001,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.35,c.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+.18);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
 function closeK(){clearInterval(window.KAG);const d=$('kov');if(d)d.remove()}
 function showCode(o){
@@ -262,33 +317,6 @@ function showCode(o){
  d.innerHTML=`<div class="kbox"><div class="kt">🔐 Konami code received</div><div class="kc">${E(o.kcode)}</div><div class="ks">#${E(o.id)} · ${E(o.product)} — ${E(o.package)}<br>📞 ${E(o.phone||'')}</div><button class="btn" data-t="${E(o.kcode)}" onclick="cpd(this)">📋 Copy code</button><button class="btn s" onclick="closeK()">Close</button><small id="kage">⏱ 0:00 since it arrived</small></div>`;
  document.body.appendChild(d);
  const t0=Date.now();clearInterval(window.KAG);window.KAG=setInterval(()=>{const e=$('kage');if(!e)return clearInterval(window.KAG);const q=Math.floor((Date.now()-t0)/1000);e.textContent='⏱ '+Math.floor(q/60)+':'+String(q%60).padStart(2,'0')+' since it arrived';e.style.color=q>150?'#ef4444':''},1000)}
-async function codeWatch(){
- if(!ME||document.hidden)return;
- xPoll();
- try{
-  const{data,error}=await sb.from('orders').select('id,code,product,package,phone,kcode,code_req,status').eq('status','approved').or('kcode.not.is.null,code_req.eq.true').limit(30);
-  if(error||!data)return;
-  const w=data.filter(o=>o.code_req&&!o.kcode),nk=JSON.stringify(w.map(o=>o.id)),ok=JSON.stringify(KWAIT.map(o=>o.id));
-  KWAIT=w;if(nk!==ok&&cur==='home'&&view==='dash')paint();
-  let fresh=null;
-  data.forEach(o=>{if(!o.kcode)return;const k=o.id+':'+o.kcode;if(!KSEEN[k]){KSEEN[k]=Date.now();fresh=o}});
-  if(fresh){const ks=Object.entries(KSEEN).sort((a,b)=>b[1]-a[1]).slice(0,60);KSEEN=Object.fromEntries(ks);try{localStorage.kseen=JSON.stringify(KSEEN)}catch(e){}showCode(fresh);refresh()}
- }catch(e){}}
-
-/* ---------- more ---------- */
-function more(){
- const it=(ic,t,sub,c)=>`<button class="card" onclick="${c}"><span><b>${ic} ${t}</b><small>${sub}</small></span><span>›</span></button>`;
- $('v').innerHTML=`<h2 style="margin:4px 0">More</h2><div class="menu">
-  ${it('📣','Broadcast','Message all members',"openOrders('bc','more')")}
-  ${it('🎟','Codes','Promo codes',"openOrders('codes','more')")}
-  ${it('➕','Listings','Players, accounts',"openOrders('lst','more')")}
-  ${it('📥','Sell requests','From sellers',"openOrders('subs','more')")}
-  ${it('✅','Delivered','Completed orders',"openOrders('delivered','more')")}
-  ${it('❌','Rejected','',"openOrders('rejected','more')")}
-  ${it('🔔','Notifications','Turn on / test',"go('home')")}
-  ${it('🌐','Open customer site','efootballet.store',"location.href='/'")}
-  ${it('🚪','Log out','',"logout()")}</div>`}
-async function logout(){await sb.auth.signOut();$('fo').removeAttribute('src');$('fm').removeAttribute('src');login()}
 
 /* ---------- push ---------- */
 async function ensurePush(quiet){if(!('Notification' in window)||Notification.permission!=='granted')return;await enablePush(quiet)}
@@ -303,8 +331,8 @@ async function enablePush(quiet){try{
  if(!quiet)alert('✅ Admin notifications are ON for this phone.');paint()}catch(e){quiet||alert('Error: '+e.message)}}
 async function testPush(){try{const s=(await sb.auth.getSession()).data.session;const r=await fetch('/notifytest',{method:'POST',headers:{authorization:'Bearer '+s.access_token}});const j=await r.json();alert('Test sent to '+(j.phones||0)+' phone(s). '+JSON.stringify(j.status||j))}catch(e){alert('Error: '+e)}}
 
-$('fm').addEventListener('load',fixMsgFrame);
-window.addEventListener('message',e=>{if(e.data==='admin-refresh')refresh()});
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','orders','msgs','more'].includes(h)&&h!==cur&&ME)go(h)});
+
+window.addEventListener('message',e=>{if(e.data==='admin-refresh')load().then(paint)});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','coins','sales','swaps','chat','more'].includes(h)&&h!==cur&&ME)go(h)});
 start();
-</script><style>.vbi{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .08em}.vbi svg{width:100%;height:100%;display:block}</style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script></body></html>
+</script></body></html>
