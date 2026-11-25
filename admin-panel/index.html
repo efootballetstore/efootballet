@@ -51,6 +51,36 @@ h2.t{margin:2px 0 10px;font-size:20px}.sub{color:var(--h)}
 .kwait{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#F2B7051f;border:1px solid #F2B70566;font-weight:700;cursor:pointer;animation:glow 2s ease-in-out infinite}
 .kwait i{font-style:normal;animation:beat 1s ease-in-out infinite}
 
+</style><style id="pa2">
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes angSpin{to{--ang:360deg}}@keyframes gShift{to{background-position:260% 0}}
+@keyframes hdrFlow{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+@keyframes twk{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes rpl{to{transform:scale(3.6);opacity:0}}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 #F2B70566}60%{box-shadow:0 0 0 9px #F2B70500}}
+@keyframes bdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes rbIn{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes glowTxt{0%,100%{text-shadow:0 0 0 #F2B70500}50%{text-shadow:0 0 16px #F2B705aa}}
+@keyframes sweepX{0%{transform:translateX(-130%) skewX(-18deg)}60%,100%{transform:translateX(330%) skewX(-18deg)}}
+.ah{background:linear-gradient(110deg,#1b1442,#2b1c6b,#12304a,#1b1442)!important;background-size:300% 100%!important;animation:hdrFlow 14s ease infinite}
+.ah b{background:linear-gradient(100deg,#fff 0%,#ffe08a 35%,#F2B705 55%,#fff 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gShift 5s linear infinite}
+.tile{position:relative;overflow:hidden;isolation:isolate;transition:transform .3s var(--ease),box-shadow .3s}.tile:active{transform:scale(.96)}
+.tile.hot{border-color:transparent;box-shadow:0 10px 28px #F2B70522}
+.tile.hot::before,.cs.open::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang),#F2B705,#22C3A6,#7c5cff,#F2B705);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask-composite:exclude;animation:angSpin 5s linear infinite;pointer-events:none;z-index:2}
+.tile.hot::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(100deg,transparent,#ffffff22,transparent);animation:sweepX 4s ease-in-out infinite;pointer-events:none}
+.tile .n{background:linear-gradient(100deg,#F2B705 0%,#fff3b0 40%,#F2B705 70%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gShift 5s linear infinite}
+.cs{position:relative;transition:box-shadow .3s,border-color .3s}.cs.open{border-color:transparent;box-shadow:0 12px 32px #F2B7051f}
+.stp.now .sth i{animation:ring 2.2s ease-out infinite}.stp.done .sth i{box-shadow:0 0 12px #22c3a666}
+.st{position:relative;overflow:hidden}.st.g{animation:glowTxt 2.4s ease-in-out infinite}
+.bd{animation:bdPulse 1.8s ease-in-out infinite}
+nav button.on{animation:ring 2.8s ease-out infinite}nav .ei{transition:transform .3s var(--ease)}nav button.on .ei{transform:translateY(-2px) scale(1.12)}
+.code{background:linear-gradient(100deg,#F2B705 0%,#fff3b0 40%,#F2B705 70%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gShift 4s linear infinite,glowTxt 2.2s ease-in-out infinite}
+.btn,.tile,.csh{position:relative;overflow:hidden}
+.rpl{position:absolute;border-radius:50%;width:90px;height:90px;margin:-45px 0 0 -45px;background:radial-gradient(circle,#ffffff99,#ffffff00 70%);transform:scale(0);animation:rpl .65s ease-out forwards;pointer-events:none}
+.enter>*{animation:slideUp .5s var(--ease) both}.enter>*:nth-child(2){animation-delay:.06s}.enter>*:nth-child(3){animation-delay:.12s}.enter>*:nth-child(4){animation-delay:.18s}.enter>*:nth-child(5){animation-delay:.24s}.enter>*:nth-child(n+6){animation-delay:.3s}
+.rbn{position:fixed;left:12px;right:12px;top:calc(var(--hh) + 8px);z-index:70;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#0e9f5a,#17c97f);color:#04130c;display:flex;flex-direction:column;gap:2px;box-shadow:0 12px 30px #0009;animation:rbIn .5s var(--ease) both;cursor:pointer}.rbn b{font-size:16px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="ah"><b>eFootballET ADMIN</b><span><small id="who"></small><button onclick="go('more')">⋯</button></span></div>
 <div id="v" class="pane"></div>
@@ -120,6 +150,10 @@ async function load(){
  if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
  D.orders=o.data||D.orders;D.convs=c.data||D.convs;D.xm=xm.data||D.xm;D.steps=st.data||D.steps;D.cat=cat.data||D.cat;D.conv=cv.error?D.conv:(cv.data||null);D.subs=(sb2.data||[]).length;
  const ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});(rm.data||[]).forEach(x=>{const k=x.meta&&x.meta.ready;if(k&&!ready[k])ready[k]=x.created_at});D.ready=ready;
+ let RS={};try{RS=JSON.parse(localStorage.rseen||'{}')}catch(e){}let nr=null;
+ coinOrders().forEach(o=>{if(o.status!='approved')return;const t=ready[o.code];if(!t)return;const k=o.code+':'+t;if(!RS[k]){RS[k]=Date.now();if(Date.now()-new Date(t)<10*60000)nr=o}});
+ {const ks=Object.entries(RS).sort((a,b)=>b[1]-a[1]).slice(0,80);try{localStorage.rseen=JSON.stringify(Object.fromEntries(ks))}catch(e){}}
+ if(nr&&!document.hidden){try{navigator.vibrate&&navigator.vibrate([150,80,150])}catch(e){}beep3();rBanner(nr)}
  // seller codes of every active sale
  const ids=[...new Set(saleOrders().filter(x=>x.status!='delivered').map(x=>x.catalog_id))];
  await Promise.all(ids.map(async id=>{const q=await sb.rpc('seller_codes',{p_catalog:id});if(!q.error)D.sc[id]=q.data||{}}));
@@ -142,13 +176,14 @@ const act=async fn=>{if(BUSY)return;BUSY=1;try{await fn();await load()}catch(e){
 
 /* ---------- navigation ---------- */
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function premFrame(f){try{const d=f.contentDocument;if(!d||!d.head||d.getElementById('pfx'))return;const st=d.createElement('style');st.id='pfx';st.textContent='@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}@keyframes rpl{to{transform:scale(3.6);opacity:0}}@keyframes gShift{to{background-position:260% 0}}@keyframes bdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@keyframes ring{0%,100%{box-shadow:0 0 0 0 #F2B70566}60%{box-shadow:0 0 0 8px #F2B70500}}.btn{position:relative;overflow:hidden}.rpl{position:absolute;border-radius:50%;width:90px;height:90px;margin:-45px 0 0 -45px;background:radial-gradient(circle,#ffffff99,#ffffff00 70%);transform:scale(0);animation:rpl .65s ease-out forwards;pointer-events:none}.udot{animation:bdPulse 1.8s ease-in-out infinite}.mrow,.box.o,.box{animation:slideUp .45s both}.mrow{transition:transform .25s}.mrow:active{transform:scale(.98)}.mrow.xv{animation:slideUp .45s both,ring 2.4s ease-out infinite}h1{background:linear-gradient(100deg,#fff 0%,#ffe08a 40%,#F2B705 60%,#fff 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gShift 5s linear infinite}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}';d.head.appendChild(st);d.addEventListener('pointerdown',function(e){const b=e.target.closest&&e.target.closest('.btn');if(!b||b.disabled)return;const r=b.getBoundingClientRect(),x=d.createElement('span');x.className='rpl';x.style.left=(e.clientX-r.left)+'px';x.style.top=(e.clientY-r.top)+'px';b.appendChild(x);setTimeout(function(){x.remove()},700)},{passive:true})}catch(e){}}
 function fixMsgFrame(){try{const d=$('fm').contentDocument;if(!d||!d.head||d.getElementById('shellfix'))return;const st=d.createElement('style');st.id='shellfix';st.textContent='.cin{align-items:center!important}.cin input{flex:1!important;width:auto!important;margin:0!important;min-width:0!important;border-radius:24px!important}.cin .btn{width:46px!important;height:46px!important;flex:none!important;margin:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important}.cin .btn::after{display:none!important}.chh .btn{width:auto!important;margin:0!important}.cms{padding-bottom:130px!important}';d.head.appendChild(st)}catch(e){}}
 function frame(id,src){const f=$(id);if(f.getAttribute('src')!==src)f.src=src;return f}
 function go(t,hash){cur=t;setNav(t==='more'?'':t);const fr=t==='chat'||t==='classic';
  $('v').hidden=fr;$('fm').hidden=t!=='chat';$('fo').hidden=t!=='classic';
  if(t==='chat')frame('fm','/adminmsg.html?v='+BUILD);
  if(t==='classic')frame('fo','/admin.html?v='+BUILD+'#'+(hash||'delivered'));
- if(!fr){$('v').scrollTop=0;paint()}
+ if(!fr){$('v').scrollTop=0;paint();const v=$('v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');clearTimeout(window.ENT);window.ENT=setTimeout(()=>v.classList.remove('enter'),900)}
  history.replaceState(null,'','#'+(t==='classic'?'more':t))}
 function paint(){if(!ME)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#v')&&/INPUT|TEXTAREA/.test(a.tagName))return;
  const y=$('v').scrollTop;({home,coins,sales,swaps,more}[cur]||(()=>{}))();$('v').scrollTop=y}
@@ -158,12 +193,13 @@ function tg(id){OPEN[id]=!OPEN[id];if(OPEN[id]&&cur==='swaps')swapRefresh().then
 /* ---------- HOME ---------- */
 function home(){
  const co=coinOrders(),so=saleOrders(),sw=swapCases(),un=D.convs.reduce((s,x)=>s+(+x.unread||0),0);
+ const rdyN=co.filter(o=>o.status=='approved'&&D.ready[o.code]).length;
  const cNeed=co.filter(o=>o.status=='awaiting_review'||(o.status=='approved'&&(!o.claimed_by||o.kcode))).length;
  const sNeed=so.filter(o=>['awaiting_review','pending'].includes(o.status)||o.status=='approved').length;
  const tile=(cls,ic,t,sub,n,f)=>`<button class="tile ${cls}" onclick="${f}"><small>${ic} ${t}</small><div class="n">${n}</div><small>${sub}</small></button>`;
  $('v').innerHTML=`<h2 class="t">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
-  ${tile(cNeed?'hot':'','🪙','Coin orders','Needs action: '+cNeed,co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
+  ${tile(cNeed||rdyN?'hot':'','🪙','Coin orders','Needs action: '+cNeed+(rdyN?' · 🟢 '+rdyN+' ready':''),co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
   ${tile(sNeed?'hot':'','🏷️','Account sales','Open: '+sNeed,so.filter(o=>!['delivered','rejected'].includes(o.status)).length,"go('sales')")}
   ${tile(sw.length?'hot':'','🔁','Swaps','Open',sw.length,"go('swaps')")}
   ${tile(un?'hot':'','💬','Unread chats','Messages',un,"go('chat')")}
@@ -172,6 +208,7 @@ function home(){
  <div class="box2"><b>Codes</b>${LEGEND}</div>`}
 
 /* ---------- COINS (A) ---------- */
+function rBanner(o){const old=document.getElementById('rbn');if(old)old.remove();const d=document.createElement('div');d.id='rbn';d.className='rbn';d.innerHTML=`<b>🟢 Customer is ready</b><span>#${E(o.id)} · ${E(o.package||'')} · ${E(o.phone||'')}</span>`;d.onclick=()=>{d.remove();OPEN['o'+o.id]=1;go('coins')};document.body.appendChild(d);setTimeout(()=>d.remove(),15000)}
 function coinCase(o){
  const jp=/japan/i.test((o.product||'')+' '+(o.package||'')),ct=jp?2:1,id='o'+o.id;
  const sp=(o.info||'').indexOf(' '),em=sp>0?o.info.slice(0,sp):'',pw=sp>0?o.info.slice(sp+1):(o.info||'');
@@ -190,9 +227,9 @@ function coinCase(o){
   ${o.status=='approved'&&mine?`<div class="row">${bt(o.code_req||o.kcode?`🔁 Ask Code ${ct} again`:`🔐 Ask Code ${ct}`,`askCoin(${o.id},${ct})`,o.code_req||o.kcode?'s':'')}</div>`:''}`);
  b+=stp(4,'Deliver',done?'done':(o.status=='approved'&&mine&&o.kcode?'now':'todo'),done?`✅ Delivered${o.proof?`<div><img style="max-width:100%;border-radius:12px" src="${CFG.URL}/storage/v1/object/public/proofs/${E(o.proof)}"></div>`:''}`:
   o.status=='approved'&&mine?`<label class="sub">📸 Delivery proof photo (optional, customer sees it)</label><input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}</div>`:'<small class="sub">Take the order first.</small>');
- return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.package)} <small style="display:inline">${jp?'Japan':'All Region'}</small></b><small>${E(o.phone||'')} · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.package)} <small style="display:inline">${jp?'Japan':'All Region'}</small></b><small>${rd&&o.status=='approved'?'🟢 Ready · ':''}${E(o.phone||'')} · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
 function coins(){
- const all=coinOrders(),act=all.filter(o=>['awaiting_review','approved'].includes(o.status)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,12);
+ const all=coinOrders(),act=all.filter(o=>['awaiting_review','approved'].includes(o.status)).sort((a,b)=>(D.ready[b.code]&&b.status=='approved'?1:0)-(D.ready[a.code]&&a.status=='approved'?1:0)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,12);
  $('v').innerHTML=`<h2 class="t">🪙 Coin orders <small class="sub" style="font-weight:400">Coin buyers</small></h2>${act.map(coinCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open coin orders</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(coinCase).join('')}`:''}`}
 async function ordAct(id,a){if(a=='no'&&!confirm('Reject this order?'))return;act(async()=>{
  const[fn,args]={ok:['review_order',{p_id:id,p_ok:true}],no:['review_order',{p_id:id,p_ok:false}],claim:['claim_order',{p_id:id}]}[a];
@@ -266,7 +303,7 @@ async function swapRefresh(){const cs=swapCases();await Promise.all(cs.filter(c=
 async function vrAsk(uid,want,ct,ref){act(async()=>{await findSup(uid);const sup=supOf(uid);if(!sup){alert('This person has no Support chat yet. Ask them to open Messages > Support and send "Hi".');return}
  if(want=='code'){const e=await sb.rpc('send_message',{p_conv:sup,p_body:CASK[ct],p_meta:{adm:1,ref,step:'ctype',ctype:ct}});if(e.error){alert('Failed: '+e.error.message);return}}
  const{data:mid,error}=await sb.rpc('admin_vr_ask',{p_conv:sup,p_want:want});if(error){alert('Error: '+error.message);return}pingPush(mid);const cs=swapCases().find(x=>x.ref===ref);await partyLoad(uid,cs?cs.acc.created_at:0,ref)})}
-async function xUnlock(cid){if(!confirm('Open the payment step for both users?'))return;act(async()=>{const{data,error}=await sb.rpc('send_message',{p_conv:cid,p_body:'',p_kind:'verify_done'});if(error){alert('Could not unlock: '+error.message);return}pingPush(data)})}
+async function xUnlock(cid){if(!confirm('Open the payment step for both users?'))return;act(async()=>{const{data,error}=await sb.rpc('send_message',{p_conv:cid,p_body:'verified',p_kind:'verify_done'});if(error){alert('Could not unlock: '+error.message);return}pingPush(data)})}
 async function xPaid(cid){const c=swapCases().find(x=>x.cid==cid);if(!c||!confirm('Payment received? Both users will be told.'))return;act(async()=>{
  const t='✅ Payment received. eFootballET will now ask you for your account login and codes in Support chat.';await note(c.C,t,c.ref,'paid');await note(c.F,t)})}
 async function xDone(cid){const c=swapCases().find(x=>x.cid==cid);if(!c||!confirm('Mark this swap as completed?'))return;act(async()=>{
@@ -333,7 +370,8 @@ async function enablePush(quiet){try{
 async function testPush(){try{const s=(await sb.auth.getSession()).data.session;const r=await fetch('/notifytest',{method:'POST',headers:{authorization:'Bearer '+s.access_token}});const j=await r.json();alert('Test sent to '+(j.phones||0)+' phone(s). '+JSON.stringify(j.status||j))}catch(e){alert('Error: '+e)}}
 
 
-$('fm').addEventListener('load',fixMsgFrame);
+$('fm').addEventListener('load',()=>{fixMsgFrame();premFrame($('fm'))});$('fo').addEventListener('load',()=>premFrame($('fo')));
+document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('.btn,.tile,.csh');if(!b||b.disabled)return;const r=b.getBoundingClientRect(),x=document.createElement('span');x.className='rpl';x.style.left=(e.clientX-r.left)+'px';x.style.top=(e.clientY-r.top)+'px';b.appendChild(x);setTimeout(()=>x.remove(),700)},{passive:true});
 window.addEventListener('message',e=>{if(e.data==='admin-refresh')load().then(paint)});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','coins','sales','swaps','chat','more'].includes(h)&&h!==cur&&ME)go(h)});
 start();
