@@ -3,8 +3,10 @@
 <title>eFootballET ADMIN</title><meta name="robots" content="noindex">
 <link rel="manifest" href="/admin-panel/manifest.json"><meta name="theme-color" content="#120d2e">
 <link rel="icon" href="/admin-panel/icon-192.png"><link rel="apple-touch-icon" href="/admin-panel/icon-192.png">
-<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin-premium.css?v=2"><script src="/admin-premium.js?v=2"></script>
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/admin-premium.css?v=2"><script>["contextmenu","selectstart","dragstart"].forEach(function(t){document.addEventListener(t,function(e){e.stopImmediatePropagation()},true)})</script><script src="/admin-premium.js?v=3"></script>
 <style>
+*{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
+.xs{padding:10px 0;border-top:1px solid #ffffff0f}.xs>b{display:block;margin-bottom:6px}.xs .btn{width:100%;margin-top:8px}.xcode{font-size:34px;font-weight:800;letter-spacing:.14em;color:#F2B705;font-family:ui-monospace,Menlo,monospace}
 :root{--hh:calc(54px + env(safe-area-inset-top,0px));--nh:96px}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--t)}
@@ -170,7 +172,7 @@ function listFor(k){
  if(k==='today')return ORD.filter(isT);
  if(k==='delivered')return ORD.filter(o=>isT(o)&&o.status==='delivered');
  if(k==='exch')return CVS.filter(c=>PXM[c.id]);
- if(k==='unread')return CVS.filter(c=>+c.unread>0);
+ if(k==='unread')return grpC(CVS.filter(c=>+c.unread>0));
  return []}
 function ordIt(o){
  const id='o'+o.id,acc=['ef','account','player'].includes(o.cat),sp=(o.info||'').indexOf(' ');
@@ -196,13 +198,50 @@ function ordIt(o){
   ${o.proof?`<div class="r"><img src="${CFG.URL}/storage/v1/object/public/proofs/${E(o.proof)}" style="max-width:100%;border-radius:12px"></div>`:''}
   <button class="btn" style="margin-top:10px;width:100%" onclick="openOrders('${tab}')">📂 Open in Orders (approve / deliver)</button>
  </div></div></div></div>`}
+const pkey=t=>{t=String(t||'');const m=t.match(/\((?:buyer|seller)\s+([^)]+)\)/i)||t.match(/^\s*Support\s*[\u00b7\u2022:\-]\s*(.+?)\s*$/i);return m?m[1].trim():null};
+const isSupT=t=>/^\s*Support/i.test(String(t||''));
+function grpC(cs){const g={},out=[];(cs||[]).forEach(c=>{const k=pkey(c.title);if(!k){out.push(c);return}const K=k.toLowerCase();let x=g[K];if(!x){x=g[K]={id:c.id,title:k,last_text:c.last_text,last_at:c.last_at,unread:0,sup:null};out.push(x)}x.unread+=+c.unread||0;if(isSupT(c.title))x.sup=c.id;if(new Date(c.last_at)>new Date(x.last_at)){x.last_at=c.last_at;x.last_text=c.last_text}});out.forEach(x=>{if(x.sup)x.id=x.sup});return out}
+async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(s&&mid)fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
+
+/* ---------- exchange verification (login -> code -> verified) ---------- */
+const XS={};let XPB=0,XSIG='';
+async function xLoad(cid){
+ const st=XS[cid]=XS[cid]||{};
+ if(!st.uid){const{data}=await sb.from('messages').select('sender_id,id').eq('conv_id',cid).eq('kind','exchange_accept').order('id',{ascending:false}).limit(1);st.uid=(data&&data[0]&&data[0].sender_id)||null}
+ if(st.uid&&!st.sup){const sups=CVS.filter(c=>isSupT(c.title)).map(c=>c.id);if(sups.length){const{data}=await sb.from('messages').select('conv_id').eq('sender_id',st.uid).in('conv_id',sups).limit(1);st.sup=(data&&data[0]&&data[0].conv_id)||null}}
+ if(st.sup){const{data}=await sb.from('messages').select('id,kind,meta,created_at').eq('conv_id',st.sup).in('kind',['vr_ask','vr_answer']).order('id');const ms=data||[];
+  for(const w of ['login','code']){const asks=ms.filter(m=>m.kind=='vr_ask'&&m.meta&&m.meta.want==w),a=asks[asks.length-1];if(!a){st[w]=null;continue}const an=ms.find(m=>m.kind=='vr_answer'&&m.meta&&m.meta.req==a.meta.req);st[w]={req:a.meta.req,at:a.created_at,ans:an?an.created_at:null};
+   if(an&&(!st['d'+w]||st['d'+w].req!==a.meta.req)){const g=await sb.rpc('admin_vr_get',{p_req:a.meta.req});if(!g.error&&g.data)st['d'+w]={req:a.meta.req,v:g.data}}}}
+ st.loaded=true}
+async function xPoll(){if(XPB||cur!=='home'||view!=='detail'||dk!=='exch')return;XPB=1;try{const ids=listFor('exch').map(c=>c.id);await Promise.all(ids.map(xLoad));const sig=JSON.stringify(ids.map(i=>XS[i]));if(sig!==XSIG){XSIG=sig;try{await Promise.all(ids.map(xLoad))}catch(e){}
+ if(cur==='home'&&view==='detail'&&dk==='exch')paintDetail()}}catch(e){}finally{XPB=0}}
+async function xAsk(cid,w){const st=XS[cid];if(!st||!st.sup){alert('This customer has no Support chat yet.');return}
+ const{data:mid,error}=await sb.rpc('admin_vr_ask',{p_conv:st.sup,p_want:w});if(error){alert(error.message=='NONE'?'This customer has no Support chat yet.':'Error: '+error.message);return}
+ pingPush(mid);delete st['d'+w];await xLoad(cid);paintDetail()}
+async function xVerified(cid){if(!confirm('Mark this account as verified and ask the buyer to pay?'))return;
+ const{data,error}=await sb.rpc('send_message',{p_conv:cid,p_body:'',p_kind:'verify_done'});if(error){alert('Could not mark verified: '+error.message);return}
+ pingPush(data);alert('✅ Verified. The buyer is now asked to pay.');refresh()}
+function xPanel(c){
+ const st=XS[c.id]||{};
+ if(!st.loaded)return '<div class="r">⏳ Loading…</div>';
+ if(!st.sup)return '<div class="r">⚠️ This customer has not opened the Support chat yet. Ask them to send a message to Support first.</div>';
+ const L=st.login,C=st.code,dl=L&&st.dlogin&&st.dlogin.req===L.req?st.dlogin.v:null,dc=C&&st.dcode&&st.dcode.req===C.req?st.dcode.v:null;
+ const wait=(r)=>r?(r.ans?'<div class="r">⏳ Opening…</div>':`<div class="r">⏳ Waiting for the customer… (${ago(r.at)})</div>`):'';
+ let h=`<div class="xs"><b>① 🔑 Account login</b>`;
+ if(dl&&(dl.email||dl.pass))h+=`<div class="r">📧 <code>${E(dl.email||'—')}</code> ${dl.email?cpB(dl.email):''}</div><div class="r">🔑 <code>${E(dl.pass||'—')}</code> ${dl.pass?cpB(dl.pass):''}</div>`;else h+=wait(L);
+ h+=`<button class="btn s" onclick="xAsk(${c.id},'login')">${L?'🔁 Ask login again':'🔑 Ask customer for email + password'}</button></div>`;
+ if(dl){h+=`<div class="xs"><b>② 🔐 Konami code</b>`;
+  if(dc&&dc.code)h+=`<div class="r"><span class="xcode">${E(dc.code)}</span> ${cpB(dc.code)}</div><div class="r"><small>⏱ received ${ago(C.ans)}</small></div>`;else h+=wait(C);
+  h+=`<button class="btn s" onclick="xAsk(${c.id},'code')">${C?'🔁 Ask new code':'🔐 Ask customer for the code'}</button></div>`;
+  h+=`<div class="xs"><b>③ Done</b><button class="btn" onclick="xVerified(${c.id})">✅ Verified — ask buyer to pay</button></div>`}
+ return h}
 function convIt(c){
- const id='c'+c.id,x=EXD[c.id],U0=CFG.URL+'/storage/v1/object/public/chat/';
+ const id='c'+c.id,x=EXD[c.id],U0=CFG.URL+'/storage/v1/object/public/chat/',ex=dk==='exch';
  let det='';
  if(x){det=`<div class="r">🔁 <b>${E(x.mode||'')}</b> ${E(x.amount||0)} ETB · OVR ${E(x.ovr||'')}</div>${x.note?`<div class="r">📝 ${E(x.note)}</div>`:''}${(x.images||[]).length?`<div class="r" style="gap:6px">${(x.images||[]).map(q=>`<a href="${U0+E(q)}" target="_blank"><img src="${U0+E(q)}" style="width:76px;height:76px;object-fit:cover;border-radius:10px"></a>`).join('')}</div>`:''}`}
- else if(dk==='exch')det='<div class="r">⏳ Loading offer…</div>';
+ else if(ex)det='<div class="r">⏳ Loading offer…</div>';
  return `<div class="it${OPEN[id]?' open':''}" id="it${id}"><div class="ith" onclick="tg('${id}')"><div class="m"><b>${E(c.title)}${PXM[c.id]?' <span class="st">🔁 Verify exchange</span>':''}</b><small>${E(c.last_text||'')}</small></div>${+c.unread?`<span class="bd2">${E(c.unread)}</span>`:''}<span class="ch">›</span></div>
- <div class="xd"><div><div class="xb"><div class="r">💬 ${E(c.last_text||'—')}</div>${det}<button class="btn" style="margin-top:10px;width:100%" onclick="openChat(${c.id})">💬 Open chat</button></div></div></div></div>`}
+ <div class="xd"><div><div class="xb">${ex?'':`<div class="r">💬 ${E(c.last_text||'—')}</div>`}${det}${ex?xPanel(c):`<button class="btn" style="margin-top:10px;width:100%" onclick="openChat(${c.id})">💬 Open chat</button>`}</div></div></div></div>`}
 function paintDetail(){
  const L=listFor(dk),T=KT[dk]||['',''],isC=dk==='exch'||dk==='unread';
  $('v').innerHTML=`<div class="dh"><button class="back" onclick="view='dash';paint()">‹</button><div><h2>${T[0]}</h2><small>${T[1]} · ${L.length}</small></div></div>`+(L.length?L.map(isC?convIt:ordIt).join(''):'<p class="sub" style="text-align:center;margin-top:40px">✨ ምንም የለም · Nothing here</p>')}
@@ -225,6 +264,7 @@ function showCode(o){
  const t0=Date.now();clearInterval(window.KAG);window.KAG=setInterval(()=>{const e=$('kage');if(!e)return clearInterval(window.KAG);const q=Math.floor((Date.now()-t0)/1000);e.textContent='⏱ '+Math.floor(q/60)+':'+String(q%60).padStart(2,'0')+' since it arrived';e.style.color=q>150?'#ef4444':''},1000)}
 async function codeWatch(){
  if(!ME||document.hidden)return;
+ xPoll();
  try{
   const{data,error}=await sb.from('orders').select('id,code,product,package,phone,kcode,code_req,status').eq('status','approved').or('kcode.not.is.null,code_req.eq.true').limit(30);
   if(error||!data)return;
