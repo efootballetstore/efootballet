@@ -13,7 +13,7 @@ html,body{height:100%;margin:0}body{background:var(--bg);color:var(--t)}
 .ah{position:fixed;top:0;left:0;right:0;height:var(--hh);box-sizing:border-box;padding:env(safe-area-inset-top,0) 14px 0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1b1442,#120d2e);border-bottom:1px solid var(--l);z-index:20}
 .ah b{font-size:16px;letter-spacing:.08em}.ah small{color:var(--h);margin-right:8px}.ah button{background:#ffffff10;border:1px solid #ffffff22;color:var(--t);border-radius:12px;width:38px;height:34px;font-size:18px}
 .pane{position:fixed;top:var(--hh);bottom:var(--nh);left:0;right:0;overflow:auto;padding:12px;box-sizing:border-box;animation:paneIn .3s var(--ease) both}
-iframe.pane{border:0;width:100%;padding:0;background:var(--bg)}
+iframe.pane{border:0;width:100%;padding:0;background:var(--bg);height:calc(100vh - var(--hh) - var(--nh));height:calc(100dvh - var(--hh) - var(--nh))}
 nav[hidden]{display:none!important}
 nav{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));height:70px;display:flex;gap:2px;padding:6px;border-radius:26px;background:#10121c;border:1px solid #ffffff1c;box-shadow:0 10px 30px #000a;z-index:30}
 nav button{flex:1;position:relative;background:none;border:0;color:var(--h);font:600 11px/1.2 inherit;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
@@ -76,7 +76,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/admin-panel/s
 /* ---------- meaning of the letters and codes ---------- */
 const CT={1:'Data transfer code',2:'Konami login code',3:'Email change code'};
 const CASK={1:'Please send Code 1 — the data transfer code.',2:'Please send Code 2 — the code Konami emailed so the account can log in.',3:'Please send Code 3 — the code Konami emailed to confirm the email change.'};
-const LEGEND=`<div class="lgd"><p><span>A</span>Coin buyer</p><p><span>B</span>Account seller</p><p><span>E</span>Account buyer</p><p><span>C</span>Account owner (listed, accepted the swap)</p><p><span>F</span>Swap requester (sent the swap request)</p><hr style="border-color:#ffffff14"><p><b>Code 1</b> · Data transfer code</p><p><b>Code 2</b> · Konami login code</p><p><b>Code 3</b> · Email change code</p></div>`;
+const LEGEND=`<div class="lgd"><p><b>Code 1</b> · Data transfer code</p><p><b>Code 2</b> · Konami login code</p><p><b>Code 3</b> · Email change code</p></div>`;
 
 /* ---------- small helpers ---------- */
 const ago=t=>{if(!t)return '';const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h ago':Math.floor(m/1440)+' d ago'};
@@ -142,6 +142,7 @@ const act=async fn=>{if(BUSY)return;BUSY=1;try{await fn();await load()}catch(e){
 
 /* ---------- navigation ---------- */
 function setNav(t){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function fixMsgFrame(){try{const d=$('fm').contentDocument;if(!d||!d.head||d.getElementById('shellfix'))return;const st=d.createElement('style');st.id='shellfix';st.textContent='.cin{align-items:center!important}.cin input{flex:1!important;width:auto!important;margin:0!important;min-width:0!important;border-radius:24px!important}.cin .btn{width:46px!important;height:46px!important;flex:none!important;margin:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center!important}.cin .btn::after{display:none!important}.chh .btn{width:auto!important;margin:0!important}.cms{padding-bottom:130px!important}';d.head.appendChild(st)}catch(e){}}
 function frame(id,src){const f=$(id);if(f.getAttribute('src')!==src)f.src=src;return f}
 function go(t,hash){cur=t;setNav(t==='more'?'':t);const fr=t==='chat'||t==='classic';
  $('v').hidden=fr;$('fm').hidden=t!=='chat';$('fo').hidden=t!=='classic';
@@ -162,13 +163,13 @@ function home(){
  const tile=(cls,ic,t,sub,n,f)=>`<button class="tile ${cls}" onclick="${f}"><small>${ic} ${t}</small><div class="n">${n}</div><small>${sub}</small></button>`;
  $('v').innerHTML=`<h2 class="t">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
-  ${tile(cNeed?'hot':'','🪙','Coin orders','A · needs action: '+cNeed,co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
-  ${tile(sNeed?'hot':'','🏷️','Account sales','B → E · open: '+sNeed,so.filter(o=>!['delivered','rejected'].includes(o.status)).length,"go('sales')")}
-  ${tile(sw.length?'hot':'','🔁','Swaps','C ⇄ F · open',sw.length,"go('swaps')")}
+  ${tile(cNeed?'hot':'','🪙','Coin orders','Needs action: '+cNeed,co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
+  ${tile(sNeed?'hot':'','🏷️','Account sales','Open: '+sNeed,so.filter(o=>!['delivered','rejected'].includes(o.status)).length,"go('sales')")}
+  ${tile(sw.length?'hot':'','🔁','Swaps','Open',sw.length,"go('swaps')")}
   ${tile(un?'hot':'','💬','Unread chats','Messages',un,"go('chat')")}
   ${tile(D.subs?'hot':'','📥','Sell requests','To review & list',D.subs,"go('classic','subs')")}
  </div>
- <div class="box2"><b>Who is who</b>${LEGEND}</div>`}
+ <div class="box2"><b>Codes</b>${LEGEND}</div>`}
 
 /* ---------- COINS (A) ---------- */
 function coinCase(o){
@@ -182,7 +183,7 @@ function coinCase(o){
   ${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}${o.status=='awaiting_review'?bt('🔍 Check',`chk(${o.id},this)`):''}</div><div id="rc${o.id}"></div>`:''}
   ${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}
   ${o.status=='rejected'?`<div class="row">${bt('↩️ Approve anyway',`fa(${o.id})`)}</div>`:''}`);
- b+=stp(2,'A · account login',paid?(em||pw?'done':'now'):'todo',`${loginH(em,pw)}<div>📞 ${E(o.phone||'—')} ${o.tg?'· ✈️ '+E(o.tg):''}</div>${o.status=='approved'?(rd?`<div>🟢 Customer is ready (${ago(rd)})</div>`:'<div><small class="sub">⏳ Customer has not said ready yet</small></div>'):''}
+ b+=stp(2,'Customer login',paid?(em||pw?'done':'now'):'todo',`${loginH(em,pw)}<div>📞 ${E(o.phone||'—')} ${o.tg?'· ✈️ '+E(o.tg):''}</div>${o.status=='approved'?(rd?`<div>🟢 Customer is ready (${ago(rd)})</div>`:'<div><small class="sub">⏳ Customer has not said ready yet</small></div>'):''}
   ${o.status=='approved'&&!o.claimed_by?`<div class="row">${bt('🙋 I will deliver this',`ordAct(${o.id},'claim')`,'')}</div>`:o.claimed_by&&!mine?`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`:''}`);
  b+=stp(3,`Code ${ct} · ${CT[ct]}`,o.kcode?'done':(o.status=='approved'&&mine?'now':'todo'),`${jp?'Japan region → Code 2':'All Region → Code 1'}
   ${o.kcode?`<div>${codeH(o.kcode)}</div>`:o.code_req?'<div>⏳ Customer is sending the code…</div>':''}
@@ -192,7 +193,7 @@ function coinCase(o){
  return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(o.package)} <small style="display:inline">${jp?'Japan':'All Region'}</small></b><small>${E(o.phone||'')} · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
 function coins(){
  const all=coinOrders(),act=all.filter(o=>['awaiting_review','approved'].includes(o.status)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,12);
- $('v').innerHTML=`<h2 class="t">🪙 Coin orders <small class="sub" style="font-weight:400">A · coin buyer</small></h2>${act.map(coinCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open coin orders</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(coinCase).join('')}`:''}`}
+ $('v').innerHTML=`<h2 class="t">🪙 Coin orders <small class="sub" style="font-weight:400">Coin buyers</small></h2>${act.map(coinCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open coin orders</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(coinCase).join('')}`:''}`}
 async function ordAct(id,a){if(a=='no'&&!confirm('Reject this order?'))return;act(async()=>{
  const[fn,args]={ok:['review_order',{p_id:id,p_ok:true}],no:['review_order',{p_id:id,p_ok:false}],claim:['claim_order',{p_id:id}]}[a];
  const{data,error}=await sb.rpc(fn,args);if(error||!data)alert('Failed (maybe another admin already did it)')})}
@@ -215,26 +216,26 @@ function saleCase(o){
  const l=listing(o.catalog_id),c=o.catalog_id,id='s'+o.id,ref='s'+o.id,M=mk(ref),sc=D.sc[c]||{},cr=CRD[c];
  const paid=['approved','delivered'].includes(o.status),mine=o.claimed_by&&ME&&o.claimed_by===ME.id,done=o.status=='delivered';
  const stage=!cr&&!sc.c1?'login':!sc.c1?'code1':!M.verified?'verified':!sc.c2?'code3':!M.pay&&!paid?'pay':!paid?'paying':'deliver';
- const label={login:'Ask B login',code1:'Ask Code 1',verified:'Press Verified',code3:'Ask Code 3',pay:'Ask E to pay',paying:'Waiting for E payment',deliver:'Deliver'}[stage];
+ const label={login:'Ask seller login',code1:'Ask Code 1',verified:'Press Verified',code3:'Ask Code 3',pay:'Ask buyer to pay',paying:'Waiting for payment',deliver:'Deliver'}[stage];
  const sBadge=done?chip('✅ Done','g'):o.status=='rejected'?chip('❌ Rejected','r'):chip(label,paid&&stage=='deliver'?'g':'');
- let b=`<div class="pp"><b>🏷️ ${E(l.title||o.product||'Account')} · ${E(o.amount)} ETB</b>B: ${E(l.seller_tg||'—')} · E: ${E(o.phone||'')} ${o.tg?'· ✈️ '+E(o.tg):''}<br>${chip(({pending:'⏳ E has not paid yet',awaiting_review:'🔎 E paid, checking',approved:'💰 E paid',delivered:'✅ Delivered',rejected:'❌ Rejected'})[o.status]||E(o.status),paid?'g':'')}</div>`;
- b+=stp(1,'B · account login',cr||sc.c1?'done':'now',`${cr?loginH(...splitLogin(cr)):'<small class="sub">Not loaded yet</small>'}<div class="row">${bt('📨 Ask B for login',`sAskLogin(${o.id})`)}${bt('👁 Show login',`sShow(${c},this)`)}</div>`);
- b+=stp(2,'Code 1 · Data transfer code (from B)',sc.c1?'done':(cr?'now':'todo'),`${sc.c1?codeH(sc.c1):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c1?'🔁 Ask Code 1 again':'🔐 Ask B for Code 1',`sAskCode(${o.id},1)`)}</div>`);
- b+=stp(3,'Verified',M.verified?'done':(sc.c1?'now':'todo'),M.verified?`✅ Verified ${ago(M.verified)}`:`<div class="row">${bt('✅ Verified — account is OK',`sVerified(${o.id})`,'')}</div><small class="sub">Tells E the account is verified.</small>`);
- b+=stp(4,'Code 3 · Email change code (from B)',sc.c2?'done':(M.verified?'now':'todo'),`${sc.c2?codeH(sc.c2):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c2?'🔁 Ask Code 3 again':'🔐 Ask B for Code 3',`sAskCode(${o.id},3)`)}</div>`);
- b+=stp(5,'E pays',paid?'done':(M.pay||sc.c2?'now':'todo'),paid?'💰 Payment received':`${M.pay?`✅ E was asked ${ago(M.pay)}`:''}<div class="row">${bt(M.pay?'🔁 Ask E to pay again':'💰 Ask E to pay',`sPay(${o.id})`)}</div>${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve payment',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}</div><div id="rc${o.id}"></div>`:''}`);
- b+=stp(6,'Hand over & close',done?'done':(paid?'now':'todo'),done?'✅ Handed over':paid?`${!o.claimed_by?`<div class="row">${bt('🙋 I will hand it over',`ordAct(${o.id},'claim')`,'')}</div>`:mine?`<input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}${bt('🔒 Sold / Close listing',`sClose(${c})`)}</div>`:`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`}`:'<small class="sub">After E pays.</small>');
- return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(l.title||o.product||'Account')}</b><small>B → E · ${E(o.amount)} ETB · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+ let b=`<div class="pp"><b>🏷️ ${E(l.title||o.product||'Account')} · ${E(o.amount)} ETB</b>Seller: ${E(l.seller_tg||'—')} · Buyer: ${E(o.phone||'')} ${o.tg?'· ✈️ '+E(o.tg):''}<br>${chip(({pending:'⏳ Buyer has not paid yet',awaiting_review:'🔎 Buyer paid, checking',approved:'💰 Buyer paid',delivered:'✅ Delivered',rejected:'❌ Rejected'})[o.status]||E(o.status),paid?'g':'')}</div>`;
+ b+=stp(1,'Seller login',cr||sc.c1?'done':'now',`${cr?loginH(...splitLogin(cr)):'<small class="sub">Not loaded yet</small>'}<div class="row">${bt('📨 Ask seller for login',`sAskLogin(${o.id})`)}${bt('👁 Show login',`sShow(${c},this)`)}</div>`);
+ b+=stp(2,'Code 1 · Data transfer code (from seller)',sc.c1?'done':(cr?'now':'todo'),`${sc.c1?codeH(sc.c1):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c1?'🔁 Ask Code 1 again':'🔐 Ask seller for Code 1',`sAskCode(${o.id},1)`)}</div>`);
+ b+=stp(3,'Verified',M.verified?'done':(sc.c1?'now':'todo'),M.verified?`✅ Verified ${ago(M.verified)}`:`<div class="row">${bt('✅ Verified — account is OK',`sVerified(${o.id})`,'')}</div><small class="sub">Tells the buyer the account is verified.</small>`);
+ b+=stp(4,'Code 3 · Email change code (from seller)',sc.c2?'done':(M.verified?'now':'todo'),`${sc.c2?codeH(sc.c2):'<small class="sub">⏳ not received</small>'}<div class="row">${bt(sc.c2?'🔁 Ask Code 3 again':'🔐 Ask seller for Code 3',`sAskCode(${o.id},3)`)}</div>`);
+ b+=stp(5,'Buyer pays',paid?'done':(M.pay||sc.c2?'now':'todo'),paid?'💰 Payment received':`${M.pay?`✅ Buyer was asked ${ago(M.pay)}`:''}<div class="row">${bt(M.pay?'🔁 Ask buyer to pay again':'💰 Ask buyer to pay',`sPay(${o.id})`)}</div>${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve payment',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}</div><div id="rc${o.id}"></div>`:''}`);
+ b+=stp(6,'Hand over & close',done?'done':(paid?'now':'todo'),done?'✅ Handed over':paid?`${!o.claimed_by?`<div class="row">${bt('🙋 I will hand it over',`ordAct(${o.id},'claim')`,'')}</div>`:mine?`<input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}${bt('🔒 Sold / Close listing',`sClose(${c})`)}</div>`:`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`}`:'<small class="sub">After the buyer pays.</small>');
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${o.id} · ${E(l.title||o.product||'Account')}</b><small>Seller → Buyer · ${E(o.amount)} ETB · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
 function sales(){
  const all=saleOrders(),act=all.filter(o=>!['delivered','rejected'].includes(o.status)),dn=all.filter(o=>['delivered','rejected'].includes(o.status)).slice(0,10);
- $('v').innerHTML=`<h2 class="t">🏷️ Account sales <small class="sub" style="font-weight:400">B sells · E buys</small></h2>${act.map(saleCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open account sales</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(saleCase).join('')}`:''}`}
+ $('v').innerHTML=`<h2 class="t">🏷️ Account sales <small class="sub" style="font-weight:400">Seller → Buyer</small></h2>${act.map(saleCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open account sales</p>'}${dn.length?`<h3 class="sub">Recent</h3>${dn.map(saleCase).join('')}`:''}`}
 const sellerOf=o=>listing(o.catalog_id).seller_id||null;
 async function sAskLogin(oid){act(async()=>{const o=D.orders.find(x=>x.id==oid),uid=sellerOf(o);if(!uid){alert('No seller linked to this listing');return}
- const{data,error}=await sb.rpc('admin_msg_user',{p_user:uid,p_text:'A buyer is interested in your account. Please send the account email and password below.',p_kind:'cred_req',p_meta:{catalog_id:o.catalog_id}});if(error){alert('Failed: '+error.message);return}pingPush(data);alert('Login request sent to B')})}
+ const{data,error}=await sb.rpc('admin_msg_user',{p_user:uid,p_text:'A buyer is interested in your account. Please send the account email and password below.',p_kind:'cred_req',p_meta:{catalog_id:o.catalog_id}});if(error){alert('Failed: '+error.message);return}pingPush(data);alert('Login request sent to the seller')})}
 async function sShow(c,b){b.disabled=true;const r=await sb.rpc('seller_creds',{p_catalog:c});b.disabled=false;if(r.error){alert('No seller login saved');return}CRD[c]=r.data;paint()}
 async function sAskCode(oid,n){act(async()=>{const o=D.orders.find(x=>x.id==oid),uid=sellerOf(o),stage=n==1?1:2;if(!uid){alert('No seller linked to this listing');return}
  const{data,error}=await sb.rpc('admin_msg_user',{p_user:uid,p_text:CASK[n]+' Konami sent it to the account email. Enter it below.',p_kind:'code_req',p_meta:{catalog_id:o.catalog_id,stage}});if(error){alert('Failed: '+error.message);return}
- pingPush(data);sb.rpc('ask_seller_code',{p_catalog:o.catalog_id,p_stage:stage}).then(()=>{},()=>{});alert('Code '+n+' requested from B')})}
+ pingPush(data);sb.rpc('ask_seller_code',{p_catalog:o.catalog_id,p_stage:stage}).then(()=>{},()=>{});alert('Code '+n+' requested from the seller')})}
 async function sVerified(oid){if(!confirm('Mark this account as verified?'))return;act(async()=>{const o=D.orders.find(x=>x.id==oid);await note(o.user_id,'✅ The account you want to buy has been verified by eFootballET. We will ask you for payment shortly.','s'+oid,'verified')})}
 async function sPay(oid){act(async()=>{const o=D.orders.find(x=>x.id==oid);await note(o.user_id,'💰 Please pay '+o.amount+' ETB to get your account. Open Profile > My orders (or your buy request in Messages) and pay with Telebirr.','s'+oid,'pay')})}
 async function sClose(c){if(!confirm('Mark as sold? The listing leaves the website and saved passwords are deleted.'))return;act(async()=>{const r=await sb.rpc('close_listing',{p_catalog:c});alert(r.error?'Failed':'Closed')})}
@@ -278,9 +279,9 @@ function partyBlock(c,who,uid){
   <div>${lv&&(e||p)?loginH(e,p):lg?`<div>⏳ Waiting for login… (${ago(lg.at)})</div>`:'<small class="sub">Login not asked yet</small>'}</div>
   <div class="row">${bt(lg?'🔁 Ask login again':`🔑 Ask ${who} for email + password`,`vrAsk('${uid}','login',0,'${c.ref}')`)}</div>${codeRow(2)}${codeRow(3)}</div>`}
 function swapCase(c){
- const id='x'+c.cid,o=c.offer,mode=o.mode=='even'?'Even swap':o.mode=='buyer_adds'?'F adds '+(o.amount||0)+' ETB':o.mode=='seller_adds'?'C adds '+(o.amount||0)+' ETB':E(o.mode||'');
- const who=uid=>uid&&uid===c.C?'C':uid&&uid===c.F?'F':'?';
- const adder=o.mode=='buyer_adds'?'F':o.mode=='seller_adds'?'C':null;
+ const id='x'+c.cid,o=c.offer,mode=o.mode=='even'?'Even swap':o.mode=='buyer_adds'?'Requester adds '+(o.amount||0)+' ETB':o.mode=='seller_adds'?'Owner adds '+(o.amount||0)+' ETB':E(o.mode||'');
+ const who=uid=>uid&&uid===c.C?'Owner':uid&&uid===c.F?'Requester':'?';
+ const adder=o.mode=='buyer_adds'?'Requester':o.mode=='seller_adds'?'Owner':null;
  const PC=XS.party[c.C+':'+c.ref]||{},PF=XS.party[c.F+':'+c.ref]||{};
  const logins=!!(PC.login&&PC.login.ans&&PF.login&&PF.login.ans),codes=['2','3'].every(n=>(PC.codes||{})[n]&&PC.codes[n].ans&&(PF.codes||{})[n]&&PF.codes[n].ans);
  const step=!c.unlocked?'Unlock payment':!c.M.paid?'Payment':!logins?'Logins':!codes?'Codes':'Finish';
@@ -288,11 +289,11 @@ function swapCase(c){
  const due=[];if(adder)due.push(`<div>💵 <b>${adder}</b> must pay the added money: <b>${o.amount||0} ETB</b></div>`);
  due.push(`<div>🧾 eFootballET fee <b>100 ETB</b> → ${c.payer?`paid by <b>${who(c.payer)}</b>`:c.declined?'⚠️ declined, they must choose again':c.asked?'⏳ one asked the other to pay':'⏳ not chosen yet'}</div>`);
  b+=stp(1,'Payment',c.M.paid?'done':'now',`${due.join('')}${c.unlocked?'<div>🔓 Payment step is open for both users</div>':''}<div class="row">${c.unlocked?'':bt('🔓 Open payment (C & F choose who pays)',`xUnlock(${c.cid})`,'')}${c.M.paid?'':bt('✅ Payment received',`xPaid(${c.cid})`,c.unlocked?'':'s')}</div>${c.M.paid?`<div>✅ Received ${ago(c.M.paid)}</div>`:''}`);
- b+=stp(2,'Logins & codes · C',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'C',c.C));
- b+=stp(3,'Logins & codes · F',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'F',c.F));
+ b+=stp(2,'Owner · login & codes',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'Owner',c.C));
+ b+=stp(3,'Requester · login & codes',logins&&codes?'done':(c.M.paid?'now':'todo'),partyBlock(c,'Requester',c.F));
  b+=stp(4,'Finish',logins&&codes?'now':'todo',`<div class="row">${bt('🎉 Swap completed',`xDone(${c.cid})`,'')}</div>`);
- return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${c.cid} · ${E(nameOf(c.F))} ⇄ ${E(nameOf(c.C))}</b><small>F ⇄ C · ${mode}</small></div>${chip(step)}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
-function swaps(){const cs=swapCases();$('v').innerHTML=`<h2 class="t">🔁 Swaps <small class="sub" style="font-weight:400">C owner ⇄ F requester</small></h2>${cs.map(swapCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open swaps</p>'}`}
+ return `<div class="cs${OPEN[id]?' open':''}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>#${c.cid} · ${E(nameOf(c.F))} ⇄ ${E(nameOf(c.C))}</b><small>Requester ⇄ Owner · ${mode}</small></div>${chip(step)}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+function swaps(){const cs=swapCases();$('v').innerHTML=`<h2 class="t">🔁 Swaps <small class="sub" style="font-weight:400">Owner ⇄ Requester</small></h2>${cs.map(swapCase).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ No open swaps</p>'}`}
 
 /* ---------- MORE ---------- */
 function more(){const it=(ic,t,sub,c)=>`<button onclick="${c}"><span><b>${ic} ${t}</b><small>${sub}</small></span><span>›</span></button>`;
@@ -305,7 +306,7 @@ function more(){const it=(ic,t,sub,c)=>`<button onclick="${c}"><span><b>${ic} ${
   ${it('❌','Rejected','',"go('classic','rejected')")}
   ${it('🔔','Notifications','Turn on / test','enablePush()')}
   ${it('🌐','Open customer site','efootballet.store',"location.href='/'")}
-  ${it('🚪','Log out','','logout()')}</div><div class="box2" style="margin-top:12px"><b>Who is who</b>${LEGEND}</div>`}
+  ${it('🚪','Log out','','logout()')}</div><div class="box2" style="margin-top:12px"><b>Codes</b>${LEGEND}</div>`}
 async function logout(){await sb.auth.signOut();$('fo').removeAttribute('src');$('fm').removeAttribute('src');ME=null;login()}
 
 function beep3(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[0,.22,.44].forEach((t,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=i===2?1175:880;g.gain.setValueAtTime(.0001,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.35,c.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+t+.18);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
@@ -332,6 +333,7 @@ async function enablePush(quiet){try{
 async function testPush(){try{const s=(await sb.auth.getSession()).data.session;const r=await fetch('/notifytest',{method:'POST',headers:{authorization:'Bearer '+s.access_token}});const j=await r.json();alert('Test sent to '+(j.phones||0)+' phone(s). '+JSON.stringify(j.status||j))}catch(e){alert('Error: '+e)}}
 
 
+$('fm').addEventListener('load',fixMsgFrame);
 window.addEventListener('message',e=>{if(e.data==='admin-refresh')load().then(paint)});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['home','coins','sales','swaps','chat','more'].includes(h)&&h!==cur&&ME)go(h)});
 start();
