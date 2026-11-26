@@ -9,7 +9,7 @@ input{width:100%;background:#11121b;border:1px solid #ffffff1f;border-radius:14p
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script><script src="config.js"></script>
 <script>
 const sb=supabase.createClient(CFG.URL,CFG.KEY),V=document.getElementById('v'),$=i=>document.getElementById(i),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-if(top!==self)document.documentElement.classList.add('inapp');const VAPID='BA7-v2x2GvoU1Jcuf1WqX1z6o787aSupTfXRWXZkysCgAGKaJTE78Qv0R2hUUibxGF6dtl40nESqBebHb1CthAc';let T=null,UID=null;
+if(top!==self)document.documentElement.classList.add('inapp');const VAPID='BGQtnFksNcq6JmOL03xqhKECdcsij9itrW81buBFiW-ih1eJKNkYrCVdhRfr44V9TGPJ1uM-VMuRsBh2IKXXemQ';let T=null,UID=null;
 const tmo=t=>{const d=new Date(t),n=new Date();return d.toDateString()==n.toDateString()?d.toTimeString().slice(0,5):d.toLocaleDateString()+' '+d.toTimeString().slice(0,5)};
 const u8=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
