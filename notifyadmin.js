@@ -9,7 +9,7 @@ const cat = (...a) => { const n = a.reduce((t, x) => t + x.length, 0); const o =
 async function vapidAuth(env, endpoint) {
   const aud = new URL(endpoint).origin;
   const h = b64u(enc.encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
-  const p = b64u(enc.encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 43200, sub: 'mailto:samisanta7990@gmail.com' })));
+  const p = b64u(enc.encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 43200, sub: 'mailto:efootballetstore@gmail.com' })));
   const key = await crypto.subtle.importKey('jwk', JSON.parse(env.VAPID_PRIVATE_JWK), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
   const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, enc.encode(h + '.' + p));
   return `vapid t=${h}.${p}.${b64u(sig)}, k=${env.VAPID_PUBLIC}`;
@@ -45,7 +45,7 @@ export async function onRequestPost({ request, env }) {
     if (!u.ok) return json({ error: 'auth' }, 401);
     const uid = (await u.json()).id;
     const { type, ref } = await request.json();
-    if (!['order', 'ready', 'receipt', 'code'].includes(type) || !/^[A-Za-z0-9]{4,20}$/.test(String(ref || ''))) return json({ error: 'bad' }, 400);
+    if (!['order', 'ready', 'receipt'].includes(type) || !/^[A-Za-z0-9]{4,20}$/.test(String(ref || ''))) return json({ error: 'bad' }, 400);
     const os = await (await fetch(`${SB}/rest/v1/orders?code=eq.${encodeURIComponent(ref)}&user_id=eq.${uid}&select=code,amount,package,product,created_at`, { headers: H })).json();
     const o = Array.isArray(os) && os[0];
     if (!o) return json({ error: 'order' }, 403);
@@ -60,7 +60,6 @@ export async function onRequestPost({ request, env }) {
       order: { title: '🛒 New order', body: what, url: '/admin-panel/#orders' },
       receipt: { title: '🧾 Receipt sent', body: what, url: '/admin-panel/#orders' },
       ready: { title: '🟢 Customer is ready', body: `${what} · ask for the code now`, url: '/admin-panel/#orders' },
-      code: { title: '🔑 Code submitted', body: `${what} · open now, it expires fast`, url: '/admin-panel/#orders' },
     }[type];
     const text = JSON.stringify(msg);
 

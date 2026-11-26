@@ -44,7 +44,7 @@ export async function onRequestPost({ request, env }) {
             const enc = new TextEncoder();
             const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
             const h = b64u(enc.encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
-            const p = b64u(enc.encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 43200, sub: 'mailto:samisanta7990@gmail.com' })));
+            const p = b64u(enc.encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 43200, sub: 'mailto:efootballetstore@gmail.com' })));
             const key = await crypto.subtle.importKey('jwk', JSON.parse(env.VAPID_PRIVATE_JWK), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
             const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, enc.encode(h + '.' + p));
             const r2 = await fetch(s.endpoint, { method: 'POST', headers: { TTL: '86400', Urgency: 'high', Authorization: `vapid t=${h}.${p}.${b64u(sig)}, k=${env.VAPID_PUBLIC}`, 'Content-Length': '0' } });
