@@ -545,25 +545,34 @@ function mrow(c,isSup){
  const av=isSup?`<div class="tav sup">${SUP}</div>`:((c.photo||(window.PH||{})[c.id])?`<img class="tav" style="object-fit:cover" src="${E(c.photo||(window.PH||{})[c.id])}" onerror="this.outerHTML='<div class=&quot;tav&quot; style=&quot;--h:${avc(c.name||'')}&quot;>${E(String(c.name||'?').charAt(0).toUpperCase())}</div>'">`:`<div class="tav" style="--h:${avc(c.name||'')}">${E(String(c.name||'?').charAt(0).toUpperCase())}</div>`);
  const un=c.unread>0;
  return `<div class="mrow${un?' unread':''}" onclick="chat(${c.id})">${av}<div class="mt"><b>${name}</b><small class="sub">${sub}</small></div><div style="text-align:right;flex:none"><small class="sub">${tmo(c.last_at)}</small>${un?`<div class="udot">${c.unread}</div>`:''}</div></div>`}
+function msgsShell(){
+ const fromChat=!!$('cm');
+ const sk=[1,2,3,4,5].map(()=>'<div class="msk"><i></i><div><b></b><s></s></div></div>').join('');
+ show(`<h1>${L2('Messages','መልዕክቶች')}</h1><p class="sub">${L2('Chat with sellers, buyers and eFootballET support.','ከሻጮች፣ ገዢዎች እና ከ eFootballET ድጋፍ ጋር ይወያዩ።')}</p><div id="msrch"></div><div id="mlist" class="mlist">${sk}</div>`,'sup');
+ if(fromChat)V.classList.add('pgback');
+ window.ONMSGS=true}
 function renderMsgs(){
  const{sp,cs}=window.MC||{};if(!sp)return;
+ if(!window.ONMSGS||!$('mlist'))msgsShell();
+ const ml=$('mlist');if(!ml)return;
+ const first=ml.dataset.f!=='1';ml.dataset.f='1';ml.classList.toggle('st',!first);
  const all=(cs||[]).slice().sort((a,b)=>new Date(b.last_at||0)-new Date(a.last_at||0));
  const q=MQ.trim().toLowerCase();
  const filt=q?all.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.title||'').toLowerCase().includes(q)||(c.last_text||'').toLowerCase().includes(q)):all;
  const showSup=!q||('efootballet support '+L2('Support','ድጋፍ')).toLowerCase().includes(q);
  const rows=filt.map(c=>mrow(c,false)).join('');
- const searchBox=(all.length>4)?`<div class="srch" style="margin:12px 0"><span>\u{1F50D}</span><input id="mq" value="${E(MQ)}" placeholder="${L2('Search messages','መልዕክት ፈልግ')}" oninput="MQ=this.value;renderMsgs()"></div>`:'';
- const hadMq=document.activeElement&&document.activeElement.id=='mq';
- show(`<h1>${L2('Messages','መልዕክቶች')}</h1><p class="sub">${L2('Chat with sellers, buyers and eFootballET support.','ከሻጮች፣ ገዢዎች እና ከ eFootballET ድጋፍ ጋር ይወያዩ።')}</p>${searchBox}${showSup?mrow(sp,true):''}${rows||(q?`<p class="sub">${L2('No matching conversations.','የሚመሳሰል ውይይት አልተገኘም።')}</p>`:`<p class="sub">${L2('No conversations yet. Tap Chat on an account to message its seller.','እስካሁን ውይይት የለም። ሻጩን ለማነጋገር በአካውንት ላይ ውይይት ይጫኑ።')}</p>`)}`,'sup');
- const mq=$('mq');if(mq&&hadMq){const l=mq.value.length;mq.focus();mq.setSelectionRange(l,l)}
- badge()}
+ const ms=$('msrch');if(ms&&!ms.firstChild&&all.length>4)ms.innerHTML=`<div class="srch" style="margin:12px 0"><span>\u{1F50D}</span><input id="mq" value="${E(MQ)}" placeholder="${L2('Search messages','መልዕክት ፈልግ')}" oninput="MQ=this.value;renderMsgs()"></div>`;
+ ml.innerHTML=(showSup?mrow(sp,true):'')+(rows||(q?`<p class="sub">${L2('No matching conversations.','የሚመሳሰል ውይይት አልተገኘም።')}</p>`:`<p class="sub">${L2('No conversations yet. Tap Chat on an account to message its seller.','እስካሁን ውይይት የለም። ሻጩን ለማነጋገር በአካውንት ላይ ውይይት ይጫኑ።')}</p>`))}
 async function msgs(){
  if(!U)return account(L2('Log in to see your messages.','መልዕክቶችዎን ለማየት ይግቡ።'));
  askPush();
+ const cached=!!(window.MC&&window.MC.sp);
+ if(cached)renderMsgs();else msgsShell();
  const[{data:sp},{data:cs}]=await Promise.all([sb.rpc('support_info'),sb.rpc('my_convs')]);
- window.MC={sp,cs};
- await loadPh(cs);
- renderMsgs()}
+ if(!window.ONMSGS||!$('mlist'))return;
+ if(!sp){if(!cached)$('mlist').innerHTML=`<p class="sub">${L2('Could not load messages. Please try again.','መልዕክቶችን መጫን አልተቻለም። እንደገና ይሞክሩ።')}</p>`;return}
+ window.MC={sp,cs};renderMsgs();badge();
+ loadPh(cs).then(()=>{if(window.ONMSGS&&$('mlist'))renderMsgs()})}
 const avUrl=id=>CFG.URL+'/storage/v1/object/public/avatars/'+id+'.jpg';
 async function avCrop(f){const sj=await shrink(f);const u=URL.createObjectURL(sj);try{const i=await new Promise((ok,no)=>{const n=new Image();n.onload=()=>ok(n);n.onerror=()=>no(new Error('IMG'));n.src=u});const z=Math.min(i.width,i.height),c=document.createElement('canvas');c.width=c.height=320;c.getContext('2d').drawImage(i,(i.width-z)/2,(i.height-z)/2,z,z,0,0,320,320);return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('IMG')),'image/jpeg',.85))}finally{URL.revokeObjectURL(u)}}
 async function avUpload(blob){const r=await sb.storage.from('avatars').upload(U.id+'.jpg',blob,{contentType:'image/jpeg',upsert:true,cacheControl:'60'});if(r.error)throw r.error;const url=avUrl(U.id)+'?v='+Date.now();try{await sb.auth.updateUser({data:{tg_photo:url,av:Date.now()}})}catch(x){}return url}
@@ -583,7 +592,7 @@ async function chat(id){
  window.CINFO=info;window.CID=id;window.LASTN='';window.HAV=0;window.PREVN=null;
  const go=async()=>{const[{data:ms},{data:inf},{data:lk},{data:rx}]=await Promise.all([sb.from('messages').select('*').eq('conv_id',id).order('id'),sb.rpc('conv_info',{p_conv:id}),sb.from('message_likes').select('message_id,user_id').eq('conv_id',id),sb.from('message_reactions').select('message_id,user_id,emoji').eq('conv_id',id)]);if(!ms)return;if(inf&&inf.kind)window.CINFO=inf;window.LK=lk||[];window.RX=rx||[];const key=ms.length+':'+((inf&&inf.other_read)||0)+':'+((lk||[]).length)+':'+rxKey(rx);if(key===window.LASTN)return;const ae=document.activeElement;if(ae&&/^(pp|cr|ce|cp|kcm)/.test(ae.id||'')&&ae.value)return;if(window.EDITID)return;window.LASTN=key;drawChat(ms);popNew();hdrAv(ms);sb.rpc('mark_read',{p_conv:id}).then(badge)};
  window.CHATGO=go;await go();T=setInterval(go,3000);
- $('ci').addEventListener('keydown',e=>{if(e.key==='Enter')sendM(id)})}
+ $('ci').addEventListener('keydown',e=>{if(e.key==='Enter')sendM(id)});$('ci').addEventListener('input',e=>{const r=e.target.closest('.tgr');if(r)r.classList.toggle('has',!!e.target.value.trim())})}
 function drawChat(ms){const info=window.CINFO,box=$('cm');if(!box)return;const me=U.id,or=info.other_read||0;window.MS=ms;
  const LKC={},LKMINE=new Set();(window.LK||[]).forEach(r=>{LKC[r.message_id]=(LKC[r.message_id]||0)+1;if(r.user_id===me)LKMINE.add(r.message_id)});window.LKMINE=LKMINE;
  const RXC={};(window.RX||[]).forEach(r=>{const o=RXC[r.message_id]=RXC[r.message_id]||{};const e=o[r.emoji]=o[r.emoji]||{n:0,mine:0};e.n++;if(r.user_id===me)e.mine=1});
@@ -703,7 +712,7 @@ async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.sessi
 const afterSend=mid=>{window.LASTN=-1;if(window.CHATGO)window.CHATGO();pingPush(mid)};
 async function sendM(id){const i=$('ci');const v=i.value.trim();if(!v)return;
  if(window.EDITID){const eid=window.EDITID;i.value='';const{error}=await sb.rpc('edit_message',{p_id:eid,p_body:v});cancelEdit();if(error){toast(L2('Could not save the edit.','ማስተካከያውን ማስቀመጥ አልተቻለም።'));return}window.LASTN=-1;window.CHATGO&&window.CHATGO();return}
- i.value='';const{data,error}=await sb.rpc('send_message',{p_conv:id,p_body:v});if(error){i.value=v;const m=String(error.message);toast(/BLOCKED/.test(m)?L2('Phone numbers, links and contact details can\u2019t be shared here.','ስልክ ቁጥር፣ link እና የመገናኛ መረጃ እዚህ መላክ አይቻልም።'):/RATE/.test(m)?L2('Too many messages. Please wait a minute.','በጣም ብዙ መልዕክት። ትንሽ ይጠብቁ።'):L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
+ i.value='';{const r=i.closest('.tgr');if(r)r.classList.remove('has')}try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}const{data,error}=await sb.rpc('send_message',{p_conv:id,p_body:v});if(error){i.value=v;{const r=i.closest('.tgr');if(r)r.classList.add('has')}const m=String(error.message);toast(/BLOCKED/.test(m)?L2('Phone numbers, links and contact details can\u2019t be shared here.','ስልክ ቁጥር፣ link እና የመገናኛ መረጃ እዚህ መላክ አይቻልም።'):/RATE/.test(m)?L2('Too many messages. Please wait a minute.','በጣም ብዙ መልዕክት። ትንሽ ይጠብቁ።'):L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 function startEditFromMenu(id){document.querySelectorAll('.cmod').forEach(x=>x.remove());const m=(window.MS||[]).find(x=>x.id==id);startEdit(id,(m&&m.body)||'')}
 async function askNewCode(){if(!window.CID)return;const t=L2('My code expired. Please send a new one.','ኮዱ አልቋል። እባክዎ አዲስ ኮድ ይላኩልኝ።');const{data,error}=await sb.rpc('send_message',{p_conv:window.CID,p_body:t});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data);toast(L2('Request sent.','ጥያቄው ተልኳል።'))}
 function otp(id,v){v=String(v||'').replace(/\D/g,'').slice(0,6);let b='';for(let i=0;i<6;i++)b+='<i class="ob"></i>';return '<div class="otp">'+b+'<input id="'+id+'" class="oin" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" aria-label="6-digit code" value="'+v+'"></div>'}
@@ -800,7 +809,7 @@ function info(k){
  const p=P[k];if(!p)return;
  show(`<button class="back" onclick="home()">← ${L2('Back','ተመለስ')}</button><h1>${p[0]}</h1><div class="rows">${p[1].map(x=>`<div class="box"><b>${x[0]}</b><p class="sub" style="margin:6px 0 0">${x[1]}</p></div>`).join('')}</div>${p[2]?`<button class="btn" onclick="msgs()">💬 ${L2('Open support chat','የእርዳታ ውይይት ክፈት')}</button>`:''}`,'')}
 function hideSplash(){var s=document.getElementById('splash');if(s&&!s.classList.contains('out')){s.classList.add('out');setTimeout(function(){s.remove()},450)}}
-function show(h,t,noFT){window.OK=1;hideSplash();clearInterval(T);V.innerHTML=h+(noFT?'':FT());V.classList.remove('pgin','pgslide');void V.offsetWidth;V.classList.add('pgin');if(h.indexOf('class="tgh"')>-1)V.classList.add('pgslide');clearTimeout(window.PGT);window.PGT=setTimeout(()=>V.classList.remove('pgin','pgslide'),500);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));scrollTo(0,0);reveal();tickCd()}
+function show(h,t,noFT){window.OK=1;window.ONMSGS=false;hideSplash();clearInterval(T);V.innerHTML=h+(noFT?'':FT());V.classList.remove('pgin','pgslide','pgback');void V.offsetWidth;V.classList.add('pgin');if(h.indexOf('class="tgh"')>-1)V.classList.add('pgslide');clearTimeout(window.PGT);window.PGT=setTimeout(()=>V.classList.remove('pgin','pgslide','pgback'),500);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));scrollTo(0,0);if(t!='sup')reveal();tickCd()}
 const isA=c=>c.cat=='player'||c.cat=='manager'||c.cat=='account';
 const row=c=>`<div class="row" onclick="buy(${c.id})"><div class="ic">🪙</div><div style="flex:1"><b>${E(c.label)}</b><br><small>${E(c.title)}</small></div><div class="p">${c.price} ETB</div></div>`;
 const bigOff=c=>false;
@@ -1000,7 +1009,35 @@ async function out(){await sb.auth.signOut();U=null;account()}
 MO.observe(document.body,{childList:true,subtree:true});tr();
 (async()=>{if(!await load()){hideSplash();V.innerHTML='<p class="err">መረጃ ማምጣት አልተቻለም።</p><small class="sub">'+E(window.LOADERR||'')+' \u00b7 '+E(location.host)+'</small><button class="btn" onclick="location.reload()">'+L2('Retry','እንደገና ሞክር')+'</button>';window.addEventListener('online',()=>location.reload(),{once:true});return}
  const{data}=await sb.auth.getSession();U=data.session?.user||null;const first=!U&&!localStorage.seen;if(first)localStorage.seen=1;window.FIRST=first;const qp=new URLSearchParams(location.search);if(qp.get('msgs')&&U)msgs();else (qp.get('acc')||first)?account():home();badge();setInterval(badge,20000);if(U)setTimeout(askPush,2500)})();
-</script><style>.vbi{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .08em}.vbi svg{width:100%;height:100%;display:block}</style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script><script>(function(){try{if(!('IntersectionObserver' in window))return;var R=document.documentElement;R.classList.add('rvj');
+</script><style>.vbi{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .08em}.vbi svg{width:100%;height:100%;display:block}
+/* ===== Telegram-style smooth motion ===== */
+@keyframes pgSlide{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes pgBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+.pgslide.pgin{animation:pgSlide .34s cubic-bezier(.22,1,.36,1) both}
+.pgin.pgback{animation:pgBack .3s cubic-bezier(.22,1,.36,1) both}
+@keyframes mpop{from{opacity:0;transform:translate(-8px,14px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes mpopMe{from{opacity:0;transform:translate(10px,14px) scale(.9)}to{opacity:1;transform:none}}
+.mpop{animation:mpop .34s cubic-bezier(.2,.9,.3,1.25) both}
+.mpop.me{animation-name:mpopMe}
+.mlist:not(.st) .mrow{animation:rowIn .34s cubic-bezier(.22,1,.36,1) both}
+.mlist:not(.st) .mrow:nth-child(2){animation-delay:.04s}.mlist:not(.st) .mrow:nth-child(3){animation-delay:.08s}.mlist:not(.st) .mrow:nth-child(4){animation-delay:.12s}.mlist:not(.st) .mrow:nth-child(5){animation-delay:.16s}.mlist:not(.st) .mrow:nth-child(n+6){animation-delay:.2s}
+.mlist.st .mrow,.mlist.st .udot{animation:none!important}
+.mrow{transition:transform .18s cubic-bezier(.22,1,.36,1),background-color .2s ease}
+.mrow:active{background:#ffffff14!important;transform:scale(.985)}
+@keyframes udotPop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.udot{animation:udotPop .4s cubic-bezier(.34,1.56,.64,1) both}
+.msk{display:flex;gap:13px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--l)}
+.msk i,.msk b,.msk s{display:block;background:linear-gradient(100deg,#ffffff0a 30%,#ffffff1c 50%,#ffffff0a 70%);background-size:250% 100%;animation:mskS 1.3s linear infinite}
+.msk i{width:54px;height:54px;border-radius:50%;flex:none}
+.msk>div{flex:1}.msk b{height:14px;width:55%;border-radius:7px;margin-bottom:9px}.msk s{height:11px;width:80%;border-radius:6px;text-decoration:none}
+@keyframes mskS{from{background-position:100% 0}to{background-position:-150% 0}}
+.tgr .tsend{transform:scale(.72) rotate(-35deg);opacity:.5;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .2s ease}
+.tgr.has .tsend{transform:none;opacity:1}
+.tgr.has .tsend:active{transform:scale(.88)}
+.tgr{transition:border-color .2s ease,box-shadow .2s ease}
+.tgr:focus-within{border-color:#F2B70566;box-shadow:0 0 0 3px #F2B70518}
+@media(prefers-reduced-motion:reduce){.mlist .mrow,.udot,.msk i,.msk b,.msk s,.tgr .tsend{animation:none!important;transition:none!important}}
+</style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script><script>(function(){try{if(!('IntersectionObserver' in window))return;var R=document.documentElement;R.classList.add('rvj');
 var io=new IntersectionObserver(function(es){var k=0;es.forEach(function(e){if(!e.isIntersecting)return;var t=e.target;t.style.transitionDelay=Math.min(k++*70,420)+'ms';t.classList.add('in');io.unobserve(t);setTimeout(function(){t.style.transitionDelay=''},1300)})},{threshold:.06,rootMargin:'0px 0px -5% 0px'});
 var SEL='.cc,.pcard,.sm,.sec,.rvw,.dbn,.owner,.wcc,.steps div,.acard';
 function scan(){document.querySelectorAll(SEL).forEach(function(e){if(!e.classList.contains('rv')){e.classList.add('rv');io.observe(e)}})}
