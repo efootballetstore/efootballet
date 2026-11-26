@@ -809,7 +809,7 @@ function info(k){
  const p=P[k];if(!p)return;
  show(`<button class="back" onclick="home()">← ${L2('Back','ተመለስ')}</button><h1>${p[0]}</h1><div class="rows">${p[1].map(x=>`<div class="box"><b>${x[0]}</b><p class="sub" style="margin:6px 0 0">${x[1]}</p></div>`).join('')}</div>${p[2]?`<button class="btn" onclick="msgs()">💬 ${L2('Open support chat','የእርዳታ ውይይት ክፈት')}</button>`:''}`,'')}
 function hideSplash(){var s=document.getElementById('splash');if(s&&!s.classList.contains('out')){s.classList.add('out');setTimeout(function(){s.remove()},450)}}
-function show(h,t,noFT){window.OK=1;window.ONMSGS=false;hideSplash();clearInterval(T);V.innerHTML=h+(noFT?'':FT());V.classList.remove('pgin','pgslide','pgback');void V.offsetWidth;V.classList.add('pgin');if(h.indexOf('class="tgh"')>-1)V.classList.add('pgslide');clearTimeout(window.PGT);window.PGT=setTimeout(()=>V.classList.remove('pgin','pgslide','pgback'),500);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));scrollTo(0,0);if(t!='sup')reveal();tickCd()}
+function show(h,t,noFT){window.OK=1;window.ONMSGS=false;V.classList.remove('ordpg');hideSplash();clearInterval(T);V.innerHTML=h+(noFT?'':FT());V.classList.remove('pgin','pgslide','pgback');void V.offsetWidth;V.classList.add('pgin');if(h.indexOf('class="tgh"')>-1)V.classList.add('pgslide');clearTimeout(window.PGT);window.PGT=setTimeout(()=>V.classList.remove('pgin','pgslide','pgback'),500);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));scrollTo(0,0);if(t!='sup')reveal();tickCd()}
 const isA=c=>c.cat=='player'||c.cat=='manager'||c.cat=='account';
 const row=c=>`<div class="row" onclick="buy(${c.id})"><div class="ic">🪙</div><div style="flex:1"><b>${E(c.label)}</b><br><small>${E(c.title)}</small></div><div class="p">${c.price} ETB</div></div>`;
 const bigOff=c=>false;
@@ -920,8 +920,8 @@ async function enableNow(){const ok=await enablePush();alert(ok?L2('Notification
 async function status(code,p){
  window.AVT=0;let LS='';const d=async()=>{if($('kc')&&$('kc').value)return;if($('tx2')&&$('tx2').value)return;const{data}=await sb.rpc('get_order',{p_code:code,p_phone:p});if(data&&data.status=='awaiting_review'&&(window.AVT||0)<160){window.AVT=(window.AVT||0)+1;autoV(code)}const J=JSON.stringify(data);if(data&&J===LS)return;LS=J;
   if(!data){show('<p class="err">ትዕዛዝ አልተገኘም። ቁጥሩን እና ስልኩን ያረጋግጡ።</p><button class="btn s" onclick="account()">ተመለስ</button>','acc');return}
-  show(`<h1>ትዕዛዝ ${data.code}</h1><div class="box">${E(data.product)}<br>${E(data.package)} · <span class="p">${data.amount} ETB</span><div class="st st-${data.status}">${ST[data.status]}</div></div>`+(data.status=='awaiting_review'?`<div class="hint prem">${L2('We are verifying your payment automatically. This page updates by itself.','ክፍያዎን በራስ-ሰር እያረጋገጥን ነው። ይህ ገጽ በራሱ ይዘምናል።')}</div><div class="scan"><i></i></div>`:'')+(data.status=='approved'?`<div class="hint prem">\u2705 ${L2('Receipt verified. Our admin will deliver your order shortly.','ደረሰኝዎ ተረጋግጧል። አድሚናችን ትዕዛዝዎን በቅርቡ ያደርሳል።')}</div>${!data.code_req?`<button class="btn" onclick="imReady('${code}','${p}',this)">✅ ${L2("I'm ready, I'll enter the code now",'ዝግጁ ነኝ፣ ኮዱን አሁን አስገባለሁ')}</button>`:''}${(window.Notification&&Notification.permission!=='granted')?`<button class="btn s" onclick="enableNow()">🔔 ${L2('Turn on notifications to be alerted when the code is requested','ኮድ ሲጠየቅ እንዲያውቁ ማሳወቂያ ያብሩ')}</button>`:''}`:'')+(data.status=='pending'?`<button class="btn" onclick="pay('${code}','${p}',${data.amount})">💰 ክፍያ ፈጽሜያለሁ፣ ደረሰኝ ላክ</button>`:'')+(data.proof?`<div class="box"><b>📸 የማድረስ ማረጋገጫ</b><img src="${CFG.URL}/storage/v1/object/public/proofs/${data.proof}" style="width:100%;border-radius:12px;margin-top:8px"></div>`:'')+(data.code_req?`<div class="hint">🔐 ${/japan/i.test(data.product||'')?L2('Enter Code 2 — the Konami login code','ኮድ 2 ያስገቡ — የ Konami ሎግኢን ኮድ'):L2('Enter Code 1 — the data transfer code','ኮድ 1 ያስገቡ — የዳታ ትራንስፈር ኮድ')} <b id="cd" style="float:right"></b></div>${otp('kc',(document.getElementById('kc')||{}).value)}<a class="btn s" href="https://mail.google.com/mail/u/0/#search/konami+newer_than%3A1d" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin:8px 0">📧 ${L2('Open Gmail (Konami email)','ጂሜይል ክፈት (የ Konami ኢሜል)')}</a><div class="err" id="er"></div><button class="btn" onclick="sendKc('${code}','${p}')">ኮድ ላክ</button>`:'')+'<button class="btn s" onclick="home()">መነሻ</button>','acc');
-  if(data.code_req){const k0=$('kc');if(k0){otpSync(k0);k0.focus()}}
+  show(`<h1>ትዕዛዝ ${data.code}</h1><div class="box">${E(data.product)}<br>${E(data.package)} · <span class="p">${data.amount} ETB</span><div class="st st-${data.status}">${ST[data.status]}</div></div>`+(data.status=='awaiting_review'?`<div class="hint prem">${L2('We are verifying your payment automatically. This page updates by itself.','ክፍያዎን በራስ-ሰር እያረጋገጥን ነው። ይህ ገጽ በራሱ ይዘምናል።')}</div><div class="scan"><i></i></div>`:'')+(data.status=='approved'?`<div class="hint prem">\u2705 ${L2('Receipt verified. Our admin will deliver your order shortly.','ደረሰኝዎ ተረጋግጧል። አድሚናችን ትዕዛዝዎን በቅርቡ ያደርሳል።')}</div>${!data.code_req?`<button class="btn" onclick="imReady('${code}','${p}',this)">✅ ${L2("I'm ready, I'll enter the code now",'ዝግጁ ነኝ፣ ኮዱን አሁን አስገባለሁ')}</button>`:''}${(window.Notification&&Notification.permission!=='granted')?`<button class="btn s" onclick="enableNow()">🔔 ${L2('Turn on notifications to be alerted when the code is requested','ኮድ ሲጠየቅ እንዲያውቁ ማሳወቂያ ያብሩ')}</button>`:''}`:'')+(data.status=='pending'?`<button class="btn" onclick="pay('${code}','${p}',${data.amount})">💰 ክፍያ ፈጽሜያለሁ፣ ደረሰኝ ላክ</button>`:'')+(data.proof?`<div class="box"><b>📸 የማድረስ ማረጋገጫ</b><img src="${CFG.URL}/storage/v1/object/public/proofs/${data.proof}" style="width:100%;border-radius:12px;margin-top:8px"></div>`:'')+(data.code_req?`<div class="hint kch"><span>🔐 ${/japan/i.test(data.product||'')?L2('Enter Code 2 — the Konami login code','ኮድ 2 ያስገቡ — የ Konami ሎግኢን ኮድ'):L2('Enter Code 1 — the data transfer code','ኮድ 1 ያስገቡ — የዳታ ትራንስፈር ኮድ')}</span><b id="cd"></b></div>${otp('kc',(document.getElementById('kc')||{}).value)}<a class="btn s" href="https://mail.google.com/mail/u/0/#search/konami+newer_than%3A1d" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin:8px 0">📧 ${L2('Open Gmail (Konami email)','ጂሜይል ክፈት (የ Konami ኢሜል)')}</a><div class="err" id="er"></div><button class="btn" id="kcb" onclick="sendKc('${code}','${p}')">ኮድ ላክ</button>`:'')+'<button class="btn s" onclick="home()">መነሻ</button>','acc');V.classList.add('ordpg');
+  if(data.code_req){const k0=$('kc');if(k0){otpSync(k0);k0.focus();if(!k0._a){k0._a=1;k0.addEventListener('input',()=>{const e=$('er');if(e)e.textContent='';const v=k0.value.trim();if(v.length==6&&/^[A-Za-z0-9]{6}$/.test(v))sendKc(code,p)})}}}
   if(data.code_req){window.CRT=window.CRT||Date.now();clearInterval(window.CDI);const f=()=>{const e=$('cd');if(!e)return clearInterval(window.CDI);const t=Math.max(0,180-Math.floor((Date.now()-window.CRT)/1000));e.textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};f();window.CDI=setInterval(f,1000)}
   if(!['delivered','rejected','pending'].includes(data.status))T=setInterval(d,4000)};
  await d()}
@@ -935,8 +935,18 @@ async function chatSendKc(oid){const i=$('kcm'+oid),v=((i&&i.value)||'').trim();
   try{localStorage['kcs'+oid]=Date.now()}catch(e){}
   try{pingAdmin('code',o.code)}catch(e){}
   toast(L2('Code sent \u2705','ኮዱ ተልኳል \u2705'));if(window.MS)drawChat(window.MS)}finally{window.KCBUSY=0}}
-async function sendKc(c,p){const v=$('kc').value.trim();if(!/^[A-Za-z0-9]{4,10}$/.test(v)){$('er').textContent='ኮዱ ትክክል አይደለም።';return}
- const r=await sb.rpc('submit_konami_code',{p_code:c,p_phone:p,p_val:v});if(r.error||!r.data){$('er').textContent='መላክ አልተቻለም፣ እንደገና ይሞክሩ።';return}pingAdmin('code',c);status(c,p)}
+async function sendKc(c,p){
+ if(window.KCB)return;const k=$('kc'),b=$('kcb'),e=$('er'),v=((k&&k.value)||'').trim();
+ if(!/^[A-Za-z0-9]{4,10}$/.test(v)){if(e)e.textContent='ኮዱ ትክክል አይደለም።';return}
+ if(e)e.textContent='';window.KCB=1;const t0=b?b.textContent:'';
+ if(b){b.disabled=true;b.textContent='⏳ '+L2('Sending…','በመላክ ላይ…')}
+ try{const r=await sb.rpc('submit_konami_code',{p_code:c,p_phone:p,p_val:v});
+  if(r.error||!r.data){if(e)e.textContent='መላክ አልተቻለም፣ እንደገና ይሞክሩ።';if(b){b.disabled=false;b.textContent=t0}return}
+  try{pingAdmin('code',c)}catch(x){}
+  if(b)b.textContent='✅ '+L2('Sent','ተልኳል');
+  toast(L2('Code sent ✅','ኮዱ ተልኳል ✅'));try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
+  await new Promise(ok=>setTimeout(ok,700));if(k)k.value='';status(c,p)}
+ finally{window.KCB=0}}
 function mn(){$('mn').classList.toggle('open')}
 function go2(f){$('mn').classList.remove('open');f()}
 async function sell(){
@@ -1037,6 +1047,19 @@ MO.observe(document.body,{childList:true,subtree:true});tr();
 .tgr{transition:border-color .2s ease,box-shadow .2s ease}
 .tgr:focus-within{border-color:#F2B70566;box-shadow:0 0 0 3px #F2B70518}
 @media(prefers-reduced-motion:reduce){.mlist .mrow,.udot,.msk i,.msk b,.msk s,.tgr .tsend{animation:none!important;transition:none!important}}
+
+/* ===== order page: readable text, no dead gaps ===== */
+.hint.prem,.hint.prem.rv{opacity:1!important}
+.hint.kch{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hint.kch #cd{flex:none;font-variant-numeric:tabular-nums;color:var(--a,#F2B705)}
+.ordpg .hint{font-size:16.5px;line-height:1.45;padding:14px;margin:12px 0}
+.ordpg .box{font-size:17px;line-height:1.5;padding:16px}
+.ordpg .st{font-size:20px;margin:10px 0 2px}
+.ordpg .btn{font-size:17px;font-weight:700;padding:15px;margin-top:10px;font-family:inherit}
+.ordpg .btn:disabled{opacity:.75}
+.ordpg .err{font-size:15px;margin:6px 0}
+.ordpg .otp{margin:14px 0}
+.ordpg .scan{margin:10px 6px 6px}
 </style><script>(function(){var SV='<svg viewBox="0 0 24 24"><g fill="#3d9be9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><rect x="3.5" y="3.5" width="17" height="17" rx="5" transform="rotate(45 12 12)"/></g><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',SK=/^(SCRIPT|STYLE|TEXTAREA|TITLE|OPTION|NOSCRIPT)$/;function conv(r){if(!r)return;var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,null),L=[],n;while(n=w.nextNode()){if(n.nodeValue.indexOf('\u2705')>-1&&n.parentNode&&!SK.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){var P=n.nodeValue.split('\u2705'),F=document.createDocumentFragment();P.forEach(function(p,i){if(i){var s=document.createElement('span');s.className='vbi';s.innerHTML=SV;F.appendChild(s)}if(p)F.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(F,n)})}var q=0;function sch(){if(q)return;q=1;requestAnimationFrame(function(){q=0;conv(document.body)})}new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true,characterData:true});if(document.readyState!='loading')sch();else document.addEventListener('DOMContentLoaded',sch)})();</script><script>(function(){try{if(!('IntersectionObserver' in window))return;var R=document.documentElement;R.classList.add('rvj');
 var io=new IntersectionObserver(function(es){var k=0;es.forEach(function(e){if(!e.isIntersecting)return;var t=e.target;t.style.transitionDelay=Math.min(k++*70,420)+'ms';t.classList.add('in');io.unobserve(t);setTimeout(function(){t.style.transitionDelay=''},1300)})},{threshold:.06,rootMargin:'0px 0px -5% 0px'});
 var SEL='.cc,.pcard,.sm,.sec,.rvw,.dbn,.owner,.wcc,.steps div,.acard';
