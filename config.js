@@ -6,5 +6,6 @@ CHANNEL:'eFootballetstore',
 TIKTOK:'eFootballetStore',
 GROUP:'https://t.me/Efbgroupet',
 PHONE:'',
-GOOGLE:true
+GOOGLE:true,
+FWD:'konami-in-9b6fdbc9@efootballet.store'
 };
