@@ -997,7 +997,7 @@ async function acCheck(){const i=$('ace'),out=$('acr');if(!i||!out)return;const 
  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){out.textContent=L2('Enter the email you use for Konami.','ለ Konami የሚጠቀሙበትን ኢሜል ያስገቡ።');return}
  try{localStorage.acMail=em}catch(e){}
  out.textContent='…';const{data,error}=await sb.rpc('my_fwd_status',{p_email:em});
- if(error||!data){out.textContent=L2('Could not check. Use the email from one of your orders.','ማረጋገጥ አልተቻለም። ከትዕዛዞችዎ በአንዱ ያለውን ኢሜል ይጠቀሙ።');return}
+ if(error||!data){out.textContent=L2('Could not check. Make sure auto_code.sql was run and you are signed in.','ማረጋገጥ አልተቻለም። ገብተው እንደሆነ ያረጋግጡ እና ቆይተው ይሞክሩ።');return}
  let h='';if(data.confirm)h+=`<div class="acc">${L2('Gmail confirmation code','የ Gmail ማረጋገጫ ኮድ')}<b>${E(data.confirm)}</b></div>`;
  h+=data.last_code?`<div class="aok">✅ ${L2('Active. Last Konami email received:','ንቁ ነው። የመጨረሻ የ Konami ኢሜል፦')} ${E(new Date(data.last_code).toLocaleString())}</div>`:`<small>${L2('No Konami email received yet. It appears here after step 4 and the first Konami email.','እስካሁን የ Konami ኢሜል አልደረሰም። ደረጃ 4 እና የመጀመሪያው የ Konami ኢሜል ከደረሰ በኋላ እዚህ ይታያል።')}</small>`;
  out.innerHTML=h}
