@@ -731,6 +731,7 @@ function exchModal(){const d=document.createElement('div');d.className='cmod';d.
 async function sendCode(mid){const m=(window.MS||[]).find(x=>x.id==mid);if(!m)return;const v=($('cr'+mid).value||'').trim();if(!/^[A-Za-z0-9]{4,12}$/.test(v)){toast(L2('Enter the code (4-12 letters or numbers).','ኮዱን ያስገቡ (4-12 ፊደል ወይም ቁጥር)።'));return}const{data,error}=await sb.rpc('seller_send_code',{p_conv:window.CID,p_catalog:m.meta.catalog_id,p_stage:m.meta.stage||1,p_code:v});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 async function sendCreds(mid){const m=(window.MS||[]).find(x=>x.id==mid);if(!m)return;const e1=($('ce'+mid).value||'').trim(),p1=($('cp'+mid).value||'').trim();if(!e1||!p1){toast(L2('Enter the email and password.','ኢሜል እና ይለፍ ቃል ያስገቡ።'));return}const{data,error}=await sb.rpc('seller_send_creds',{p_conv:window.CID,p_catalog:m.meta.catalog_id,p_email:e1,p_pass:p1});if(error){toast(L2('Could not send.','መላክ አልተቻለም።'));return}afterSend(data)}
 async function pingAdmin(t,r){try{const ss=(await sb.auth.getSession()).data.session;if(ss&&r)fetch('/notifyadmin',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+ss.access_token},body:JSON.stringify({type:t,ref:r})})}catch(e){}}
+async function pingDeal(id){try{const s=(await sb.auth.getSession()).data.session;if(s&&id)fetch('/notifydeal',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({deal_id:id})})}catch(e){}}
 async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(!s||!mid)return;fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
 const afterSend=mid=>{window.LASTN=-1;if(window.CHATGO)window.CHATGO();pingPush(mid)};
 async function sendM(id){const i=$('ci');const v=i.value.trim();if(!v)return;
@@ -1069,7 +1070,7 @@ async function dealSend(id,kind){
    const m=$('dm').value;Object.assign(a,{p_mode:m,p_amount:m=='even'?0:(parseInt(($('dam').value||'0').replace(/\D/g,''))||0),p_fee_payer:$('df').value,p_ovr:($('dov').value||'').trim(),p_note:($('dnt').value||'').trim(),p_images:paths});
   }
   const{data,error}=await sb.rpc('deal_request',a);if(error)throw error;
-  localStorage.samph=p;try{pingAdmin('deal',String(data))}catch(e){}
+  localStorage.samph=p;try{pingAdmin('deal',String(data))}catch(e){}pingDeal(data);
   show(`<h1>\u{1F4E8} ${L2('Request sent','ጥያቄዎ ተልኳል')}</h1><div class="box">${L2('The owner will answer. You will get a notification when it is your turn. Follow every step in My deals.','ባለቤቱ ይመልሳል። ተራዎ ሲሆን ማሳወቂያ ይደርስዎታል። ሁሉንም ደረጃዎች በ "የእኔ ስምምነቶች" ውስጥ ይከተሉ።')}</div><button class="btn" onclick="deals()">${L2('Open My deals','የእኔ ስምምነቶች')}</button>`,'');
  }catch(e){er.textContent=DERR(e)+' ['+String(e&&e.message||e).slice(0,60)+']';go.disabled=false;go.textContent=L2('Send request','ጥያቄ ላክ')}}
 const DSTEP=(s)=>({requested:0,login:1,ask1:2,code1:2,verify:2,code3:2,pay:3,handover:4,done:5}[s]??0);
@@ -1097,9 +1098,9 @@ async function deals(){
  const{data,error}=await sb.rpc('deal_mine');if(error){$('dl').innerHTML='<p class="sub">'+L2('Could not load.','መጫን አልተቻለም።')+'</p>';return}
  const a=data||[];window.DEALS=a;$('dl').innerHTML=a.length?a.map(dealCard).join(''):`<div class="box">${L2('No deals yet. Open an account and tap Buy or Exchange.','ገና ስምምነት የለም። አካውንት ከፍተው ግዛ ወይም ተለዋወጥ ይጫኑ።')}</div>`}
 async function dealRun(fn){if(window.DBUSY)return;window.DBUSY=1;try{const r=await fn();if(r&&r.error){toast(DERR(r.error));return false}return r||true}catch(e){toast(DERR(e));return false}finally{window.DBUSY=0}}
-async function dealAns(id,ok){if(await dealRun(()=>sb.rpc('deal_answer',{p_id:id,p_accept:ok})))deals()}
+async function dealAns(id,ok){if(await dealRun(()=>sb.rpc('deal_answer',{p_id:id,p_accept:ok}))){pingDeal(id);deals()}}
 async function dealSub(id,step){const v=s=>($(s+id)||{}).value?.trim()||'';let a,b=null;if(step=='login'){a=v('dle');b=v('dlp');if(!a||!b){toast(L2('Enter email and password.','ኢሜል እና ይለፍ ቃል ያስገቡ።'));return}}else{a=v('dcd');if(!/^[A-Za-z0-9]{4,12}$/.test(a)){toast(L2('Enter the code (4-12 letters or numbers).','ኮዱን ያስገቡ (4-12 ፊደል ወይም ቁጥር)።'));return}}
- if(await dealRun(()=>sb.rpc('deal_submit',{p_id:id,p_step:step,p_a:a,p_b:b}))){toast(L2('Sent ✅','ተልኳል ✅'));deals()}}
+ if(await dealRun(()=>sb.rpc('deal_submit',{p_id:id,p_step:step,p_a:a,p_b:b}))){toast(L2('Sent ✅','ተልኳል ✅'));pingDeal(id);deals()}}
 async function dealPay(id){const r=await dealRun(()=>sb.rpc('deal_pay_order',{p_id:id}));if(r&&r.data){const o=r.data;pay(o.code,o.phone,o.amount)}}
 async function dealCancel(id){if(!confirm(L2('Cancel this deal?','ስምምነቱን መሰረዝ ይፈልጋሉ?')))return;if(await dealRun(()=>sb.rpc('deal_cancel',{p_id:id})))deals()}
 function dealsCard(){return `<div class="box ac2" id="dcw" onclick="deals()" style="cursor:pointer"><div class="act"><span class="aci">\u{1F91D}</span><div><b>${L2('My deals','የእኔ ስምምነቶች')}</b><small id="dcs">${L2('Buy · Exchange · Sell','ግዢ · መለዋወጥ · ሽያጭ')}</small></div></div></div>`}
