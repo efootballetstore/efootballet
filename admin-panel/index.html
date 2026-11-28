@@ -161,7 +161,7 @@ const pkey=t=>{t=String(t||'');const m=t.match(/\((?:buyer|seller)\s+([^)]+)\)/i
 const isSupT=t=>/^\s*Support/i.test(String(t||''));
 async function pingDeal(id){try{const s=(await sb.auth.getSession()).data.session;if(s&&id)fetch('/notifydeal',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({deal_id:id})})}catch(e){}}
 async function pingPush(mid){try{const s=(await sb.auth.getSession()).data.session;if(s&&mid)fetch('/notifypush',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+s.access_token},body:JSON.stringify({msg_id:mid})})}catch(e){}}
-async function shrink(f){const u=URL.createObjectURL(f);try{const i=await new Promise((ok,no)=>{const n=new Image();n.onload=()=>ok(n);n.onerror=no;n.src=u});const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.82))}finally{URL.revokeObjectURL(u)}}
+async function shrink(f){const u=URL.createObjectURL(f);try{const i=await new Promise((ok,no)=>{const n=new Image();n.onload=()=>ok(n);n.onerror=no;n.src=u});const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);return await new Promise(ok=>c.toBlob(b=>ok(b||f),'image/jpeg',.82))}catch(e){return f}finally{URL.revokeObjectURL(u)}}
 
 /* ---------- login ---------- */
 function login(msg=''){clearInterval(timer);$('nav').hidden=true;$('fo').hidden=$('fm').hidden=true;$('v').hidden=false;$('who').textContent='';
