@@ -139,6 +139,7 @@ const sb=supabase.createClient(CFG.URL,CFG.KEY),$=i=>document.getElementById(i);
 const VAPID='BGQtnFksNcq6JmOL03xqhKECdcsij9itrW81buBFiW-ih1eJKNkYrCVdhRfr44V9TGPJ1uM-VMuRsBh2IKXXemQ';
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const u8=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
+(function(el){const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');Object.defineProperty(el,'innerHTML',{configurable:true,set(h){if(this.__h===h)return;this.__h=h;d.set.call(this,h)},get(){return d.get.call(this)}})})(document.getElementById('v'));
 const BUILD=Date.now();let cur='todo',ME=null,timer=null,KSEEN={};try{KSEEN=JSON.parse(localStorage.kseen||'{}')}catch(e){}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/admin-panel/sw.js',{scope:'/admin-panel/'}).catch(()=>{});
 
