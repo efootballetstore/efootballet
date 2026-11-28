@@ -115,6 +115,30 @@ h2.t .cimg{-webkit-text-fill-color:initial}
 .stb .btn,.stp .btn{min-height:48px;border-radius:14px;font-size:15px}
 .rr{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10}.rr b.r{color:#ef4444}.rr b.g{color:#22C3A6}.rr.tot{border:0;font-size:17px;padding-top:12px}
 .row2{display:flex;gap:8px}.row2 input{flex:1;min-width:0}.le{display:flex;justify-content:space-between;gap:10px}
+</style><style id="pa7">.oc{display:flex;align-items:center;gap:12px;padding:13px;margin-bottom:10px;border-radius:20px;background:linear-gradient(160deg,#1d2036,#12141f);border:1px solid #ffffff14;box-shadow:0 14px 30px -22px #000;position:relative;animation:paneIn .35s var(--ease) both}
+.oc:active{transform:scale(.985)}
+.oc.hot{border-color:#F2B7058c;box-shadow:0 0 0 1px #F2B70522 inset,0 16px 34px -22px #F2B705}
+.oc.hot::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(#F2B705,#c98f00)}
+.oi{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:22px;background:#ffffff0d;border:1px solid #ffffff12}.oi .cimg{width:32px;height:32px;margin:0}
+.om{flex:1;min-width:0}.om b{display:block;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.om small{display:block;color:var(--h);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.or{flex:none;text-align:right;display:flex;flex-direction:column;gap:5px;align-items:flex-end}.or>b{font-size:14px}
+#sh{position:fixed;inset:0;z-index:45;background:var(--bg);display:flex;flex-direction:column;animation:shUp .32s var(--ease) both}
+@keyframes shUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.shh{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:linear-gradient(120deg,#1b1442,#0d0a24);border-bottom:1px solid #ffffff14}
+.shh button{flex:none;width:40px;height:40px;border-radius:13px;border:1px solid #ffffff24;background:#ffffff10;color:var(--t);font-size:26px;line-height:1}
+.shh .m{flex:1;min-width:0}.shh .m b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shh .m small{display:block;color:var(--h);font-size:12px}
+.shb{flex:1;overflow:auto;padding:14px 14px 40px}
+.tl .stp{position:relative;border:0;margin:0;padding:0 0 18px 40px}
+.tl .stp::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:#ffffff1a}.tl .stp:last-child::before{display:none}
+.tl .stp.done::before{background:#22c3a699}
+.tl .sth{position:static}.tl .sth i{position:absolute;left:0;top:0;width:32px;height:32px;font-size:14px}
+.tl .sth b{font-size:15.5px;line-height:32px}
+.tl .stb{margin:6px 0 0}
+.tl .stp.todo .sth b{color:var(--h)}.tl .stp.todo .stb{opacity:.55}
+.tl .stp.now .stb{padding:12px;border-radius:16px;background:#F2B7050f;border:1px solid #F2B70544}
+.tl .stp.now .sth i{box-shadow:0 0 0 5px #F2B70524}
+.tl .stb .btn{min-height:50px;font-size:15.5px;border-radius:15px}
+.tl .pp{background:#ffffff0c}
 </style><style id="pa4">
 .cs.simple:not(.all) .stp.todo{display:none}
 .cs.simple:not(.all) .stp.done .stb{display:none}
@@ -234,9 +258,31 @@ function go(t,hash){if(['home','coins','sales','swaps','chat'].includes(t))t='to
  if(!fr){$('v').scrollTop=0;if(t==='rpt')RC=null;paint();const v=$('v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');clearTimeout(window.ENT);window.ENT=setTimeout(()=>v.classList.remove('enter'),900)}
  history.replaceState(null,'','#'+(t==='classic'?'more':t))}
 function paint(){if(!ME)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#v')&&/INPUT|TEXTAREA/.test(a.tagName))return;
- const y=$('v').scrollTop;if(cur==='rpt'){if(!RC)rptLoad();return}({todo,hist,more}[cur]||(()=>{}))();$('v').scrollTop=y}
+ const y=$('v').scrollTop;if(cur==='rpt'){if(!RC)rptLoad();sheetPaint();return}({todo,hist,more}[cur]||(()=>{}))();sheetPaint();$('v').scrollTop=y}
 async function tick(){if(!ME||document.hidden)return;try{await load();if(cur==='todo')await swapRefresh();paint()}catch(e){}}
 function tg(id){OPEN[id]=!OPEN[id];if(OPEN[id]&&cur==='todo')swapRefresh().then(paint);paint()}
+
+/* ---------- CARDS + DETAIL SHEET ---------- */
+const oc=(k,id,ic,title,sub,amt,st,cls,hot)=>`<div class="oc${hot?' hot':''}" onclick="openSheet('${k}',${id})"><div class="oi">${ic}</div><div class="om"><b>${title}</b><small>${sub}</small></div><div class="or"><b>${amt}</b>${chip(st,cls)}</div></div>`;
+function coinStat(o){const rd=D.ready[o.code];
+ if(o.status=='awaiting_review')return['Verify payment',''];if(o.status=='delivered')return['Delivered','g'];if(o.status=='rejected')return[/Refunded/.test(o.auto_note||'')?'Refunded':'Rejected','r'];if(o.status=='pending')return['Not paid',''];
+ const jp=/japan/i.test((o.product||'')+' '+(o.package||''));
+ if(!o.claimed_by)return[rd?'🟢 Ready · Take it':'Take it','g'];if(o.kcode)return['Deliver now','g'];if(o.relogin)return['Waiting login',''];if(o.code_req)return['Waiting code',''];return['Ask Code '+(jp?2:1),'']}
+function coinCard(o){const[st,c]=coinStat(o),rd=D.ready[o.code];return oc('o',o.id,COINI,E(o.package||o.product),`#${o.id} · ${E(o.phone||'')} · ${ago(o.created_at)}${rd&&o.status=='approved'?' · 🟢 ready':''}`,E(o.amount)+' ETB',st,c,needsC(o))}
+function dealCard(d){const closed=['done','declined','cancelled'].includes(d.status);return oc('d',d.id,d.kind=='buy'?'🛒':'🔁',E(d.title||'Account deal'),`D${d.id} · ${d.kind=='buy'?'Buy':'Exchange'} · ${E(d.buyer_name||d.phone||'')} · ${ago(d.updated_at||d.created_at)}`,d.kind=='buy'?E(d.price)+' ETB':'⇄',DLSTEP[d.status]||E(d.status),closed?(d.status=='done'?'g':'r'):(needsD(d)?'g':''),needsD(d))}
+function saleCard(o){const l=listing(o.catalog_id);return oc('s',o.id,'🏷️',E(l.title||o.product||'Account'),`#${o.id} · old deal · ${E(o.phone||'')} · ${ago(o.created_at)}`,E(o.amount)+' ETB',({delivered:'Delivered',rejected:'Rejected',approved:'Paid',awaiting_review:'Verify payment',pending:'Open'})[o.status]||E(o.status),o.status=='delivered'?'g':o.status=='rejected'?'r':'',false)}
+function swapCard(c){return oc('x',c.cid,'🔁',`${E(nameOf(c.F))} ⇄ ${E(nameOf(c.C))}`,`#${c.cid} · old swap`,'⇄','Open','',false)}
+let SH=null;
+function openSheet(k,id){SH={k,id};try{history.pushState({sh:1},'')}catch(e){}sheetPaint(true)}
+function closeSheet(pop){SH=null;const e=$('sh');if(e)e.remove();if(!pop&&history.state&&history.state.sh){try{history.back()}catch(x){}}}
+window.addEventListener('popstate',()=>{if(SH)closeSheet(true)});
+function caseHtml(k,id){if(k=='o'){const o=D.orders.find(x=>x.id==id);return o&&coinCase(o)}if(k=='d'){const d=(D.deals||[]).find(x=>x.id==id);return d&&dealCase(d)}if(k=='s'){const o=D.orders.find(x=>x.id==id);return o&&saleCase(o)}if(k=='x'){const c=swapCases().find(x=>x.cid==id);return c&&swapCase(c)}return null}
+function sheetPaint(force){if(!SH)return;const a=document.activeElement;if(!force&&a&&a.closest&&a.closest('#sh')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+ const h=caseHtml(SH.k,SH.id);if(!h){closeSheet();return}
+ const t=document.createElement('div');t.innerHTML=h;const cs=t.querySelector('.cs'),hd=cs.querySelector('.csh .m'),ch=cs.querySelector('.csh .st'),bd=cs.querySelector('.csb').innerHTML;
+ let e=$('sh');if(!e){e=document.createElement('div');e.id='sh';document.body.appendChild(e)}
+ const html=`<div class="shh"><button onclick="closeSheet()">‹</button><div class="m">${hd.innerHTML}</div>${ch?ch.outerHTML:''}</div><div class="shb tl">${bd}</div>`;
+ if(e.__h!==html){e.__h=html;const o=e.querySelector('.shb'),y=o?o.scrollTop:0;e.innerHTML=html;const n=e.querySelector('.shb');if(n)n.scrollTop=y}}
 
 /* ---------- REPORT ---------- */
 let RP='7',RC=null,RL=[];
@@ -264,10 +310,10 @@ function todo(){
  const co=coinOrders().filter(o=>['awaiting_review','approved'].includes(o.status)).sort((a,b)=>(D.ready[b.code]&&b.status=='approved'?1:0)-(D.ready[a.code]&&a.status=='approved'?1:0));
  const dl=(D.deals||[]).filter(d=>!['done','declined','cancelled'].includes(d.status));
  const now=[],wait=[],old=[];
- co.forEach(o=>(needsC(o)?now:wait).push(coinCase(o)));
- dl.forEach(d=>(needsD(d)?now:wait).push(dealCase(d)));
- saleOrders().filter(o=>!['delivered','rejected'].includes(o.status)).forEach(o=>old.push(saleCase(o)));
- swapCases().forEach(c=>old.push(swapCase(c)));
+ co.forEach(o=>(needsC(o)?now:wait).push(coinCard(o)));
+ dl.forEach(d=>(needsD(d)?now:wait).push(dealCard(d)));
+ saleOrders().filter(o=>!['delivered','rejected'].includes(o.status)).forEach(o=>old.push(saleCard(o)));
+ swapCases().forEach(c=>old.push(swapCard(c)));
  const sec=(t,n,h,cls)=>h.length?`<div class="sech ${cls||''}"><b>${t}</b><span>${n}</span></div>${h.join('')}`:'';
  $('v').innerHTML=`<div class="hero ${now.length?'hot':''}"><div><small>${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'})}</small><b>${now.length?now.length+' need'+(now.length==1?'s':'')+' you':'All done'}</b></div><span class="hn">${now.length||'✓'}</span></div>
  ${sec('🔥 Needs you',now.length,now,'hotc')}
@@ -277,7 +323,7 @@ function todo(){
 function hist(){
  const dn=coinOrders().filter(o=>o.status=='delivered').slice(0,15),rj=[...coinOrders(),...saleOrders()].filter(o=>o.status=='rejected');
  const dd=(D.deals||[]).filter(d=>['done','declined','cancelled'].includes(d.status)).slice(0,15),sd=saleOrders().filter(o=>o.status=='delivered').slice(0,10);
- $('v').innerHTML=`<h2 class="t">✅ Done</h2>${dn.length?`<div class="sech"><b>Coins delivered</b><span>${dn.length}</span></div>${dn.map(coinCase).join('')}`:''}${dd.length?`<div class="sech"><b>Account deals</b><span>${dd.length}</span></div>${dd.map(dealCase).join('')}`:''}${sd.length?`<div class="sech"><b>Accounts delivered</b><span>${sd.length}</span></div>${sd.map(saleCase).join('')}`:''}${rejGroup(rj,o=>o.cat==='ef'?coinCase(o):saleCase(o),'hist')}${(dn.length+dd.length+sd.length+rj.length)?'':'<p class="sub" style="text-align:center;margin:40px 0">Nothing yet</p>'}`;decorate()}
+ $('v').innerHTML=`<h2 class="t">✅ Done</h2>${dn.length?`<div class="sech"><b>Coins delivered</b><span>${dn.length}</span></div>${dn.map(coinCard).join('')}`:''}${dd.length?`<div class="sech"><b>Account deals</b><span>${dd.length}</span></div>${dd.map(dealCard).join('')}`:''}${sd.length?`<div class="sech"><b>Accounts delivered</b><span>${sd.length}</span></div>${sd.map(saleCard).join('')}`:''}${rejGroup(rj,o=>o.cat==='ef'?coinCard(o):saleCard(o),'hist')}${(dn.length+dd.length+sd.length+rj.length)?'':'<p class="sub" style="text-align:center;margin:40px 0">Nothing yet</p>'}`;decorate()}
 
 /* ---------- HOME (old, unused) ---------- */
 function home(){
