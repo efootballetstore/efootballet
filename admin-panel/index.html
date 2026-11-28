@@ -165,7 +165,7 @@ async function start(){
 let D={orders:[],convs:[],ready:{},xm:[],steps:[],cat:[],conv:null,subs:0,sc:{}},XS={sup:{},party:{},val:{}},CRD={},OPEN={},BUSY=0;
 const XK=['exchange_offer','exchange_accept','exchange_decline','verify_done','fee_sender','fee_ask','fee_agree','fee_decline'];
 async function load(){
- const[o,c,r,xm,st,cat,cv,sb2,rm]=await Promise.all([
+ const[o,c,r,xm,st,cat,cv,sb2,rm,dl]=await Promise.all([
   sb.from('orders').select('*').order('id',{ascending:false}).limit(300),
   sb.rpc('admin_convs'),sb.from('order_ready').select('*'),
   sb.from('messages').select('conv_id,id,kind,sender_id,meta,created_at').in('kind',XK).order('id',{ascending:false}).limit(1500),
@@ -173,7 +173,9 @@ async function load(){
   sb.from('catalog').select('*').in('cat',['account','player']).order('id',{ascending:false}).limit(300),
   sb.from('conversations').select('*').limit(2000),
   sb.from('submissions').select('id').eq('status','pending').limit(100),
-  sb.from('messages').select('meta,created_at').not('meta->>ready','is',null).order('id',{ascending:false}).limit(200)]);
+  sb.from('messages').select('meta,created_at').not('meta->>ready','is',null).order('id',{ascending:false}).limit(200),
+  sb.rpc('deal_admin_list')]);
+ D.deals=dl&&!dl.error?(dl.data||[]):(D.deals||[]);
  if(o.error&&/JWT|auth/i.test(o.error.message||''))return login('Please log in again.');
  D.orders=o.data||D.orders;D.convs=c.data||D.convs;D.xm=xm.data||D.xm;D.steps=st.data||D.steps;D.cat=cat.data||D.cat;D.conv=cv.error?D.conv:(cv.data||null);D.subs=(sb2.data||[]).length;
  const ready={};(r.data||[]).forEach(x=>{ready[x.order_code]=x.ready_at});(rm.data||[]).forEach(x=>{const k=x.meta&&x.meta.ready;if(k&&!ready[k])ready[k]=x.created_at});D.ready=ready;
@@ -185,7 +187,7 @@ async function load(){
  const ids=[...new Set(saleOrders().filter(x=>x.status!='delivered').map(x=>x.catalog_id))];
  await Promise.all(ids.map(async id=>{const q=await sb.rpc('seller_codes',{p_catalog:id});if(!q.error)D.sc[id]=q.data||{}}));
  // badges + new Konami code alerts
- const cn=coinOrders().filter(x=>['awaiting_review','approved'].includes(x.status)).length,sn=saleOrders().filter(x=>x.status!='delivered'&&x.status!='rejected').length,xn=swapCases().length,un=D.convs.reduce((s,x)=>s+(+x.unread||0),0);
+ const cn=coinOrders().filter(x=>['awaiting_review','approved'].includes(x.status)).length,sn=saleOrders().filter(x=>x.status!='delivered'&&x.status!='rejected').length,xn=swapCases().length+(D.deals||[]).filter(d=>!['done','declined','cancelled'].includes(d.status)&&(d.turn||[]).includes('admin')).length,un=D.convs.reduce((s,x)=>s+(+x.unread||0),0);
  [['b1',cn],['b2',sn+xn],['b4',un]].forEach(([i,n])=>{$(i).textContent=n>99?'99+':n;$(i).hidden=!n});
  document.title=(cn+sn+xn+un)?`(${cn+sn+xn+un}) eFootballET ADMIN`:'eFootballET ADMIN';
  let fresh=null;D.orders.forEach(x=>{if(x.status!='approved'||!x.kcode)return;const k=x.id+':'+x.kcode;if(!KSEEN[k]){KSEEN[k]=Date.now();fresh=x}});
@@ -230,7 +232,7 @@ function home(){
  $('v').innerHTML=`<h2 class="t">Today <small class="sub" style="font-weight:400">${new Date().toLocaleDateString()}</small></h2>
  <div class="grid">
   ${tile(cNeed||rdyN?'hot':'',COINI,'Coin orders','Needs action: '+cNeed+(rdyN?' · 🟢 '+rdyN+' ready':''),co.filter(o=>['awaiting_review','approved'].includes(o.status)).length,"go('coins')")}
-  ${tile(sNeed||sw.length?'hot':'','🏷️','Account deals','Buy · Swap · Sell: '+(sNeed+sw.length)+' to handle',so.filter(o=>!['delivered','rejected'].includes(o.status)).length+sw.length,"go('sales')")}
+  ${tile(sNeed||sw.length?'hot':'','🏷️','Account deals','Buy · Swap · Sell: '+(sNeed+sw.length)+' to handle',so.filter(o=>!['delivered','rejected'].includes(o.status)).length+sw.length+(D.deals||[]).filter(d=>!['done','declined','cancelled'].includes(d.status)).length,"go('sales')")}
   ${tile(un?'hot':'','💬','Unread chats','Messages',un,"go('chat')")}
   ${tile(D.subs?'hot':'','📥','Sell requests','To review & list',D.subs,"go('classic','subs')")}
  </div>
@@ -292,11 +294,36 @@ function saleCase(o){
  b+=stp(5,'Buyer pays',paid?'done':(M.pay||sc.c2?'now':'todo'),paid?'💰 Payment received':`${M.pay?`✅ Buyer was asked ${ago(M.pay)}`:''}<div class="row">${bt(M.pay?'🔁 Ask buyer to pay again':'💰 Ask buyer to pay',`sPay(${o.id})`)}</div>${o.status=='awaiting_review'?`<div class="row">${bt('✅ Approve payment',`ordAct(${o.id},'ok')`,'')}${bt('❌ Reject',`ordAct(${o.id},'no')`)}</div>`:''}${o.receipt_path?`<div class="row">${bt('🖼 Receipt',`rcpt(${o.id},this)`)}</div><div id="rc${o.id}"></div>`:''}`);
  b+=stp(6,'Hand over & close',done?'done':(paid?'now':'todo'),done?'✅ Handed over':paid?`${!o.claimed_by?`<div class="row">${bt('🙋 I will hand it over',`ordAct(${o.id},'claim')`,'')}</div>`:mine?`<input type="file" accept="image/*" id="pf${o.id}"><div class="row">${bt('✅ Delivered',`finish(${o.id})`,'')}${bt('🔒 Sold / Close listing',`sClose(${c})`)}</div>`:`<div>🔒 Taken by ${E(o.claimed_by_name||'another admin')}</div>`}`:'<small class="sub">After the buyer pays.</small>');
  return `<div class="cs simple${OPEN[id]?' open':''}" data-id="${id}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>🏷️ #${o.id} · ${E(l.title||o.product||'Account')}</b><small>Buy · Seller → Buyer · ${E(o.amount)} ETB · ${ago(o.created_at)}</small></div>${sBadge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+/* ---------- NEW DEALS ---------- */
+const DLSTEP={requested:'Owner decision',login:'Waiting for login',ask1:'Ask Code 1',code1:'Waiting Code 1',verify:'Press Verified',code3:'Waiting Code 3',pay:'Waiting for payment',handover:'Hand over',done:'Done',declined:'Declined',cancelled:'Cancelled'};
+function dealCase(d){
+ const id='d'+d.id,sec=d.secrets||{},S1=sec.seller||{},B1=sec.buyer||{},st=d.status,closed=['done','declined','cancelled'].includes(st);
+ const n=['requested','login','ask1','code1','verify','code3','pay','handover','done'].indexOf(st);const stage=(k)=>n>k?'done':n==k?'now':'todo';
+ const who=(side)=>side=='seller'?`Owner: ${E(d.seller_name||'eFootballET')}`:`${d.kind=='buy'?'Buyer':'Swapper'}: ${E(d.buyer_name||'')} ${E(d.phone||'')}`;
+ const off=d.offer||{};
+ const sideSec=(nm,s)=>`<div><b>${nm}</b>${s.email||s.pass?loginH(s.email,s.pass):'<br><small class="sub">⏳ login not received</small>'}<div>Code 1: ${s.code1?codeH(s.code1):'<small class="sub">—</small>'}</div><div>Code 3: ${s.code3?codeH(s.code3):'<small class="sub">—</small>'}</div></div>`;
+ let b=`<div class="pp"><b>🤝 ${E(d.title||'')} · ${d.kind=='buy'?'Buy '+E(d.price)+' ETB':'Exchange'+(d.mode&&d.mode!='even'?' · '+(d.mode=='buyer_adds'?'swapper':'owner')+' adds '+E(d.amount)+' ETB':' · even')+' · fee: '+E(d.fee_payer||'—')}</b>${who('seller')}<br>${who('buyer')}${off.ovr?'<br>OVR: '+E(off.ovr):''}${off.note?'<br>'+E(off.note):''}</div>`;
+ if(d.kind=='swap'&&(off.images||[]).length)b+=`<div class="row">${bt('🖼 Swapper screenshots',`dlImgs(${d.id},this)`)}</div><div id="di${d.id}"></div>`;
+ b+=stp(1,'Owner accepts',n>0?'done':'now',n>0?'✅ Accepted':'⏳ Waiting for the owner'+(d.seller_id?'':' (eFootballET owns it)'));
+ b+=stp(2,'Login'+(d.kind=='swap'?'s':''),n>1?'done':(n==1?'now':'todo'),`${sideSec('Owner account',S1)}${d.kind=='swap'?sideSec('Swapper account',B1):''}`);
+ b+=stp(3,'Ask Code 1',n>2?'done':(n==2?'now':'todo'),st=='ask1'?`<small class="sub">Request the Data Transfer code on Konami with the login above, then press:</small><div class="row">${bt('🔐 Konami sent Code 1 — ask customer',`dlAct(${d.id},'ask1')`,'')}</div>`:(n>2?'✅ Done':'<small class="sub">After both logins arrive</small>'));
+ b+=stp(4,'Verified',n>4?'done':(n==4?'now':'todo'),st=='verify'?`<small class="sub">Code 1 received. Check the account, then:</small><div class="row">${bt('✅ Verified — account is OK',`dlAct(${d.id},'verified')`,'')}</div>`:(n>4?'✅ Verified':'<small class="sub">After Code 1</small>'));
+ b+=stp(5,'Code 3 · Email change',n>5?'done':(n==5?'now':'todo'),n>5?'✅ Received':n==5?'⏳ Waiting for the customer (they were notified)':'<small class="sub">After Verified</small>');
+ const pays=(d.pays||[]);
+ b+=stp(6,'Payment',n>6?'done':(n==6?'now':'todo'),pays.length?pays.map(p=>`<div class="pp">${p.side=='buyer'?(d.kind=='buy'?'Buyer':'Swapper'):'Owner'} pays <b>${E(p.due)} ETB</b> · ${p.ok?'✅ confirmed':p.order_status=='awaiting_review'?'🔎 receipt sent':p.order_status=='rejected'?'❌ rejected':p.order_code?'⏳ not paid yet':'⏳ not started'}${p.order_status=='awaiting_review'?`<div class="row">${bt('✅ Approve',`ordAct(${p.order_id},'ok')`,'')}${bt('❌ Reject',`ordAct(${p.order_id},'no')`)}</div>`:''}${p.receipt?`<div class="row">${bt('🖼 Receipt',`rcpt(${p.order_id},this)`)}</div><div id="rc${p.order_id}"></div>`:''}</div>`).join(''):'<small class="sub">After Code 3</small>');
+ b+=stp(7,'Hand over & close',st=='done'?'done':(st=='handover'?'now':'todo'),st=='done'?'✅ Completed':st=='handover'?`<small class="sub">Move the account to the customer's login, then press:</small><div class="row">${bt('🎉 Handed over — complete',`dlAct(${d.id},'complete')`,'')}</div>`:'<small class="sub">After payment</small>');
+ if(!closed)b+=`<div class="row">${bt('🗑 Cancel deal',`dlCancel(${d.id})`)}</div>`;
+ const badge=st=='done'?chip('✅ Done','g'):st=='declined'||st=='cancelled'?chip('❌ '+DLSTEP[st],'r'):chip(DLSTEP[st],['ask1','verify','handover'].includes(st)?'g':'');
+ return `<div class="cs simple${OPEN[id]?' open':''}" data-id="${id}"><div class="csh" onclick="tg('${id}')"><div class="m"><b>🤝 D${d.id} · ${E(d.title||'')}</b><small>${d.kind=='buy'?'Buy':'Exchange'} · ${E(d.buyer_name||d.phone||'')} → ${E(d.seller_name||'eFootballET')} · ${ago(d.created_at)}</small></div>${badge}<span class="ch">›</span></div><div class="csb">${b}</div></div>`}
+async function dlAct(id,a){act(async()=>{const r=await sb.rpc('deal_admin_step',{p_id:id,p_act:a});if(r.error)alert('Failed: '+r.error.message)})}
+async function dlCancel(id){if(!confirm('Cancel this deal?'))return;act(async()=>{const r=await sb.rpc('deal_cancel',{p_id:id});if(r.error)alert('Failed: '+r.error.message)})}
+async function dlImgs(id,b){const d=(D.deals||[]).find(x=>x.id==id),el=$('di'+id);b.disabled=true;let h='';for(const p of (d.offer.images||[])){const{data}=await sb.storage.from('chat').createSignedUrl(p,300);if(data)h+=`<img style="max-width:100%;border-radius:12px;margin-top:8px" src="${data.signedUrl}">`}el.innerHTML=h||'Could not open';b.disabled=false}
 function sales(){
  const all=saleOrders(),act=all.filter(o=>!['delivered','rejected'].includes(o.status)),dn=all.filter(o=>o.status=='delivered').slice(0,10),rj=all.filter(o=>o.status=='rejected'),xs=swapCases();
- const open=act.length+xs.length;
- const lst=[...xs.map(c=>({k:c.cid*1e6,h:swapCase(c)})),...act.map(o=>({k:+new Date(o.created_at||0),h:saleCase(o)}))].sort((a,b)=>b.k-a.k);
- $('v').innerHTML=`<h2 class="t">🏷️ Accounts <small class="sub" style="font-weight:400">Buy · Swap · one next step each</small></h2>${lst.map(x=>x.h).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ Nothing to handle</p>'}${dn.length?`<h3 class="sub">✅ Delivered</h3>${dn.map(saleCase).join('')}`:''}${rejGroup(rj,saleCase,'sales')}`;decorate()}
+ const dls=(D.deals||[]),dAct=dls.filter(d=>!['done','declined','cancelled'].includes(d.status)),dOld=dls.filter(d=>['done','declined','cancelled'].includes(d.status)).slice(0,10);
+ const open=act.length+xs.length+dAct.length;
+ const lst=[...dAct.map(d=>({k:+new Date(d.updated_at||0)+1e13,h:dealCase(d)})),...xs.map(c=>({k:c.cid*1e6,h:swapCase(c)})),...act.map(o=>({k:+new Date(o.created_at||0),h:saleCase(o)}))].sort((a,b)=>b.k-a.k);
+ $('v').innerHTML=`<h2 class="t">🏷️ Accounts <small class="sub" style="font-weight:400">Buy · Swap · one next step each</small></h2>${lst.map(x=>x.h).join('')||'<p class="sub" style="text-align:center;margin:30px 0">✨ Nothing to handle</p>'}${dOld.length?`<h3 class="sub">🤝 Recent deals</h3>${dOld.map(dealCase).join('')}`:''}${dn.length?`<h3 class="sub">✅ Delivered</h3>${dn.map(saleCase).join('')}`:''}${rejGroup(rj,saleCase,'sales')}`;decorate()}
 const swaps=sales;
 const ALLS={};
 function allSteps(id){ALLS[id]=!ALLS[id];paint()}
