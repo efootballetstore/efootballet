@@ -34,5 +34,39 @@
    "type": "image/png",
    "purpose": "monochrome"
   }
+ ],
+ "id": "/",
+ "categories": [
+  "shopping",
+  "games"
+ ],
+ "display_override": [
+  "standalone",
+  "minimal-ui"
+ ],
+ "prefer_related_applications": false,
+ "shortcuts": [
+  {
+   "name": "Buy coins",
+   "short_name": "Coins",
+   "url": "/?source=shortcut",
+   "icons": [
+    {
+     "src": "/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Messages",
+   "short_name": "Messages",
+   "url": "/?msgs=1",
+   "icons": [
+    {
+     "src": "/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
  ]
 }
